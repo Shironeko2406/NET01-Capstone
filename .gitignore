@@ -1,0 +1,9 @@
+# Thư mục build và biên dịch
+bin/
+obj/
+
+# Migrations (nếu là dự án Entity Framework)
+Migrations/
+
+# Các thư mục tạm thời khác
+.vs/
