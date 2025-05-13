@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ClinictManagementSystem.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace ClinictManagementSystem.Models.Entity
 {
@@ -6,10 +7,7 @@ namespace ClinictManagementSystem.Models.Entity
     {
         [Key]
         public Guid RoleId { get; set; }
-
         public string RoleName { get; set; }
-        public string Description { get; set; }
-
         public ICollection<UserRole> UserRoles { get; set; }
 
     }
