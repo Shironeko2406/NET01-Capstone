@@ -1,4 +1,6 @@
-﻿using ClinictManagementSystem.Models.Entity;
+﻿using ClinictManagementSystem.Commons;
+using ClinictManagementSystem.Enums;
+using ClinictManagementSystem.Models.Entity;
 using Microsoft.EntityFrameworkCore;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -54,6 +56,101 @@ namespace ClinictManagementSystem
                 .HasOne(ur => ur.Role)
                 .WithMany(r => r.UserRoles)
                 .HasForeignKey(ur => ur.RoleId);
+
+            //--------------------- Dữ liệu thiết lập ----------------------------
+
+            // Hardcoded Role GUIDs
+            var rolePatientId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+            var roleDoctorId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
+            var roleReceptionistId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc");
+            var roleAdminId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd");
+
+            modelBuilder.Entity<Role>().HasData(
+                new Role { RoleId = rolePatientId, RoleName = AppRole.Patient },
+                new Role { RoleId = roleDoctorId, RoleName = AppRole.Doctor },
+                new Role { RoleId = roleReceptionistId, RoleName = AppRole.Receptionist },
+                new Role { RoleId = roleAdminId, RoleName = AppRole.Admin }
+            );
+
+            // ====== Seed Users ======
+            // Hardcoded User GUIDs
+            var userPatientId = new Guid("11111111-1111-1111-1111-111111111111");
+            var userDoctorId = new Guid("22222222-2222-2222-2222-222222222222");
+            var userReceptionistId = new Guid("33333333-3333-3333-3333-333333333333");
+            var userAdminId = new Guid("44444444-4444-4444-4444-444444444444");
+
+            // Hardcoded PasswordHashes
+            var hash123456 = "$2a$11$WbZ9XPdZ1VnG8jUQu1P3/ulI91j7pnmI4Y7xjXORJXkEB1sI1HR8e"; // Hash for "123456"
+            var hashAdmin123 = "$2a$11$gUoDlTtxu/XsFkaNMO8HgOrOtGFDKj6j5yyJCUr/nh8HKnPH5asby"; // Hash for "admin123"
+
+            modelBuilder.Entity<Users>().HasData(
+                new Users
+                {
+                    UserId = userPatientId,
+                    FullName = "Nguyễn Văn A",
+                    Username = "patient",
+                    PasswordHash = hash123456,
+                    Email = "patient@example.com",
+                    DateOfBirth = new DateTime(1990, 1, 1),
+                    Gender = Enums.GenderEnum.Male,
+                    PhoneNumber = "0123456789",
+                    Address = "Hà Nội",
+                    CreatedAt = new DateTime(2023, 1, 1),
+                    Status = Enums.UserStatusEnum.Active
+                },
+                new Users
+                {
+                    UserId = userDoctorId,
+                    FullName = "Trần Văn B",
+                    Username = "doctor",
+                    PasswordHash = hash123456,
+                    Email = "doctor@example.com",
+                    DateOfBirth = new DateTime(1985, 5, 10),
+                    Gender = Enums.GenderEnum.Male,
+                    PhoneNumber = "0987654321",
+                    Address = "HCM",
+                    CreatedAt = new DateTime(2023, 1, 1),
+                    Status = Enums.UserStatusEnum.Active
+                },
+                new Users
+                {
+                    UserId = userReceptionistId,
+                    FullName = "Lê Thị C",
+                    Username = "receptionist",
+                    PasswordHash = hash123456,
+                    Email = "receptionist@example.com",
+                    DateOfBirth = new DateTime(1995, 3, 15),
+                    Gender = Enums.GenderEnum.Female,
+                    PhoneNumber = "0911222333",
+                    Address = "Đà Nẵng",
+                    CreatedAt = new DateTime(2023, 1, 1),
+                    Status = Enums.UserStatusEnum.Active
+                },
+                new Users
+                {
+                    UserId = userAdminId,
+                    FullName = "Admin System",
+                    Username = "admin",
+                    PasswordHash = hashAdmin123,
+                    Email = "admin@example.com",
+                    DateOfBirth = new DateTime(1980, 1, 1),
+                    Gender = Enums.GenderEnum.Male,
+                    PhoneNumber = "0999888777",
+                    Address = "System HQ",
+                    CreatedAt = new DateTime(2023, 1, 1),
+                    Status = Enums.UserStatusEnum.Active
+                }
+            );
+
+            // ====== Seed UserRoles ======
+            modelBuilder.Entity<UserRole>().HasData(
+                new UserRole { UserId = userPatientId, RoleId = rolePatientId },
+                new UserRole { UserId = userDoctorId, RoleId = roleDoctorId },
+                new UserRole { UserId = userReceptionistId, RoleId = roleReceptionistId },
+                new UserRole { UserId = userAdminId, RoleId = roleAdminId }
+            );
+
+
         }
     }
 }
