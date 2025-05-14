@@ -3,9 +3,15 @@ using ClinictManagementSystem.Interfaces;
 using ClinictManagementSystem.Mapper;
 using ClinictManagementSystem.Repositories.Generic;
 using ClinictManagementSystem.Repositories.ServiceRepo;
+using ClinictManagementSystem.Repositories.SpecialtyRepo;
 using ClinictManagementSystem.Repositories.UnitOfWork;
 using ClinictManagementSystem.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,22 +24,80 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
+builder.Services.AddSwaggerGen(options =>
+{
+    options.EnableAnnotations();
+
+    // Thêm cấu hình bảo mật (Security Definition)
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter 'Bearer' [space] and then your valid JWT token.\nExample: Bearer eyJhbGciOiJIUzI1NiIsInR..."
+    });
+
+    // Thêm yêu cầu bảo mật (Security Requirement)
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {} // No specific scopes
+        }
+    });
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", builder =>
+    {
+        builder
+            .AllowAnyOrigin()      // hoặc .WithOrigins("http://localhost:3000") nếu muốn cụ thể
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
 
 
 //Đăng ký DI
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
+builder.Services.AddScoped<ISpecialtyRepository, SpecialtyRepository>();
+
 
 //Đăng ký service
 builder.Services.AddScoped<IServiceClinict, ServiceClinict>();
+builder.Services.AddScoped<ISpecialtyService, SpecialtyService>();
 builder.Services.AddScoped<ICurrentTime, CurrentTime>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+            ValidAudience = builder.Configuration["JwtSettings:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"]))
+        };
+    });
 
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -46,6 +110,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors("AllowAll");
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

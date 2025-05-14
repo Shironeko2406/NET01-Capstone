@@ -5,6 +5,7 @@ using ClinictManagementSystem.Models.Entity;
 using ClinictManagementSystem.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace ClinictManagementSystem.Controllers
 {
@@ -17,25 +18,30 @@ namespace ClinictManagementSystem.Controllers
         {
             _serviceClinict = serviceClinict;
         }
+
+
+        [SwaggerOperation(Summary = "Phân quyền: Admin")]
         [HttpPost]
-        //[SwaggerOperation(Summary = "Tạo mới đơn thuốc")]
         public async Task<ApiResponse<bool>> CreateServciceAsync(CreateServiceDTO createServiceDTO)
         {
             return await _serviceClinict.CreateServciceAsync(createServiceDTO);
         }
 
+        [SwaggerOperation(Summary = "Phân quyền: Admin")]
         [HttpDelete("{serviceId}")]
         public async Task<ApiResponse<bool>> DeleteServiceByIdAsync(Guid serviceId)
         {
             return await _serviceClinict.DeleteServiceByIdAsync(serviceId);
         }
 
+        [SwaggerOperation(Summary = "Phân quyền: Admin")]
         [HttpPut("{serviceId}")]
         public async Task<ApiResponse<bool>> UpdateServiceByIdAsync(Guid serviceId, UpdateServiceDTO updateServiceDto)
         {
             return await _serviceClinict.UpdateServiceByIdAsync(serviceId ,updateServiceDto);
         }
 
+        [SwaggerOperation(Summary = "Phân quyền: Admin")]
         [HttpGet]
         public async Task<ApiResponse<Pagination<GetServiceDTO>>> GetServiceAsync([FromQuery] ServiceFiltercs serviceFiltercs)
         {

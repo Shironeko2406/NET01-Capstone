@@ -53,9 +53,7 @@ namespace ClinictManagementSystem.Services
                     return ResponseHandler.Failure<bool>("Service not found.");
                 }
 
-                service.IsDeleted = true;
-                _unitOfWork.ServiceRepository.UpdateAsync(service);
-
+                _unitOfWork.ServiceRepository.SoftDelete(service);
                 await _unitOfWork.SaveChangeAsync();
 
                 return ResponseHandler.Success(true, "Service deleted successfully.");
