@@ -1,4 +1,10 @@
-using ClinictManagementSystem;
+﻿using ClinictManagementSystem;
+using ClinictManagementSystem.Interfaces;
+using ClinictManagementSystem.Mapper;
+using ClinictManagementSystem.Repositories.Generic;
+using ClinictManagementSystem.Repositories.ServiceRepo;
+using ClinictManagementSystem.Repositories.UnitOfWork;
+using ClinictManagementSystem.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +19,21 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+
+//Đăng ký DI
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
+
+//Đăng ký service
+builder.Services.AddScoped<IServiceClinict, ServiceClinict>();
+builder.Services.AddScoped<ICurrentTime, CurrentTime>();
+
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+
 
 var app = builder.Build();
 

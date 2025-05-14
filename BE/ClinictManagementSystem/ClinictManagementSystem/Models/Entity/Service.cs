@@ -2,7 +2,7 @@
 
 namespace ClinictManagementSystem.Models.Entity
 {
-    public class Service
+    public class Service : BaseEntity
     {
         [Key]
         public Guid ServiceId { get; set; }
@@ -10,7 +10,6 @@ namespace ClinictManagementSystem.Models.Entity
         public string Name { get; set; }
         public int Price { get; set; }
         public string Description { get; set; }
-
         public ICollection<TestResult> TestResults { get; set; }
         public ICollection<AppointmentServices> AppointmentServices { get; set; }
     }
