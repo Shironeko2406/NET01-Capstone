@@ -2,6 +2,9 @@
 using ClinictManagementSystem.Interfaces;
 using ClinictManagementSystem.Mapper;
 using ClinictManagementSystem.Repositories.Generic;
+using ClinictManagementSystem.Repositories.MedicineRepo;
+using ClinictManagementSystem.Repositories.MedicineStockHistoryRepo;
+using ClinictManagementSystem.Repositories.MedicineTypeRepo;
 using ClinictManagementSystem.Repositories.ServiceRepo;
 using ClinictManagementSystem.Repositories.SpecialtyRepo;
 using ClinictManagementSystem.Repositories.UnitOfWork;
@@ -74,11 +77,14 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<ISpecialtyRepository, SpecialtyRepository>();
-
+builder.Services.AddScoped<IMedicineTypeRepository, MedicineTypeRepository>();
+builder.Services.AddScoped<IMedicineRepocitory, MedicineRepocitory>();
+builder.Services.AddScoped<IMedicineStockHistoryRepository, MedicineStockHistoryRepository>();
 
 //Đăng ký service
 builder.Services.AddScoped<IServiceClinict, ServiceClinict>();
 builder.Services.AddScoped<ISpecialtyService, SpecialtyService>();
+builder.Services.AddScoped<IMedicineTypeService, MedicineTypeService>();
 builder.Services.AddScoped<ICurrentTime, CurrentTime>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));

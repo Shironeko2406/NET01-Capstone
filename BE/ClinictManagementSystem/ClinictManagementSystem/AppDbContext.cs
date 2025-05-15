@@ -2,7 +2,6 @@
 using ClinictManagementSystem.Enums;
 using ClinictManagementSystem.Models.Entity;
 using Microsoft.EntityFrameworkCore;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ClinictManagementSystem
 {
@@ -18,6 +17,8 @@ namespace ClinictManagementSystem
         public DbSet<Prescription> Prescriptions { get; set; }
         public DbSet<PrescriptionDetails> PrescriptionDetails { get; set; }
         public DbSet<Medicines> Medicines { get; set; }
+        public DbSet<MedicineStockHistory> MedicineStockHistorys { get; set; }
+        public DbSet<MedicineType> MedicineTypes { get; set; }
         public DbSet<Service> Services { get; set; }
         public DbSet<TestResult> TestResults { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
