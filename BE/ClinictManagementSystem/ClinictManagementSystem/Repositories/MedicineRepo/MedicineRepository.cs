@@ -5,9 +5,9 @@ using ClinictManagementSystem.Repositories.MedicineTypeRepo;
 
 namespace ClinictManagementSystem.Repositories.MedicineRepo
 {
-    public class MedicineRepocitory : GenericRepository<Medicines>, IMedicineRepocitory
+    public class MedicineRepository : GenericRepository<Medicines>, IMedicineRepository
     {
-        public MedicineRepocitory(AppDbContext context, ICurrentTime timeService) : base(context, timeService)
+        public MedicineRepository(AppDbContext context, ICurrentTime timeService) : base(context, timeService)
         {
         }
     }

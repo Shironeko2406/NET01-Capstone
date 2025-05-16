@@ -3,7 +3,7 @@ using ClinictManagementSystem.Repositories.Generic;
 
 namespace ClinictManagementSystem.Repositories.MedicineRepo
 {
-    public interface IMedicineRepocitory : IGenericRepository<Medicines>
+    public interface IMedicineRepository : IGenericRepository<Medicines>
     {
     }
 }
