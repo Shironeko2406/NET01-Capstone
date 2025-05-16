@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ClinictManagementSystem.Models.Entity
 {
-    public class Users
+    public class Users : BaseEntity
     {
         [Key]
         public Guid UserId { get; set; }
@@ -11,13 +11,12 @@ namespace ClinictManagementSystem.Models.Entity
         public string Username { get; set; }
         public string PasswordHash { get; set; }
         public string Email { get; set; }
+        public string? Avatar { get; set; }
         public DateTime DateOfBirth { get; set; }
         public GenderEnum Gender { get; set; }
         public string PhoneNumber { get; set; }
         public string Address { get; set; }
-        public DateTime CreatedAt { get; set; }
         public UserStatusEnum Status { get; set; }
-
         public ICollection<UserRole> UserRoles { get; set; }
         public ICollection<Appointment> AppointmentsAsPatient { get; set; }
         public ICollection<Appointment> AppointmentsAsDoctor { get; set; }

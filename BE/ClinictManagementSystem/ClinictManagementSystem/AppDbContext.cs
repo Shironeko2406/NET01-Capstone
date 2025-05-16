@@ -2,7 +2,6 @@
 using ClinictManagementSystem.Enums;
 using ClinictManagementSystem.Models.Entity;
 using Microsoft.EntityFrameworkCore;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ClinictManagementSystem
 {
@@ -18,6 +17,8 @@ namespace ClinictManagementSystem
         public DbSet<Prescription> Prescriptions { get; set; }
         public DbSet<PrescriptionDetails> PrescriptionDetails { get; set; }
         public DbSet<Medicines> Medicines { get; set; }
+        public DbSet<MedicineStockHistory> MedicineStockHistorys { get; set; }
+        public DbSet<MedicineType> MedicineTypes { get; set; }
         public DbSet<Service> Services { get; set; }
         public DbSet<TestResult> TestResults { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
@@ -92,11 +93,11 @@ namespace ClinictManagementSystem
                     PasswordHash = hash123456,
                     Email = "patient@example.com",
                     DateOfBirth = new DateTime(1990, 1, 1),
-                    Gender = Enums.GenderEnum.Male,
+                    Gender = GenderEnum.Male,
                     PhoneNumber = "0123456789",
                     Address = "Hà Nội",
-                    CreatedAt = new DateTime(2023, 1, 1),
-                    Status = Enums.UserStatusEnum.Active
+                    CreationDate = new DateTime(2023, 1, 1),
+                    Status = UserStatusEnum.Active
                 },
                 new Users
                 {
@@ -106,11 +107,11 @@ namespace ClinictManagementSystem
                     PasswordHash = hash123456,
                     Email = "doctor@example.com",
                     DateOfBirth = new DateTime(1985, 5, 10),
-                    Gender = Enums.GenderEnum.Male,
+                    Gender = GenderEnum.Male,
                     PhoneNumber = "0987654321",
                     Address = "HCM",
-                    CreatedAt = new DateTime(2023, 1, 1),
-                    Status = Enums.UserStatusEnum.Active
+                    CreationDate = new DateTime(2023, 1, 1),
+                    Status = UserStatusEnum.Active
                 },
                 new Users
                 {
@@ -120,11 +121,11 @@ namespace ClinictManagementSystem
                     PasswordHash = hash123456,
                     Email = "receptionist@example.com",
                     DateOfBirth = new DateTime(1995, 3, 15),
-                    Gender = Enums.GenderEnum.Female,
+                    Gender = GenderEnum.Female,
                     PhoneNumber = "0911222333",
                     Address = "Đà Nẵng",
-                    CreatedAt = new DateTime(2023, 1, 1),
-                    Status = Enums.UserStatusEnum.Active
+                    CreationDate = new DateTime(2023, 1, 1),
+                    Status = UserStatusEnum.Active
                 },
                 new Users
                 {
@@ -134,11 +135,11 @@ namespace ClinictManagementSystem
                     PasswordHash = hashAdmin123,
                     Email = "admin@example.com",
                     DateOfBirth = new DateTime(1980, 1, 1),
-                    Gender = Enums.GenderEnum.Male,
+                    Gender = GenderEnum.Male,
                     PhoneNumber = "0999888777",
                     Address = "System HQ",
-                    CreatedAt = new DateTime(2023, 1, 1),
-                    Status = Enums.UserStatusEnum.Active
+                    CreationDate = new DateTime(2023, 1, 1),
+                    Status = UserStatusEnum.Active
                 }
             );
 

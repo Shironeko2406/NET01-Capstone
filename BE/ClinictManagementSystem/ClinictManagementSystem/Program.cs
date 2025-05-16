@@ -2,9 +2,13 @@
 using ClinictManagementSystem.Interfaces;
 using ClinictManagementSystem.Mapper;
 using ClinictManagementSystem.Repositories.Generic;
+using ClinictManagementSystem.Repositories.MedicineRepo;
+using ClinictManagementSystem.Repositories.MedicineStockHistoryRepo;
+using ClinictManagementSystem.Repositories.MedicineTypeRepo;
 using ClinictManagementSystem.Repositories.ServiceRepo;
 using ClinictManagementSystem.Repositories.SpecialtyRepo;
 using ClinictManagementSystem.Repositories.UnitOfWork;
+using ClinictManagementSystem.Repositories.UsersRepo;
 using ClinictManagementSystem.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -74,12 +78,23 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<ISpecialtyRepository, SpecialtyRepository>();
+builder.Services.AddScoped<IMedicineTypeRepository, MedicineTypeRepository>();
+builder.Services.AddScoped<IMedicineRepository, MedicineRepository>();
+builder.Services.AddScoped<IMedicineStockHistoryRepository, MedicineStockHistoryRepository>();
+builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 
 
 //Đăng ký service
 builder.Services.AddScoped<IServiceClinict, ServiceClinict>();
 builder.Services.AddScoped<ISpecialtyService, SpecialtyService>();
+builder.Services.AddScoped<IMedicineTypeService, MedicineTypeService>();
+builder.Services.AddScoped<IMedicineService, MedicineService>();
+builder.Services.AddScoped<IMedicineStockHistoryService, MedicineStockHistoryService>();
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IJWTService, JWTService>();
 builder.Services.AddScoped<ICurrentTime, CurrentTime>();
+
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
