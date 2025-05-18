@@ -5,6 +5,6 @@
         Patient ,
         Doctor ,
         Receptionist ,
-        Admin ,
+        Administrator ,
     }
 }

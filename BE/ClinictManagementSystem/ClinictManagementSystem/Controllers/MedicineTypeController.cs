@@ -1,6 +1,7 @@
 ﻿using ClinictManagementSystem.Commons;
 using ClinictManagementSystem.Interfaces;
 using ClinictManagementSystem.Models.DTO.MedicineTypeDTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,6 +36,7 @@ namespace ClinictManagementSystem.Controllers
             return await _medicineTypeService.UpdateMedicineTypeByIdAsync(id, updateMedicineTypeDTO);
         }
 
+        [Authorize(Roles = AppRole.Admin + "," + AppRole.Doctor)]
         [HttpGet]
         public async Task<ApiResponse<List<MedicineTypeGetDTO>>> GetAllMedicineTypes()
         {

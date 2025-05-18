@@ -22,7 +22,7 @@ namespace ClinictManagementSystem.Controllers
 
         [SwaggerOperation(Summary = "Phân quyền: Admin")]
         [HttpPost]
-        public async Task<ApiResponse<bool>> CreateServciceAsync(CreateServiceDTO createServiceDTO)
+        public async Task<ApiResponse<bool>> CreateServciceAsync([FromBody] CreateServiceDTO createServiceDTO)
         {
             return await _serviceClinict.CreateServciceAsync(createServiceDTO);
         }
@@ -36,7 +36,7 @@ namespace ClinictManagementSystem.Controllers
 
         [SwaggerOperation(Summary = "Phân quyền: Admin")]
         [HttpPut("{serviceId}")]
-        public async Task<ApiResponse<bool>> UpdateServiceByIdAsync(Guid serviceId, UpdateServiceDTO updateServiceDto)
+        public async Task<ApiResponse<bool>> UpdateServiceByIdAsync(Guid serviceId, [FromBody] UpdateServiceDTO updateServiceDto)
         {
             return await _serviceClinict.UpdateServiceByIdAsync(serviceId ,updateServiceDto);
         }
