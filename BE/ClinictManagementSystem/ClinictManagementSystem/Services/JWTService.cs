@@ -11,13 +11,10 @@ namespace ClinictManagementSystem.Services
     public class JWTService : IJWTService
     {
         private readonly IConfiguration _configuration;
-        private readonly ICurrentTime _currentTime;
 
-
-        public JWTService(IConfiguration configuration, ICurrentTime currentTime)
+        public JWTService(IConfiguration configuration)
         {
             _configuration = configuration;
-            _currentTime = currentTime;
         }
         public string GenerateJWT(Users user)
         {
@@ -26,16 +23,26 @@ namespace ClinictManagementSystem.Services
             var issuer = jwtSettings["Issuer"];
             var audience = jwtSettings["Audience"];
 
-            var claims = new[]
+            var roles = user.UserRoles?.Select(ur => ur.Role.RoleName).ToList();
+            var specialties = user.DoctorSpecialties?.Select(ds => ds.Specialty.Name).ToList();
+
+            // Tạo claim cơ bản
+            var claims = new List<Claim>
             {
                 new Claim("UserId", user.UserId.ToString()),
                 new Claim("UserName", user.Username),
-                new Claim("FullName", user.FullName),
-                new Claim("Email", user.Email),
+                new Claim("FullName", user.FullName ?? ""),
+                new Claim("Email", user.Email ?? ""),
                 new Claim("Gender", user.Gender.ToString()),
                 new Claim("DateOfBirth", user.DateOfBirth.ToString("yyyy-MM-dd")),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
+
+            // Thêm role claims (standard)
+            claims.AddRange(roles.Select(role => new Claim("role", role)));
+
+            // Thêm specialty claims (custom)
+            claims.AddRange(specialties.Select(spec => new Claim("Specialty", spec)));
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

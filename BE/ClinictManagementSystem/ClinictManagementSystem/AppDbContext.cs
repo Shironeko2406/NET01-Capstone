@@ -1,5 +1,6 @@
 ﻿using ClinictManagementSystem.Commons;
 using ClinictManagementSystem.Enums;
+using ClinictManagementSystem.Helper;
 using ClinictManagementSystem.Models.Entity;
 using Microsoft.EntityFrameworkCore;
 
@@ -58,6 +59,20 @@ namespace ClinictManagementSystem
                 .WithMany(r => r.UserRoles)
                 .HasForeignKey(ur => ur.RoleId);
 
+            // Cấu hình Doctor <-> DoctorSpecialties
+            modelBuilder.Entity<DoctorSpecialties>()
+                .HasOne(ds => ds.Doctor)
+                .WithMany(u => u.DoctorSpecialties)
+                .HasForeignKey(ds => ds.DoctorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Cấu hình Specialty <-> DoctorSpecialties
+            modelBuilder.Entity<DoctorSpecialties>()
+                .HasOne(ds => ds.Specialty)
+                .WithMany(s => s.DoctorSpecialties)
+                .HasForeignKey(ds => ds.SpecialtyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             //--------------------- Dữ liệu thiết lập ----------------------------
 
             // Hardcoded Role GUIDs
@@ -81,8 +96,7 @@ namespace ClinictManagementSystem
             var userAdminId = new Guid("44444444-4444-4444-4444-444444444444");
 
             // Hardcoded PasswordHashes
-            var hash123456 = "$2a$11$WbZ9XPdZ1VnG8jUQu1P3/ulI91j7pnmI4Y7xjXORJXkEB1sI1HR8e"; // Hash for "123456"
-            var hashAdmin123 = "$2a$11$gUoDlTtxu/XsFkaNMO8HgOrOtGFDKj6j5yyJCUr/nh8HKnPH5asby"; // Hash for "admin123"
+            var passHash = "$2a$11$85pu8Gq/dNw/gKhT3bl/t.vLWCIL2ABA7tiQ8M7EGUx68JOJUbP.i";
 
             modelBuilder.Entity<Users>().HasData(
                 new Users
@@ -90,7 +104,7 @@ namespace ClinictManagementSystem
                     UserId = userPatientId,
                     FullName = "Nguyễn Văn A",
                     Username = "patient",
-                    PasswordHash = hash123456,
+                    PasswordHash = passHash,
                     Email = "patient@example.com",
                     DateOfBirth = new DateTime(1990, 1, 1),
                     Gender = GenderEnum.Male,
@@ -104,7 +118,7 @@ namespace ClinictManagementSystem
                     UserId = userDoctorId,
                     FullName = "Trần Văn B",
                     Username = "doctor",
-                    PasswordHash = hash123456,
+                    PasswordHash = passHash,
                     Email = "doctor@example.com",
                     DateOfBirth = new DateTime(1985, 5, 10),
                     Gender = GenderEnum.Male,
@@ -118,7 +132,7 @@ namespace ClinictManagementSystem
                     UserId = userReceptionistId,
                     FullName = "Lê Thị C",
                     Username = "receptionist",
-                    PasswordHash = hash123456,
+                    PasswordHash = passHash,
                     Email = "receptionist@example.com",
                     DateOfBirth = new DateTime(1995, 3, 15),
                     Gender = GenderEnum.Female,
@@ -132,7 +146,7 @@ namespace ClinictManagementSystem
                     UserId = userAdminId,
                     FullName = "Admin System",
                     Username = "admin",
-                    PasswordHash = hashAdmin123,
+                    PasswordHash = passHash,
                     Email = "admin@example.com",
                     DateOfBirth = new DateTime(1980, 1, 1),
                     Gender = GenderEnum.Male,

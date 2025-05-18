@@ -1,10 +1,13 @@
 ﻿using ClinictManagementSystem;
 using ClinictManagementSystem.Interfaces;
 using ClinictManagementSystem.Mapper;
+using ClinictManagementSystem.Models.Entity;
+using ClinictManagementSystem.Repositories.DoctorSpecialtyRepo;
 using ClinictManagementSystem.Repositories.Generic;
 using ClinictManagementSystem.Repositories.MedicineRepo;
 using ClinictManagementSystem.Repositories.MedicineStockHistoryRepo;
 using ClinictManagementSystem.Repositories.MedicineTypeRepo;
+using ClinictManagementSystem.Repositories.RoleRepo;
 using ClinictManagementSystem.Repositories.ServiceRepo;
 using ClinictManagementSystem.Repositories.SpecialtyRepo;
 using ClinictManagementSystem.Repositories.UnitOfWork;
@@ -12,19 +15,31 @@ using ClinictManagementSystem.Repositories.UsersRepo;
 using ClinictManagementSystem.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ClinictConnect")));
+
+// ===== Add Redis =====
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -32,7 +47,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
     options.EnableAnnotations();
-
     // Thêm cấu hình bảo mật (Security Definition)
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -78,10 +92,13 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<ISpecialtyRepository, SpecialtyRepository>();
+builder.Services.AddScoped<IDoctorSpecialtyRepository, DoctorSpecialtyRepository>();
 builder.Services.AddScoped<IMedicineTypeRepository, MedicineTypeRepository>();
 builder.Services.AddScoped<IMedicineRepository, MedicineRepository>();
 builder.Services.AddScoped<IMedicineStockHistoryRepository, MedicineStockHistoryRepository>();
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+
 
 
 //Đăng ký service
@@ -94,8 +111,12 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IJWTService, JWTService>();
 builder.Services.AddScoped<ICurrentTime, CurrentTime>();
+builder.Services.AddScoped<IRedisService, RedisService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IClaimsService, ClaimsService>();
 
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

@@ -12,12 +12,10 @@ namespace ClinictManagementSystem.Services
     public class ServiceClinict : IServiceClinict
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
 
-        public ServiceClinict(IUnitOfWork unitOfWork, IMapper mapper)
+        public ServiceClinict(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
         }
         public async Task<ApiResponse<bool>> CreateServciceAsync(CreateServiceDTO createServiceDTO)
         {
