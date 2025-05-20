@@ -4,6 +4,7 @@ using System;
 using ClinictManagementSystem.Models.Entity;
 using ClinictManagementSystem.Commons;
 using ClinictManagementSystem.Interfaces;
+using ClinictManagementSystem.Services;
 
 namespace ClinictManagementSystem.Repositories.Generic
 {
@@ -136,6 +137,15 @@ namespace ClinictManagementSystem.Repositories.Generic
             };
 
             return result;
+        }
+
+        public async Task AddRangeAsync(List<TEntity> entities)
+        {
+            foreach (var entity in entities)
+            {
+                entity.CreationDate = _timeService.GetCurrentTime();
+            }
+            await _dbSet.AddRangeAsync(entities);
         }
     }
 }

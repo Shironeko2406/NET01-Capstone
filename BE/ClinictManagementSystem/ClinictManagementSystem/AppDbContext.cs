@@ -14,6 +14,7 @@ namespace ClinictManagementSystem
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<Specialties> Specialties { get; set; }
         public DbSet<DoctorSpecialties> DoctorSpecialties { get; set; }
+        public DbSet<DoctorSchedule> DoctorSchedules { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<Prescription> Prescriptions { get; set; }
         public DbSet<PrescriptionDetails> PrescriptionDetails { get; set; }

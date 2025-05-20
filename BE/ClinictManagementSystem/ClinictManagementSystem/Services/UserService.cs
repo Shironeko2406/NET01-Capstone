@@ -4,6 +4,7 @@ using ClinictManagementSystem.Enums;
 using ClinictManagementSystem.Handler;
 using ClinictManagementSystem.Helper;
 using ClinictManagementSystem.Interfaces;
+using ClinictManagementSystem.Models.DTO.DoctorScheduleDTO;
 using ClinictManagementSystem.Models.DTO.ServiceDTO;
 using ClinictManagementSystem.Models.DTO.UsersDTO;
 using ClinictManagementSystem.Models.Entity;
@@ -20,11 +21,17 @@ namespace ClinictManagementSystem.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailService _emailService;
         private readonly IClaimsService _claimsService;
-        public UserService(IUnitOfWork unitOfWork, IEmailService emailService, IClaimsService claimsService)
+        private readonly IDoctorScheduleService _doctorSchedule;
+        public UserService(
+            IUnitOfWork unitOfWork,
+            IEmailService emailService,
+            IClaimsService claimsService,
+            IDoctorScheduleService doctorScheduleService)
         {
             _unitOfWork = unitOfWork;
             _emailService = emailService;
             _claimsService = claimsService;
+            _doctorSchedule = doctorScheduleService;
         }
 
         public async Task<ApiResponse<bool>> RegisterPatientAsync(RegisterPatientDTO registerPatientDTO)
@@ -164,6 +171,12 @@ namespace ClinictManagementSystem.Services
                         };
                         await _unitOfWork.DoctorSpecialtyRepository.AddDoctorSpecialtyAsync(doctorSpecialty);
                     }
+                }
+
+                // 6. Nếu là Doctor thì tạo lịch làm việc mặc định từ Thứ 2 đến Thứ 6 (08:00 - 17:00)
+                if (role.RoleName == AppRole.Doctor)
+                {
+                    await _doctorSchedule.CreateDefaultScheduleAsync(newUser.UserId);
                 }
 
                 await _unitOfWork.SaveChangeAsync();
@@ -316,6 +329,36 @@ namespace ClinictManagementSystem.Services
             catch (Exception ex)
             {
                 return ResponseHandler.Failure<bool>($"Lỗi khi cập nhật thông tin người dùng: {ex.Message}");
+            }
+        }
+
+        public async Task<ApiResponse<List<DoctorGetDTO>>> GetAvailableDoctorsAsync(DoctorAvailabilityFilterDTO doctorAvailabilityFilterDTO)
+        {
+            try
+            {
+                var availableDoctors = await _unitOfWork.UsersRepository
+                    .GetAvailableDoctorsAsync(
+                        doctorAvailabilityFilterDTO.Date,
+                        doctorAvailabilityFilterDTO.StartTime,
+                        doctorAvailabilityFilterDTO.EndTime,
+                        doctorAvailabilityFilterDTO.SpecialtyId
+                    );
+
+
+                // Chuyển đổi entity sang DTO (có thể dùng AutoMapper hoặc mapping thủ công)
+                var result = availableDoctors.Select(d => new DoctorGetDTO
+                {
+                    UserId = d.UserId,
+                    FullName = d.FullName,
+                    Specialties = d.DoctorSpecialties.Select(ds => ds.Specialty.Name).ToList()
+                }).ToList();
+
+                return ResponseHandler.Success(result, "Available doctors retrieved successfully.");
+            }
+            catch (Exception ex)
+            {
+                // Log exception nếu cần
+                return ResponseHandler.Failure<List<DoctorGetDTO>>($"Error occurred: {ex.Message}");
             }
         }
 

@@ -1,4 +1,6 @@
-﻿using ClinictManagementSystem.Repositories.DoctorSpecialtyRepo;
+﻿using ClinictManagementSystem.Repositories.AppoinmentRepo;
+using ClinictManagementSystem.Repositories.DoctorScheduleRepo;
+using ClinictManagementSystem.Repositories.DoctorSpecialtyRepo;
 using ClinictManagementSystem.Repositories.MedicineRepo;
 using ClinictManagementSystem.Repositories.MedicineStockHistoryRepo;
 using ClinictManagementSystem.Repositories.MedicineTypeRepo;
@@ -15,10 +17,12 @@ namespace ClinictManagementSystem.Repositories.UnitOfWork
         public IServiceRepository ServiceRepository { get; }
         public ISpecialtyRepository SpecialtyRepository { get; }
         public IDoctorSpecialtyRepository DoctorSpecialtyRepository { get; }
+        public IDoctorScheduleRepository DoctorScheduleRepository { get; }
         public IMedicineTypeRepository MedicineTypeRepository { get; }
         public IMedicineRepository MedicineRepository { get; }
         public IMedicineStockHistoryRepository MedicineStockHistoryRepository { get; }
         public IRoleRepository RoleRepository { get; }
+        public IAppoinmentRepository AppoinmentRepository { get; }
         public Task<int> SaveChangeAsync();
     }
 }
