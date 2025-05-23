@@ -1,5 +1,6 @@
 ﻿using ClinictManagementSystem.Commons;
 using ClinictManagementSystem.Interfaces;
+using ClinictManagementSystem.Models.DTO.DoctorScheduleDTO;
 using ClinictManagementSystem.Models.DTO.MedicineDTO;
 using ClinictManagementSystem.Models.DTO.UsersDTO;
 using ClinictManagementSystem.Services;
@@ -52,6 +53,14 @@ namespace ClinictManagementSystem.Controllers
         public async Task<ApiResponse<bool>> UpdateUserLoginAsync(UpdateUserDTO updateUserDTO)
         {
             return await _userService.UpdateUserLoginAsync(updateUserDTO);
+        }
+
+        //[Authorize(Roles = AppRole.Admin + "," + AppRole.Receptionist + "," + AppRole.Patient)]
+        [SwaggerOperation(Summary = "Phân quyền: Admin, Receptionist, Patient")]
+        [HttpGet("doctor-avaiable")]
+        public async Task<ApiResponse<List<DoctorGetDTO>>> GetAvailableDoctorsAsync([FromQuery] DoctorAvailabilityFilterDTO doctorAvailabilityFilterDTO)
+        {
+            return await _userService.GetAvailableDoctorsAsync(doctorAvailabilityFilterDTO);
         }
     }
 }

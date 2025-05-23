@@ -22,5 +22,6 @@ namespace ClinictManagementSystem.Repositories.Generic
         Task DeleteAsync(Guid id);
         void SoftDelete(TEntity entity);
         Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate);
+        Task AddRangeAsync(List<TEntity> entities);
     }
 }

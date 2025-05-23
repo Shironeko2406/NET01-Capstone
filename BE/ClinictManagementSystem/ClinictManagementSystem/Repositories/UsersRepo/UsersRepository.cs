@@ -1,4 +1,5 @@
 ﻿using ClinictManagementSystem.Commons;
+using ClinictManagementSystem.Enums;
 using ClinictManagementSystem.Interfaces;
 using ClinictManagementSystem.Models.Entity;
 using ClinictManagementSystem.Repositories.Generic;
@@ -132,6 +133,78 @@ namespace ClinictManagementSystem.Repositories.UsersRepo
                 .Include(u => u.DoctorSpecialties)
                     .ThenInclude(ds => ds.Specialty)
                 .FirstOrDefaultAsync(u => u.UserId == userId);
+        }
+
+        public async Task<List<Users>> GetAvailableDoctorsAsync(DateTime date, TimeSpan? startTime, TimeSpan? endTime, Guid? specialtyId)
+        {
+            var query = _dbContext.Users
+                .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+                .Include(u => u.DoctorSchedules)
+                .Include(u => u.DoctorSpecialties).ThenInclude(ds => ds.Specialty)
+                .Include(u => u.AppointmentsAsDoctor)
+                .Where(u => u.UserRoles.Any(ur => ur.Role.RoleName == AppRole.Doctor) &&
+                            u.DoctorSchedules.Any(s => s.DayOfWeek == date.DayOfWeek) &&
+                            u.DoctorSpecialties.Any(ds => ds.SpecialtyId == specialtyId));
+
+            if (startTime.HasValue)
+            {
+                query = query.Where(u => u.DoctorSchedules.Any(s => s.StartTime <= startTime.Value));
+            }
+
+            if (endTime.HasValue)
+            {
+                query = query.Where(u => u.DoctorSchedules.Any(s => s.EndTime >= endTime.Value));
+            }
+
+            // Loại trừ bác sĩ có lịch hẹn xung đột
+            //query = query.Where(u => !u.AppointmentsAsDoctor.Any(a =>
+            //    a.AppointmentDate.Date == date.Date &&
+            //    (
+            //        (!startTime.HasValue && !endTime.HasValue) ? false :
+            //        (!startTime.HasValue && a.StartTime < endTime) ||
+            //        (!endTime.HasValue && a.EndTime > startTime) ||
+            //        (startTime.HasValue && endTime.HasValue &&
+            //            a.StartTime < endTime &&
+            //            a.EndTime > startTime)
+            //    )
+            //));
+            query = query.Where(u => !u.AppointmentsAsDoctor.Any(a =>
+                a.AppointmentDate.Date == date.Date &&
+                (a.Status == AppointmentStatusEnum.Booked ||
+                 a.Status == AppointmentStatusEnum.Waiting ||
+                 a.Status == AppointmentStatusEnum.InProgress) &&
+
+                (
+                    (!startTime.HasValue && !endTime.HasValue) ? false :
+                    (!startTime.HasValue && a.StartTime < endTime) ||
+                    (!endTime.HasValue && a.EndTime > startTime) ||
+                    (startTime.HasValue && endTime.HasValue &&
+                        a.StartTime < endTime &&
+                        a.EndTime > startTime)
+                )
+            ));
+
+            return await query.ToListAsync();
+        }
+
+        public async Task<bool> CheckDoctorAvailableAsync(Guid doctorId, DateTime date, TimeSpan startTime, TimeSpan endTime)
+        {
+            return !await _dbContext.Appointments
+                .AnyAsync(a =>
+                    a.DoctorId == doctorId &&
+                    a.AppointmentDate.Date == date.Date &&
+                    (a.Status == AppointmentStatusEnum.Booked ||
+                     a.Status == AppointmentStatusEnum.Waiting ||
+                     a.Status == AppointmentStatusEnum.InProgress) &&
+                    a.StartTime < endTime &&
+                    a.EndTime > startTime
+                );
+        }
+
+        public async Task<bool> CheckDoctorInSpecialtyAsync(Guid doctorId, Guid specialtyId)
+        {
+            return await _dbContext.DoctorSpecialties
+                .AnyAsync(ds => ds.DoctorId == doctorId && ds.SpecialtyId == specialtyId);
         }
     }
 }

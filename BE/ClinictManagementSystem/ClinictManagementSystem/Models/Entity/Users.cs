@@ -22,5 +22,6 @@ namespace ClinictManagementSystem.Models.Entity
         public ICollection<Appointment> AppointmentsAsDoctor { get; set; }
         public ICollection<Prescription> Prescriptions { get; set; }
         public ICollection<DoctorSpecialties> DoctorSpecialties { get; set; }
+        public ICollection<DoctorSchedule> DoctorSchedules { get; set; }
     }
 }
