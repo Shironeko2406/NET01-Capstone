@@ -187,6 +187,24 @@ namespace ClinictManagementSystem.Repositories.UsersRepo
             return await query.ToListAsync();
         }
 
+        public async Task<bool> CheckDoctorAvailableAsync(Guid doctorId, DateTime date, TimeSpan startTime, TimeSpan endTime)
+        {
+            return !await _dbContext.Appointments
+                .AnyAsync(a =>
+                    a.DoctorId == doctorId &&
+                    a.AppointmentDate.Date == date.Date &&
+                    (a.Status == AppointmentStatusEnum.Booked ||
+                     a.Status == AppointmentStatusEnum.Waiting ||
+                     a.Status == AppointmentStatusEnum.InProgress) &&
+                    a.StartTime < endTime &&
+                    a.EndTime > startTime
+                );
+        }
 
+        public async Task<bool> CheckDoctorInSpecialtyAsync(Guid doctorId, Guid specialtyId)
+        {
+            return await _dbContext.DoctorSpecialties
+                .AnyAsync(ds => ds.DoctorId == doctorId && ds.SpecialtyId == specialtyId);
+        }
     }
 }

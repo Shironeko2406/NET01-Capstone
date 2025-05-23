@@ -22,5 +22,7 @@ namespace ClinictManagementSystem.Repositories.UsersRepo
         Task<Users?> GetByUsernameOrEmailAsync(string username, string email);
         Task<bool> CheckUserNameExistAsync(string username);
         Task<List<Users>> GetAvailableDoctorsAsync(DateTime date, TimeSpan? startTime, TimeSpan? endTime, Guid? specialtyId);
+        Task<bool> CheckDoctorAvailableAsync(Guid doctorId, DateTime date, TimeSpan startTime, TimeSpan endTime);
+        Task<bool> CheckDoctorInSpecialtyAsync(Guid doctorId, Guid specialtyId);
     }
 }

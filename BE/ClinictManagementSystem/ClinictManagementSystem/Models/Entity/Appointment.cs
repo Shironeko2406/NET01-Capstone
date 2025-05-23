@@ -26,16 +26,11 @@ namespace ClinictManagementSystem.Models.Entity
 
         [ForeignKey(nameof(SpecialtyId))]
         public Specialties Specialty { get; set; }
-
-        [Required]
+        public string AppointmentCode { get; set; }
         public DateTime AppointmentDate { get; set; }
-
         public TimeSpan StartTime { get; set; }
-
         public TimeSpan EndTime { get; set; }
-
         public string? Note { get; set; }
-
         public AppointmentStatusEnum Status { get; set; }
 
         // Relationship: One appointment can have many prescriptions

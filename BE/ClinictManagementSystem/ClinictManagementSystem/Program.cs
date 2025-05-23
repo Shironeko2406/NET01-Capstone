@@ -114,7 +114,7 @@ builder.Services.AddScoped<IMedicineStockHistoryService, MedicineStockHistorySer
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IDoctorScheduleService, DoctorScheduleService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IAppoimentService, AppoimentService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IJWTService, JWTService>();
 builder.Services.AddScoped<ICurrentTime, CurrentTime>();
 builder.Services.AddScoped<IRedisService, RedisService>();
