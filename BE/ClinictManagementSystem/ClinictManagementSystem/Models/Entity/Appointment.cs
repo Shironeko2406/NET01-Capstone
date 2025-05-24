@@ -31,10 +31,11 @@ namespace ClinictManagementSystem.Models.Entity
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
         public string? Note { get; set; }
+        public string? GeneralConclusion { get; set; }
         public AppointmentStatusEnum Status { get; set; }
 
-        // Relationship: One appointment can have many prescriptions
-        public ICollection<Prescription> Prescriptions { get; set; } 
+        // 1:1 Relationship with Prescription
+        public Prescription Prescription { get; set; }
 
         // Relationship: One appointment can have many test results
         public ICollection<TestResult> TestResults { get; set; } 

@@ -4,7 +4,7 @@ using ClinictManagementSystem.Enums;
 
 namespace ClinictManagementSystem.Models.Entity
 {
-    public class AppointmentServices
+    public class AppointmentServices : BaseEntity
     {
         [Key]
         public Guid Id { get; set; }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ClinictManagementSystem.Models.Entity
 {
-    public class TestResult
+    public class TestResult : BaseEntity
     {
         [Key]
         public Guid TestResultId { get; set; }
@@ -16,8 +16,7 @@ namespace ClinictManagementSystem.Models.Entity
         [ForeignKey("ServiceId")]
         public Service Service { get; set; }
 
-        public string Result { get; set; }
-        public DateTime ResultDate { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public string? Result { get; set; }
+        public DateTime? ResultDate { get; set; }
     }
 }

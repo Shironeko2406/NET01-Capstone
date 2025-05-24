@@ -17,6 +17,7 @@ namespace ClinictManagementSystem.Repositories.Generic
            string? foreignKey = null,
            object? foreignKeyId = null);
         Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate);
+        Task<TEntity?> FindSingleAsync(Expression<Func<TEntity, bool>> predicate);
         Task AddAsync(TEntity entity);
         Task UpdateAsync(TEntity entity);
         Task DeleteAsync(Guid id);

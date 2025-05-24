@@ -1,12 +1,16 @@
 ﻿using ClinictManagementSystem.Repositories.AppoinmentRepo;
+using ClinictManagementSystem.Repositories.AppointmentServicesRepo;
 using ClinictManagementSystem.Repositories.DoctorScheduleRepo;
 using ClinictManagementSystem.Repositories.DoctorSpecialtyRepo;
 using ClinictManagementSystem.Repositories.MedicineRepo;
 using ClinictManagementSystem.Repositories.MedicineStockHistoryRepo;
 using ClinictManagementSystem.Repositories.MedicineTypeRepo;
+using ClinictManagementSystem.Repositories.PrescriptionDetailsRepo;
+using ClinictManagementSystem.Repositories.PrescriptionRepo;
 using ClinictManagementSystem.Repositories.RoleRepo;
 using ClinictManagementSystem.Repositories.ServiceRepo;
 using ClinictManagementSystem.Repositories.SpecialtyRepo;
+using ClinictManagementSystem.Repositories.TestResultRepo;
 using ClinictManagementSystem.Repositories.UsersRepo;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -26,6 +30,11 @@ namespace ClinictManagementSystem.Repositories.UnitOfWork
         private readonly IMedicineStockHistoryRepository _medicineStockHistoryRepositoryy;
         private readonly IRoleRepository _roleRepository;
         private readonly IAppoinmentRepository _appoinmentRepository;
+        private readonly IAppointmentServicesRepository _appointmentServicesRepository;
+        private readonly ITestResultRepository _testResultRepository;
+        private readonly IPrescriptionRepository _prescriptionRepository;
+        private readonly IPrescriptionDetailsRepository _prescriptionDetailsRepository;
+
 
         public UnitOfWork(
             AppDbContext context,
@@ -38,7 +47,11 @@ namespace ClinictManagementSystem.Repositories.UnitOfWork
             IMedicineRepository medicineRepocitory,
             IMedicineStockHistoryRepository medicineStockHistoryRepository,
             IRoleRepository roleRepository,
-            IAppoinmentRepository appoinmentRepository
+            IAppoinmentRepository appoinmentRepository,
+            IAppointmentServicesRepository appointmentServicesRepository,
+            ITestResultRepository testResultRepository,
+            IPrescriptionRepository prescriptionRepository,
+            IPrescriptionDetailsRepository prescriptionDetailsRepository
         )
         {
             _dbContext = context;
@@ -53,6 +66,10 @@ namespace ClinictManagementSystem.Repositories.UnitOfWork
             _roleRepository = roleRepository;
             _roleRepository = roleRepository;
             _appoinmentRepository = appoinmentRepository;
+            _appointmentServicesRepository = appointmentServicesRepository;
+            _testResultRepository = testResultRepository;
+            _prescriptionRepository = prescriptionRepository;
+            _prescriptionDetailsRepository = prescriptionDetailsRepository;
         }
         public IUsersRepository UsersRepository => _usersRepository;
         public IServiceRepository ServiceRepository => _serviceRepository;
@@ -64,6 +81,10 @@ namespace ClinictManagementSystem.Repositories.UnitOfWork
         public IMedicineStockHistoryRepository MedicineStockHistoryRepository => _medicineStockHistoryRepositoryy;
         public IRoleRepository RoleRepository => _roleRepository;
         public IAppoinmentRepository AppoinmentRepository => _appoinmentRepository;
+        public IAppointmentServicesRepository AppointmentServicesRepository => _appointmentServicesRepository;
+        public ITestResultRepository TestResultRepository => _testResultRepository;
+        public IPrescriptionRepository PrescriptionRepository => _prescriptionRepository;
+        public IPrescriptionDetailsRepository PrescriptionDetailsRepository => _prescriptionDetailsRepository;
 
         public async Task<int> SaveChangeAsync()
         {
