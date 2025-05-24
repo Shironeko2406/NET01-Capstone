@@ -6,5 +6,6 @@
         Doctor ,
         Receptionist ,
         Administrator ,
+        LabTechnician
     }
 }

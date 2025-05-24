@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ClinictManagementSystem.Models.Entity
 {
-    public class PrescriptionDetails
+    public class PrescriptionDetails : BaseEntity
     {
         [Key]
         public Guid Id { get; set; }

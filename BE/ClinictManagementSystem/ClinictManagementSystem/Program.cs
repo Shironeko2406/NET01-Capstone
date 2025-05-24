@@ -3,15 +3,19 @@ using ClinictManagementSystem.Interfaces;
 using ClinictManagementSystem.Mapper;
 using ClinictManagementSystem.Models.Entity;
 using ClinictManagementSystem.Repositories.AppoinmentRepo;
+using ClinictManagementSystem.Repositories.AppointmentServicesRepo;
 using ClinictManagementSystem.Repositories.DoctorScheduleRepo;
 using ClinictManagementSystem.Repositories.DoctorSpecialtyRepo;
 using ClinictManagementSystem.Repositories.Generic;
 using ClinictManagementSystem.Repositories.MedicineRepo;
 using ClinictManagementSystem.Repositories.MedicineStockHistoryRepo;
 using ClinictManagementSystem.Repositories.MedicineTypeRepo;
+using ClinictManagementSystem.Repositories.PrescriptionDetailsRepo;
+using ClinictManagementSystem.Repositories.PrescriptionRepo;
 using ClinictManagementSystem.Repositories.RoleRepo;
 using ClinictManagementSystem.Repositories.ServiceRepo;
 using ClinictManagementSystem.Repositories.SpecialtyRepo;
+using ClinictManagementSystem.Repositories.TestResultRepo;
 using ClinictManagementSystem.Repositories.UnitOfWork;
 using ClinictManagementSystem.Repositories.UsersRepo;
 using ClinictManagementSystem.Services;
@@ -102,6 +106,11 @@ builder.Services.AddScoped<IMedicineStockHistoryRepository, MedicineStockHistory
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IAppoinmentRepository, AppoinmentRepository>();
+builder.Services.AddScoped<IAppointmentServicesRepository, AppointmentServicesRepository>();
+builder.Services.AddScoped<ITestResultRepository, TestResultRepository>();
+builder.Services.AddScoped<IPrescriptionRepository, PrescriptionRepository>();
+builder.Services.AddScoped<IPrescriptionDetailsRepository, PrescriptionDetailsRepository>();
+
 
 
 
@@ -115,6 +124,10 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IDoctorScheduleService, DoctorScheduleService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<IAppointmentServiceDetailService, AppointmentServiceDetailService>();
+builder.Services.AddScoped<IAppointmentServiceDetailService, AppointmentServiceDetailService>();
+builder.Services.AddScoped<ITestResultService, TestResultService>();
+builder.Services.AddScoped<IPrescriptionService, PrescriptionService>();
 builder.Services.AddScoped<IJWTService, JWTService>();
 builder.Services.AddScoped<ICurrentTime, CurrentTime>();
 builder.Services.AddScoped<IRedisService, RedisService>();

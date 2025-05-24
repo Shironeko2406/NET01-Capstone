@@ -9,7 +9,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace ClinictManagementSystem.Controllers
 {
-    [Route("api/v1/appoinment")]
+    [Route("api/v1/appoinments")]
     [ApiController]
     public class AppoinmentController : ControllerBase
     {
@@ -28,7 +28,7 @@ namespace ClinictManagementSystem.Controllers
         }
 
         [SwaggerOperation(Summary = "Cập nhật trạng thái lịch khám")]
-        [HttpPut("{id}")]
+        [HttpPut("{id}/status")]
         public async Task<ApiResponse<bool>> UpdateAppointmentStatusAsync(Guid id, AppointmentStatusEnum appointmentStatusEnum)
         {
             return await _appointmentService.UpdateAppointmentStatusAsync(id, appointmentStatusEnum);
@@ -36,7 +36,7 @@ namespace ClinictManagementSystem.Controllers
 
         [SwaggerOperation(Summary = "Lấy appointment bằng user login và filter")]
         [Authorize(Roles = AppRole.Patient)]
-        [HttpGet("patient/login")]
+        [HttpGet("patient")]
         public async Task<ApiResponse<Pagination<GetAppointmentDTO>>> GetAppoinmentFilterByUserLoginAsync([FromQuery] FilterAppoinmentByPatientLoginDTO filterAppoinmentByPatientLoginDTO)
         {
             return await _appointmentService.GetAppoinmentFilterByUserLoginAsync(filterAppoinmentByPatientLoginDTO);
@@ -52,10 +52,18 @@ namespace ClinictManagementSystem.Controllers
 
         [SwaggerOperation(Summary = "Lấy appointment bằng doctor login và filter")]
         [Authorize(Roles = AppRole.Doctor)]
-        [HttpGet("doctor/login")]
+        [HttpGet("doctor")]
         public async Task<ApiResponse<Pagination<GetAppointmentByDoctorDTO>>> GetAppoinmentFilterByDoctorLoginAsync([FromQuery] FilterAppoinmentByDoctorLoginDTO filterAppoinmentByDoctorLoginDTO)
         {
             return await _appointmentService.GetAppoinmentFilterByDoctorLoginAsync(filterAppoinmentByDoctorLoginDTO);
+        }
+
+        [SwaggerOperation(Summary = "Kết luận tổng quát appointment")]
+        [Authorize(Roles = AppRole.Doctor)]
+        [HttpPatch("{appointmentId}/conclusion")]
+        public async Task<ApiResponse<bool>> UpdateAppointmentConclusionAsync(Guid appointmentId, UpdateConclusionDTO updateConclusionDTO)
+        {
+            return await _appointmentService.UpdateAppointmentConclusionAsync(appointmentId, updateConclusionDTO);
         }
     }
 }

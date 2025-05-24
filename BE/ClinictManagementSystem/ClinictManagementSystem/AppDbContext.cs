@@ -44,6 +44,13 @@ namespace ClinictManagementSystem
                 .HasForeignKey(a => a.DoctorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // Cấu hình quan hệ 1-1 giữa Appointment và Prescription
+            modelBuilder.Entity<Appointment>()
+                .HasOne(a => a.Prescription)
+                .WithOne(p => p.Appointment)
+                .HasForeignKey<Prescription>(p => p.AppointmentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             // Khóa chính tổng hợp cho UserRole
             modelBuilder.Entity<UserRole>()
                 .HasKey(ur => new { ur.UserId, ur.RoleId });
@@ -81,12 +88,14 @@ namespace ClinictManagementSystem
             var roleDoctorId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
             var roleReceptionistId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc");
             var roleAdminId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd");
+            var roleLabTechnicianId = new Guid("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee");
 
             modelBuilder.Entity<Role>().HasData(
                 new Role { RoleId = rolePatientId, RoleName = AppRole.Patient },
                 new Role { RoleId = roleDoctorId, RoleName = AppRole.Doctor },
                 new Role { RoleId = roleReceptionistId, RoleName = AppRole.Receptionist },
-                new Role { RoleId = roleAdminId, RoleName = AppRole.Admin }
+                new Role { RoleId = roleAdminId, RoleName = AppRole.Admin },
+                new Role { RoleId = roleLabTechnicianId, RoleName = AppRole.LabTechnician }
             );
 
             // ====== Seed Users ======
@@ -95,6 +104,7 @@ namespace ClinictManagementSystem
             var userDoctorId = new Guid("22222222-2222-2222-2222-222222222222");
             var userReceptionistId = new Guid("33333333-3333-3333-3333-333333333333");
             var userAdminId = new Guid("44444444-4444-4444-4444-444444444444");
+            var userLabTechnicianId = new Guid("55555555-5555-5555-5555-555555555555");
 
             // Hardcoded PasswordHashes
             var passHash = "$2a$11$85pu8Gq/dNw/gKhT3bl/t.vLWCIL2ABA7tiQ8M7EGUx68JOJUbP.i";
@@ -155,6 +165,20 @@ namespace ClinictManagementSystem
                     Address = "System HQ",
                     CreationDate = new DateTime(2023, 1, 1),
                     Status = UserStatusEnum.Active
+                },
+                new Users
+                {
+                    UserId = userLabTechnicianId,
+                    FullName = "Phạm Thị D",
+                    Username = "labtech",
+                    PasswordHash = passHash,
+                    Email = "labtech@example.com",
+                    DateOfBirth = new DateTime(1992, 4, 20),
+                    Gender = GenderEnum.Female,
+                    PhoneNumber = "0900111222",
+                    Address = "Huế",
+                    CreationDate = new DateTime(2023, 1, 1),
+                    Status = UserStatusEnum.Active
                 }
             );
 
@@ -163,7 +187,8 @@ namespace ClinictManagementSystem
                 new UserRole { UserId = userPatientId, RoleId = rolePatientId },
                 new UserRole { UserId = userDoctorId, RoleId = roleDoctorId },
                 new UserRole { UserId = userReceptionistId, RoleId = roleReceptionistId },
-                new UserRole { UserId = userAdminId, RoleId = roleAdminId }
+                new UserRole { UserId = userAdminId, RoleId = roleAdminId },
+                new UserRole { UserId = userLabTechnicianId, RoleId = roleLabTechnicianId }
             );
 
 

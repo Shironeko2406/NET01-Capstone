@@ -147,5 +147,11 @@ namespace ClinictManagementSystem.Repositories.Generic
             }
             await _dbSet.AddRangeAsync(entities);
         }
+
+        public async Task<TEntity?> FindSingleAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return await _dbSet.FirstOrDefaultAsync(predicate);
+        }
+
     }
 }

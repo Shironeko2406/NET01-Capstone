@@ -367,6 +367,24 @@ namespace ClinictManagementSystem.Services
             }
         }
 
+        public async Task<ApiResponse<bool>> UpdateAppointmentConclusionAsync(Guid appointmentId, UpdateConclusionDTO updateConclusionDTO)
+        {
+            try
+            {
+                var appointment = await _unitOfWork.AppoinmentRepository.GetByIdAsync(appointmentId);
 
+                if (appointment == null)
+                    return ResponseHandler.Failure<bool>("Appointment not found.");
+
+                appointment.GeneralConclusion = updateConclusionDTO.GeneralConclusion;
+
+                await _unitOfWork.SaveChangeAsync();
+                return ResponseHandler.Success(true, "General conclusion updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                return ResponseHandler.Failure<bool>($"An error occurred: {ex.Message}");
+            }
+        }
     }
 }

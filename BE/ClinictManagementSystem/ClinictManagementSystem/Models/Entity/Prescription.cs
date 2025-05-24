@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ClinictManagementSystem.Models.Entity
 {
-    public class Prescription
+    public class Prescription : BaseEntity
     {
         [Key]
         public Guid PrescriptionId { get; set; }
@@ -15,8 +15,6 @@ namespace ClinictManagementSystem.Models.Entity
         public Guid DoctorId { get; set; }
         [ForeignKey("DoctorId")]
         public Users Doctor { get; set; }
-
-        public DateTime CreatedAt { get; set; }
         public string Notes { get; set; }
 
         public ICollection<PrescriptionDetails> PrescriptionDetails { get; set; }
