@@ -2,6 +2,7 @@
 using ClinictManagementSystem.Repositories.AppointmentServicesRepo;
 using ClinictManagementSystem.Repositories.DoctorScheduleRepo;
 using ClinictManagementSystem.Repositories.DoctorSpecialtyRepo;
+using ClinictManagementSystem.Repositories.InvoiceRepo;
 using ClinictManagementSystem.Repositories.MedicineRepo;
 using ClinictManagementSystem.Repositories.MedicineStockHistoryRepo;
 using ClinictManagementSystem.Repositories.MedicineTypeRepo;
@@ -34,6 +35,7 @@ namespace ClinictManagementSystem.Repositories.UnitOfWork
         private readonly ITestResultRepository _testResultRepository;
         private readonly IPrescriptionRepository _prescriptionRepository;
         private readonly IPrescriptionDetailsRepository _prescriptionDetailsRepository;
+        private readonly IInvoiceRepository _invoiceRepository;
 
 
         public UnitOfWork(
@@ -51,7 +53,8 @@ namespace ClinictManagementSystem.Repositories.UnitOfWork
             IAppointmentServicesRepository appointmentServicesRepository,
             ITestResultRepository testResultRepository,
             IPrescriptionRepository prescriptionRepository,
-            IPrescriptionDetailsRepository prescriptionDetailsRepository
+            IPrescriptionDetailsRepository prescriptionDetailsRepository,
+            IInvoiceRepository invoiceRepository
         )
         {
             _dbContext = context;
@@ -70,6 +73,7 @@ namespace ClinictManagementSystem.Repositories.UnitOfWork
             _testResultRepository = testResultRepository;
             _prescriptionRepository = prescriptionRepository;
             _prescriptionDetailsRepository = prescriptionDetailsRepository;
+            _invoiceRepository = invoiceRepository;
         }
         public IUsersRepository UsersRepository => _usersRepository;
         public IServiceRepository ServiceRepository => _serviceRepository;
@@ -85,6 +89,7 @@ namespace ClinictManagementSystem.Repositories.UnitOfWork
         public ITestResultRepository TestResultRepository => _testResultRepository;
         public IPrescriptionRepository PrescriptionRepository => _prescriptionRepository;
         public IPrescriptionDetailsRepository PrescriptionDetailsRepository => _prescriptionDetailsRepository;
+        public IInvoiceRepository InvoiceRepository => _invoiceRepository;
 
         public async Task<int> SaveChangeAsync()
         {

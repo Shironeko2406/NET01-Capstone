@@ -2,6 +2,7 @@
 using ClinictManagementSystem.Repositories.AppointmentServicesRepo;
 using ClinictManagementSystem.Repositories.DoctorScheduleRepo;
 using ClinictManagementSystem.Repositories.DoctorSpecialtyRepo;
+using ClinictManagementSystem.Repositories.InvoiceRepo;
 using ClinictManagementSystem.Repositories.MedicineRepo;
 using ClinictManagementSystem.Repositories.MedicineStockHistoryRepo;
 using ClinictManagementSystem.Repositories.MedicineTypeRepo;
@@ -31,6 +32,8 @@ namespace ClinictManagementSystem.Repositories.UnitOfWork
         public ITestResultRepository TestResultRepository { get; }
         public IPrescriptionRepository PrescriptionRepository { get; }
         public IPrescriptionDetailsRepository PrescriptionDetailsRepository { get; }
+        public IInvoiceRepository InvoiceRepository { get; }
+
 
         public Task<int> SaveChangeAsync();
     }
