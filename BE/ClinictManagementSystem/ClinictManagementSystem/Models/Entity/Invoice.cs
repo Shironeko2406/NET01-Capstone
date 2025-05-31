@@ -4,7 +4,7 @@ using ClinictManagementSystem.Enums;
 
 namespace ClinictManagementSystem.Models.Entity
 {
-    public class Invoice
+    public class Invoice : BaseEntity
     {
         [Key]
         public Guid InvoiceId { get; set; }
@@ -16,6 +16,5 @@ namespace ClinictManagementSystem.Models.Entity
         public int TotalAmount { get; set; }
         public PaymentStatusEnum PaymentStatus { get; set; }
         public DateTime InvoiceDate { get; set; }
-        public DateTime CreatedAt { get; set; }
     }
 }

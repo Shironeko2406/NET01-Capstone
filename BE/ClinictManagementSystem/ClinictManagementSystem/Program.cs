@@ -1,4 +1,5 @@
 ﻿using ClinictManagementSystem;
+using ClinictManagementSystem.Commons;
 using ClinictManagementSystem.Interfaces;
 using ClinictManagementSystem.Mapper;
 using ClinictManagementSystem.Models.Entity;
@@ -7,6 +8,7 @@ using ClinictManagementSystem.Repositories.AppointmentServicesRepo;
 using ClinictManagementSystem.Repositories.DoctorScheduleRepo;
 using ClinictManagementSystem.Repositories.DoctorSpecialtyRepo;
 using ClinictManagementSystem.Repositories.Generic;
+using ClinictManagementSystem.Repositories.InvoiceRepo;
 using ClinictManagementSystem.Repositories.MedicineRepo;
 using ClinictManagementSystem.Repositories.MedicineStockHistoryRepo;
 using ClinictManagementSystem.Repositories.MedicineTypeRepo;
@@ -20,8 +22,6 @@ using ClinictManagementSystem.Repositories.UnitOfWork;
 using ClinictManagementSystem.Repositories.UsersRepo;
 using ClinictManagementSystem.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -46,6 +46,8 @@ builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
 });
+
+builder.Services.Configure<VnPayConfig>(builder.Configuration.GetSection("VnPay"));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -110,6 +112,8 @@ builder.Services.AddScoped<IAppointmentServicesRepository, AppointmentServicesRe
 builder.Services.AddScoped<ITestResultRepository, TestResultRepository>();
 builder.Services.AddScoped<IPrescriptionRepository, PrescriptionRepository>();
 builder.Services.AddScoped<IPrescriptionDetailsRepository, PrescriptionDetailsRepository>();
+builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+
 
 
 
@@ -133,6 +137,8 @@ builder.Services.AddScoped<ICurrentTime, CurrentTime>();
 builder.Services.AddScoped<IRedisService, RedisService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IClaimsService, ClaimsService>();
+builder.Services.AddScoped<IVnPayService, VnPayService>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 
 
 builder.Services.AddHttpContextAccessor();
