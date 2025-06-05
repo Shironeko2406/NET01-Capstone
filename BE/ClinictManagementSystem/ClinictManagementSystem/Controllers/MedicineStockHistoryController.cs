@@ -24,5 +24,11 @@ namespace ClinictManagementSystem.Controllers
         {
             return await _medicineStockHistoryService.CreateMedicineHistoryStockAsync(createMedicineManageStockDTO);
         }
+
+        [HttpGet]
+        public async Task<ApiResponse<Pagination<GetMedicineStockHistoryDTO>>> GetMedicineStockHistoryFilterAsync([FromQuery] MedicineStockHistoryFilterDTO medicineStockHistoryFilterDTO)
+        {
+            return await _medicineStockHistoryService.GetMedicineStockHistoryFilterAsync(medicineStockHistoryFilterDTO);
+        }
     }
 }

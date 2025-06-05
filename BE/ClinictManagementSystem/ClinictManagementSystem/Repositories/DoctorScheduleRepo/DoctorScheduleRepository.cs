@@ -7,7 +7,11 @@ namespace ClinictManagementSystem.Repositories.DoctorScheduleRepo
 {
     public class DoctorScheduleRepository : GenericRepository<DoctorSchedule>, IDoctorScheduleRepository
     {
-        public DoctorScheduleRepository(AppDbContext context, ICurrentTime timeService) : base(context, timeService)
+        public DoctorScheduleRepository(
+            AppDbContext context,
+            ICurrentTime timeService,
+            IClaimsService claimsService)
+            : base(context, timeService, claimsService)
         {
         }
     }

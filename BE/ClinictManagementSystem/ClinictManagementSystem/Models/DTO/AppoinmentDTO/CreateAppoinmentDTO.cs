@@ -7,7 +7,6 @@ namespace ClinictManagementSystem.Models.DTO.AppoinmentDTO
 {
     public class CreateAppoinmentDTO
     {
-        public Guid PatientId { get; set; }
         public Guid DoctorId { get; set; }
         public Guid SpecialtyId { get; set; }
         public DateTime AppointmentDate { get; set; }

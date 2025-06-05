@@ -350,6 +350,9 @@ namespace ClinictManagementSystem.Services
                 {
                     UserId = d.UserId,
                     FullName = d.FullName,
+                    Avatar = d.Avatar,
+                    PhoneNumber = d.PhoneNumber,
+                    Email = d.Email,
                     Specialties = d.DoctorSpecialties.Select(ds => ds.Specialty.Name).ToList()
                 }).ToList();
 

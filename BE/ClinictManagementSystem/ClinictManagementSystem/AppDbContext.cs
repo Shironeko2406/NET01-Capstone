@@ -81,6 +81,12 @@ namespace ClinictManagementSystem
                 .HasForeignKey(ds => ds.SpecialtyId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<MedicineStockHistory>()
+                .HasOne(m => m.CreatedByUser)
+                .WithMany()
+                .HasForeignKey(m => m.CreatedBy)
+                .OnDelete(DeleteBehavior.Restrict);
+
             //--------------------- Dữ liệu thiết lập ----------------------------
 
             // Hardcoded Role GUIDs

@@ -11,9 +11,11 @@ namespace ClinictManagementSystem.Models.Entity
         public Guid MedicineId { get; set; }
         [ForeignKey("MedicineId")]
         public Medicines Medicine { get; set; }
+        public string? TransactionCode { get; set; }
         public int Quantity { get; set; }       
         public MedicineStockHistoryTypeEnum Type { get; set; }       
         public string? Note { get; set; }
-        //public string? ImportedBy { get; set; }   
+        [ForeignKey("CreatedBy")]
+        public Users CreatedByUser { get; set; }
     }
 }

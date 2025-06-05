@@ -33,10 +33,12 @@ namespace ClinictManagementSystem.Services
                 new Claim("UserName", user.Username),
                 new Claim("FullName", user.FullName ?? ""),
                 new Claim("Email", user.Email ?? ""),
+                new Claim("PhoneNumber", user.PhoneNumber ?? ""),
                 new Claim("Gender", user.Gender.ToString()),
                 new Claim("DateOfBirth", user.DateOfBirth.ToString("yyyy-MM-dd")),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
+
 
             // Thêm role claims (standard)
             claims.AddRange(roles.Select(role => new Claim("role", role)));

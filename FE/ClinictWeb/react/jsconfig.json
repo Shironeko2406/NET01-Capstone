@@ -10,3 +10,13 @@
     }
   }
 }
+
+// {
+//   "compilerOptions": {
+//     "baseUrl": ".",
+//     "paths": {
+//       "@/*": ["src/components/*"]
+//     }
+//   },
+//   "include": ["src"]
+// }

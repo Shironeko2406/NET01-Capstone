@@ -6,7 +6,7 @@ namespace ClinictManagementSystem.Repositories.InvoiceRepo
 {
     public class InvoiceRepository : GenericRepository<Invoice>, IInvoiceRepository
     {
-        public InvoiceRepository(AppDbContext context, ICurrentTime timeService) : base(context, timeService)
+        public InvoiceRepository(AppDbContext context, ICurrentTime timeService, IClaimsService claimsService) : base(context, timeService, claimsService)
         {
         }
     }

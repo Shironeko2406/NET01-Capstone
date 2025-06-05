@@ -7,7 +7,7 @@ namespace ClinictManagementSystem.Repositories.MedicineRepo
 {
     public class MedicineRepository : GenericRepository<Medicines>, IMedicineRepository
     {
-        public MedicineRepository(AppDbContext context, ICurrentTime timeService) : base(context, timeService)
+        public MedicineRepository(AppDbContext context, ICurrentTime timeService, IClaimsService claimsService) : base(context, timeService, claimsService)
         {
         }
     }

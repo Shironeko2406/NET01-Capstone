@@ -11,6 +11,7 @@ namespace ClinictManagementSystem.Models.Entity
         public Guid MedicineTypeId { get; set; }
         [ForeignKey("MedicineTypeId")]
         public MedicineType MedicineType { get; set; }
+        public string? MedicineCode { get; set; }
         public string Name { get; set; }
         public string? Description { get; set; }
         public MedicineUnitTypeEnum Unit { get; set; }

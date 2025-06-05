@@ -114,7 +114,9 @@ namespace ClinictManagementSystem.Services
             {
                 Expression<Func<Service, bool>> filter = s =>
                     string.IsNullOrWhiteSpace(serviceFiltercs.SearchKeyword)
-                    || s.Name.Contains(serviceFiltercs.SearchKeyword);
+                    || s.Name.Contains(serviceFiltercs.SearchKeyword)
+                    || s.Price.ToString().Contains(serviceFiltercs.SearchKeyword)
+                    || s.Description.Contains(serviceFiltercs.SearchKeyword);
 
                 var services = await _unitOfWork.ServiceRepository.GetFilterAsync(
                     filter: filter,
