@@ -6,7 +6,7 @@ namespace ClinictManagementSystem.Repositories.ServiceRepo
 {
     public class ServiceRepository : GenericRepository<Service>, IServiceRepository
     {
-        public ServiceRepository(AppDbContext context, ICurrentTime timeService) : base(context, timeService)
+        public ServiceRepository(AppDbContext context, ICurrentTime timeService, IClaimsService claimsService) : base(context, timeService, claimsService)
         {
         }
     }

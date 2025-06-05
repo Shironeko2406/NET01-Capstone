@@ -9,9 +9,12 @@ namespace ClinictManagementSystem.Repositories.AppointmentServicesRepo
     public class AppointmentServicesRepository : GenericRepository<AppointmentServices>, IAppointmentServicesRepository
     {
         private readonly AppDbContext _dbContext;
-        public AppointmentServicesRepository(AppDbContext context, ICurrentTime timeService) : base(context, timeService)
+        public AppointmentServicesRepository(
+            AppDbContext context,
+            ICurrentTime timeService,
+            IClaimsService claimsService)
+            : base(context, timeService, claimsService)
         {
-            _dbContext = context;
         }
         public async Task<List<AppointmentServices>> GetByAppointmentIdWithServiceAsync(Guid appointmentId)
         {

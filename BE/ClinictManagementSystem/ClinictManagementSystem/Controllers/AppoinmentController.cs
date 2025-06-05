@@ -9,7 +9,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace ClinictManagementSystem.Controllers
 {
-    [Route("api/v1/appoinments")]
+    [Route("api/v1/appointment")]
     [ApiController]
     public class AppoinmentController : ControllerBase
     {
@@ -20,8 +20,9 @@ namespace ClinictManagementSystem.Controllers
             _appointmentService = appointmentServicce;
         }
 
-        [SwaggerOperation(Summary = "Tạo lịch khám với bác sĩ")]
-        [HttpPost]
+        [SwaggerOperation(Summary = "Phân quyền Patient")]
+        [Authorize(Roles = AppRole.Patient)]
+        [HttpPost("login")]
         public async Task<ApiResponse<bool>> CreateAppoinment(CreateAppoinmentDTO createAppoinmentDTO)
         {
             return await _appointmentService.CreateAppoinment(createAppoinmentDTO);

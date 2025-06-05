@@ -4,6 +4,7 @@ const TOKEN_AUTHOR = 'accessToken';
 const REFRESH_TOKEN = 'refreshToken';
 const USER_LOGIN = 'userLogin';
 const HOST_DOMAIN = 'https://localhost:7228';
+const DEFAULT_TZ = 'Asia/Ho_Chi_Minh';
 // const HOST_DOMAIN = "https://futuretech-bza4b0chcrhyeva6.eastasia-01.azurewebsites.net";
 
 // Cấu hình interceptors
@@ -16,9 +17,7 @@ httpClient.interceptors.request.use(
     req => {
         const accessToken = localStorage.getItem(TOKEN_AUTHOR);
         if (req.headers) {
-            req.headers['Authorization'] = accessToken
-                ? `Bearer ${accessToken}`
-                : '';
+            req.headers['Authorization'] = accessToken ? `Bearer ${accessToken}` : '';
         }
         return req;
     },
@@ -43,9 +42,7 @@ httpClient.interceptors.response.use(
                     );
                     break;
                 case 403:
-                    console.error(
-                        "Forbidden - you don't have permission to access this resource."
-                    );
+                    console.error("Forbidden - you don't have permission to access this resource.");
                     break;
                 case 404:
                     console.error('Resource not found.');
@@ -54,9 +51,7 @@ httpClient.interceptors.response.use(
                     console.error('Internal server error.');
                     break;
                 default:
-                    console.error(
-                        `Error ${error.response.status}: ${error.response.statusText}`
-                    );
+                    console.error(`Error ${error.response.status}: ${error.response.statusText}`);
             }
         } else if (error.request) {
             // Request đã được gửi nhưng không nhận được phản hồi từ server
@@ -70,4 +65,4 @@ httpClient.interceptors.response.use(
     }
 );
 
-export { httpClient, USER_LOGIN, TOKEN_AUTHOR, REFRESH_TOKEN, HOST_DOMAIN };
+export { httpClient, USER_LOGIN, TOKEN_AUTHOR, REFRESH_TOKEN, HOST_DOMAIN, DEFAULT_TZ };

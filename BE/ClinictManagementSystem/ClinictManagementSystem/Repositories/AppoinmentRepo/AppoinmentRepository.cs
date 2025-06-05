@@ -7,7 +7,11 @@ namespace ClinictManagementSystem.Repositories.AppoinmentRepo
 {
     public class AppoinmentRepository : GenericRepository<Appointment>, IAppoinmentRepository
     {
-        public AppoinmentRepository(AppDbContext context, ICurrentTime timeService) : base(context, timeService)
+        public AppoinmentRepository(
+            AppDbContext context,
+            ICurrentTime timeService,
+            IClaimsService claimsService) 
+            : base(context, timeService, claimsService)
         {
         }
     }

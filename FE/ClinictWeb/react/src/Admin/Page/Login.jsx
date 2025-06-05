@@ -19,7 +19,6 @@ import {
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useAsyncAction } from '../../Hooks/UseAsyncAction';
-import { useNavigate } from 'react-router-dom';
 import { LoginActionAsync } from '../../Redux/ReducerAPI/AuthenticationReducer';
 import { USER_LOGIN } from '../../Utils/Interceptor';
 import { getDataJSONStorage } from '../../Utils/UtilFunction';
@@ -36,9 +35,7 @@ const Login = () => {
             password: '',
         },
         validationSchema: Yup.object({
-            username: Yup.string().required(
-                'Tên đăng nhập không được để trống'
-            ),
+            username: Yup.string().required('Tên đăng nhập không được để trống'),
             password: Yup.string().required('Mật khẩu không được để trống'),
         }),
         onSubmit: values => {
@@ -63,9 +60,7 @@ const Login = () => {
                     </div>
                     <div>
                         <h1 className="text-xl font-bold">UMC Clinic</h1>
-                        <p className="text-blue-100 text-xs">
-                            Hệ thống quản lý phòng khám
-                        </p>
+                        <p className="text-blue-100 text-xs">Hệ thống quản lý phòng khám</p>
                     </div>
                 </div>
             </div>
@@ -87,12 +82,8 @@ const Login = () => {
                                 <Heart className="w-7 h-7 text-white" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-bold">
-                                    UMC Clinic
-                                </h1>
-                                <p className="text-blue-100 text-sm">
-                                    Hệ thống quản lý phòng khám
-                                </p>
+                                <h1 className="text-2xl font-bold">UMC Clinic</h1>
+                                <p className="text-blue-100 text-sm">Hệ thống quản lý phòng khám</p>
                             </div>
                         </div>
 
@@ -100,9 +91,7 @@ const Login = () => {
                             <h2 className="text-4xl font-bold leading-tight">
                                 Chào mừng đến với
                                 <br />
-                                <span className="text-yellow-300">
-                                    Hệ thống quản lý
-                                </span>
+                                <span className="text-yellow-300">Hệ thống quản lý</span>
                                 <br />
                                 hiện đại
                             </h2>
@@ -111,46 +100,34 @@ const Login = () => {
 
                     {/* Features */}
                     <div className="space-y-6">
-                        <h3 className="text-lg font-semibold text-blue-100">
-                            Tính năng nổi bật
-                        </h3>
+                        <h3 className="text-lg font-semibold text-blue-100">Tính năng nổi bật</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="flex items-center space-x-3 bg-white/10 rounded-xl p-4 backdrop-blur-sm">
                                 <Shield className="w-6 h-6 text-yellow-300" />
                                 <div>
                                     <p className="font-medium">Bảo mật cao</p>
-                                    <p className="text-sm text-blue-100">
-                                        Dữ liệu được mã hóa
-                                    </p>
+                                    <p className="text-sm text-blue-100">Dữ liệu được mã hóa</p>
                                 </div>
                             </div>
                             <div className="flex items-center space-x-3 bg-white/10 rounded-xl p-4 backdrop-blur-sm">
                                 <Clock className="w-6 h-6 text-yellow-300" />
                                 <div>
                                     <p className="font-medium">24/7 Hỗ trợ</p>
-                                    <p className="text-sm text-blue-100">
-                                        Luôn sẵn sàng phục vụ
-                                    </p>
+                                    <p className="text-sm text-blue-100">Luôn sẵn sàng phục vụ</p>
                                 </div>
                             </div>
                             <div className="flex items-center space-x-3 bg-white/10 rounded-xl p-4 backdrop-blur-sm">
                                 <Users className="w-6 h-6 text-yellow-300" />
                                 <div>
                                     <p className="font-medium">Đa người dùng</p>
-                                    <p className="text-sm text-blue-100">
-                                        Phân quyền linh hoạt
-                                    </p>
+                                    <p className="text-sm text-blue-100">Phân quyền linh hoạt</p>
                                 </div>
                             </div>
                             <div className="flex items-center space-x-3 bg-white/10 rounded-xl p-4 backdrop-blur-sm">
                                 <Globe className="w-6 h-6 text-yellow-300" />
                                 <div>
-                                    <p className="font-medium">
-                                        Truy cập mọi lúc
-                                    </p>
-                                    <p className="text-sm text-blue-100">
-                                        Web-based platform
-                                    </p>
+                                    <p className="font-medium">Truy cập mọi lúc</p>
+                                    <p className="text-sm text-blue-100">Web-based platform</p>
                                 </div>
                             </div>
                         </div>
@@ -187,18 +164,11 @@ const Login = () => {
                             <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                                 <Lock className="w-8 h-8 text-white" />
                             </div>
-                            <h2 className="text-2xl font-bold text-gray-800 mb-1">
-                                Đăng nhập
-                            </h2>
-                            <p className="text-gray-600 text-sm">
-                                Truy cập hệ thống quản lý
-                            </p>
+                            <h2 className="text-2xl font-bold text-gray-800 mb-1">Đăng nhập</h2>
+                            <p className="text-gray-600 text-sm">Truy cập hệ thống quản lý</p>
                         </div>
 
-                        <form
-                            className="space-y-5"
-                            onSubmit={loginForm.handleSubmit}
-                        >
+                        <form className="space-y-5" onSubmit={loginForm.handleSubmit}>
                             {/* Email Field */}
                             <div className="space-y-2">
                                 <label className="block text-sm font-medium text-gray-700">
@@ -219,12 +189,11 @@ const Login = () => {
                                         className="pl-10 h-12 rounded-xl border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                                     />
                                 </div>
-                                {loginForm.touched.username &&
-                                    loginForm.errors.username && (
-                                        <p className="text-sm text-red-500">
-                                            {loginForm.errors.username}
-                                        </p>
-                                    )}
+                                {loginForm.touched.username && loginForm.errors.username && (
+                                    <p className="text-sm text-red-500">
+                                        {loginForm.errors.username}
+                                    </p>
+                                )}
                             </div>
 
                             {/* Password Field */}
@@ -238,9 +207,7 @@ const Login = () => {
                                     </div>
                                     <Input
                                         name="password"
-                                        type={
-                                            showPassword ? 'text' : 'password'
-                                        }
+                                        type={showPassword ? 'text' : 'password'}
                                         onChange={loginForm.handleChange}
                                         onBlur={loginForm.handleBlur}
                                         value={loginForm.values.password}
@@ -250,9 +217,7 @@ const Login = () => {
                                     <button
                                         type="button"
                                         className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                                        onClick={() =>
-                                            setShowPassword(!showPassword)
-                                        }
+                                        onClick={() => setShowPassword(!showPassword)}
                                     >
                                         {showPassword ? (
                                             <EyeOff className="h-5 w-5 text-gray-400 hover:text-indigo-500 transition-colors" />
@@ -261,12 +226,11 @@ const Login = () => {
                                         )}
                                     </button>
                                 </div>
-                                {loginForm.touched.password &&
-                                    loginForm.errors.password && (
-                                        <p className="text-sm text-red-500">
-                                            {loginForm.errors.password}
-                                        </p>
-                                    )}
+                                {loginForm.touched.password && loginForm.errors.password && (
+                                    <p className="text-sm text-red-500">
+                                        {loginForm.errors.password}
+                                    </p>
+                                )}
                             </div>
 
                             {/* Remember & Forgot */}
@@ -276,9 +240,7 @@ const Login = () => {
                                         type="checkbox"
                                         className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                                     />
-                                    <span className="text-gray-600">
-                                        Ghi nhớ
-                                    </span>
+                                    <span className="text-gray-600">Ghi nhớ</span>
                                 </label>
                                 <a
                                     href="#"

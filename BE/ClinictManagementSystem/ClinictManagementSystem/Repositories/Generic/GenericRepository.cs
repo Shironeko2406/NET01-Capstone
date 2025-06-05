@@ -13,11 +13,13 @@ namespace ClinictManagementSystem.Repositories.Generic
         private readonly AppDbContext _context;
         private readonly DbSet<TEntity> _dbSet;
         private readonly ICurrentTime _timeService;
-        public GenericRepository(AppDbContext context, ICurrentTime timeService)
+        private readonly IClaimsService _claimsService;
+        public GenericRepository(AppDbContext context, ICurrentTime timeService, IClaimsService claimsService)
         {
             _context = context;
             _timeService = timeService;
             _dbSet = _context.Set<TEntity>();
+            _claimsService = claimsService;
         }
 
         public async Task<TEntity> GetByIdAsync(Guid id)
@@ -46,6 +48,7 @@ namespace ClinictManagementSystem.Repositories.Generic
         public async Task AddAsync(TEntity entity)
         {
             entity.CreationDate = _timeService.GetCurrentTime();
+            entity.CreatedBy = _claimsService.GetCurrentUserId();
             await _dbSet.AddAsync(entity);
         }
 
@@ -144,6 +147,7 @@ namespace ClinictManagementSystem.Repositories.Generic
             foreach (var entity in entities)
             {
                 entity.CreationDate = _timeService.GetCurrentTime();
+                entity.CreatedBy = _claimsService.GetCurrentUserId();
             }
             await _dbSet.AddRangeAsync(entities);
         }

@@ -7,7 +7,7 @@ namespace ClinictManagementSystem.Repositories.TestResultRepo
     public class TestResultRepository : GenericRepository<TestResult>, ITestResultRepository
     {
         private readonly AppDbContext _dbContext;
-        public TestResultRepository(AppDbContext context, ICurrentTime timeService) : base(context, timeService)
+        public TestResultRepository(AppDbContext context, ICurrentTime timeService, IClaimsService claimsService) : base(context, timeService, claimsService)
         {
             _dbContext = context;
         }

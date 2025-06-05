@@ -8,8 +8,9 @@ namespace ClinictManagementSystem.Repositories.MedicineTypeRepo
 {
     public class MedicineTypeRepository : GenericRepository<MedicineType>, IMedicineTypeRepository
     {
-        public MedicineTypeRepository(AppDbContext context, ICurrentTime timeService) : base(context, timeService)
+        public MedicineTypeRepository(AppDbContext context, ICurrentTime timeService, IClaimsService claimsService) : base(context, timeService, claimsService)
         {
         }
     }
 }
+    

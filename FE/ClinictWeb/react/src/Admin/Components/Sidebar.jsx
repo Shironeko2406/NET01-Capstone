@@ -18,6 +18,7 @@ import {
     CreditCard,
     Bell,
     Search,
+    HeartPulse,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -33,11 +34,11 @@ const menuItems = [
     },
     {
         icon: Users,
-        label: 'Quản lý bệnh nhân',
+        label: 'Quản lý người dùng',
         badge: '24',
         submenu: [
-            { label: 'Danh sách bệnh nhân', href: '/patients', badge: '156' },
-            { label: 'Thêm bệnh nhân mới', href: '/patients/new', new: true },
+            { label: 'Danh sách người dùng', href: '/admin/user' },
+            { label: 'Thêm người dùng', href: '/admin/user/create' },
             { label: 'Lịch sử khám bệnh', href: '/patients/history' },
             { label: 'Bệnh nhân VIP', href: '/patients/vip', badge: '12' },
         ],
@@ -54,6 +55,14 @@ const menuItems = [
                 badge: '!',
             },
             { label: 'Kết quả xét nghiệm', href: '/examination/results' },
+        ],
+    },
+    {
+        icon: HeartPulse,
+        label: 'Dịch vụ y tế',
+        submenu: [
+            { label: 'Danh sách dịch vụ', href: '/admin/services' },
+            { label: 'Quản lý chuyên khoa', href: '/admin/specialty' },
         ],
     },
     {
@@ -85,15 +94,9 @@ const menuItems = [
         icon: Pill,
         label: 'Nhà thuốc',
         submenu: [
-            { label: 'Kho thuốc', href: '/pharmacy/inventory', badge: '245' },
-            { label: 'Đơn thuốc', href: '/pharmacy/prescriptions' },
-            {
-                label: 'Thuốc sắp hết',
-                href: '/pharmacy/low-stock',
-                badge: '12',
-            },
-            { label: 'Nhập kho', href: '/pharmacy/import' },
-            { label: 'Xuất kho', href: '/pharmacy/export' },
+            { label: 'Kho thuốc', href: '/admin/medicine' },
+            { label: 'Loại thuốc', href: '/admin/medicine-type' },
+            { label: 'Lịch sử nhập/xuất', href: '/admin/medicine/history' },
         ],
     },
     {
@@ -135,18 +138,14 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
     const toggleExpanded = index => {
         setExpandedItems(prev =>
-            prev.includes(index)
-                ? prev.filter(i => i !== index)
-                : [...prev, index]
+            prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
         );
     };
 
     const filteredMenuItems = menuItems.filter(
         item =>
             item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.submenu?.some(sub =>
-                sub.label.toLowerCase().includes(searchQuery.toLowerCase())
-            )
+            item.submenu?.some(sub => sub.label.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
     return (
@@ -154,17 +153,12 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             <aside
                 className={cn(
                     'fixed inset-y-0 left-0 z-50 flex flex-col bg-gradient-to-b from-emerald-900 via-emerald-800 to-teal-800 shadow-2xl transition-all duration-300 ease-in-out md:relative border-r border-emerald-700/50',
-                    isOpen
-                        ? 'w-64 translate-x-0'
-                        : 'w-16 -translate-x-full md:translate-x-0'
+                    isOpen ? 'w-64 translate-x-0' : 'w-16 -translate-x-full md:translate-x-0'
                 )}
             >
                 {/* Header with logo */}
                 <div className="flex h-14 items-center border-b border-emerald-700/50 px-3 bg-emerald-900/50">
-                    <Link
-                        href="/"
-                        className="flex items-center min-w-0 group w-full"
-                    >
+                    <Link href="/" className="flex items-center min-w-0 group w-full">
                         <div
                             className={cn(
                                 'flex items-center justify-center rounded-lg bg-gradient-to-br from-emerald-400 to-teal-500 shadow-md flex-shrink-0 group-hover:scale-105 transition-transform duration-200',
@@ -222,20 +216,12 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                     <div className="p-3 border-b border-emerald-700/50">
                         <div className="grid grid-cols-2 gap-2">
                             <div className="bg-emerald-800/50 rounded-md p-2 text-center">
-                                <div className="text-sm font-bold text-white">
-                                    24
-                                </div>
-                                <div className="text-xs text-emerald-200">
-                                    Hôm nay
-                                </div>
+                                <div className="text-sm font-bold text-white">24</div>
+                                <div className="text-xs text-emerald-200">Hôm nay</div>
                             </div>
                             <div className="bg-teal-800/50 rounded-md p-2 text-center">
-                                <div className="text-sm font-bold text-white">
-                                    156
-                                </div>
-                                <div className="text-xs text-teal-200">
-                                    Tổng BN
-                                </div>
+                                <div className="text-sm font-bold text-white">156</div>
+                                <div className="text-xs text-teal-200">Tổng BN</div>
                             </div>
                         </div>
                     </div>
@@ -249,9 +235,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                                 {item.submenu ? (
                                     <div>
                                         <button
-                                            onClick={() =>
-                                                isOpen && toggleExpanded(index)
-                                            }
+                                            onClick={() => isOpen && toggleExpanded(index)}
                                             className={cn(
                                                 'group flex w-full items-center rounded-lg text-emerald-100 transition-all duration-200 hover:bg-emerald-700/50 hover:text-white hover:shadow-md relative text-sm',
                                                 !isOpen && 'justify-center p-2',
@@ -260,16 +244,12 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                                                     isOpen &&
                                                     'bg-emerald-700/30'
                                             )}
-                                            title={
-                                                !isOpen ? item.label : undefined
-                                            }
+                                            title={!isOpen ? item.label : undefined}
                                         >
                                             <div
                                                 className={cn(
                                                     'flex items-center justify-center flex-shrink-0',
-                                                    isOpen
-                                                        ? 'h-5 w-5'
-                                                        : 'h-6 w-6'
+                                                    isOpen ? 'h-5 w-5' : 'h-6 w-6'
                                                 )}
                                             >
                                                 <item.icon size={16} />
@@ -297,70 +277,54 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                                                     size={14}
                                                     className={cn(
                                                         'transition-transform duration-200 flex-shrink-0 ml-1.5',
-                                                        expandedItems.includes(
-                                                            index
-                                                        ) && 'rotate-180'
+                                                        expandedItems.includes(index) &&
+                                                            'rotate-180'
                                                     )}
                                                 />
                                             )}
                                         </button>
 
                                         {/* Submenu */}
-                                        {isOpen &&
-                                            expandedItems.includes(index) && (
-                                                <ul className="mt-1 ml-5 space-y-0.5 animate-in slide-in-from-top-2 duration-200">
-                                                    {item.submenu.map(
-                                                        (subItem, subIndex) => (
-                                                            <li key={subIndex}>
-                                                                <Link
-                                                                    href={
-                                                                        subItem.href
-                                                                    }
-                                                                    className="flex items-center rounded-md px-2.5 py-1.5 text-xs text-emerald-200 transition-all duration-200 hover:bg-emerald-700/50 hover:text-white hover:translate-x-1 group"
-                                                                    onClick={() => {
-                                                                        if (
-                                                                            window.innerWidth <
-                                                                            768
-                                                                        ) {
-                                                                            setIsOpen(
-                                                                                false
-                                                                            );
-                                                                        }
-                                                                    }}
+                                        {isOpen && expandedItems.includes(index) && (
+                                            <ul className="mt-1 ml-5 space-y-0.5 animate-in slide-in-from-top-2 duration-200">
+                                                {item.submenu.map((subItem, subIndex) => (
+                                                    <li key={subIndex}>
+                                                        <Link
+                                                            to={subItem.href}
+                                                            className="flex items-center rounded-md px-2.5 py-1.5 text-xs text-emerald-200 transition-all duration-200 hover:bg-emerald-700/50 hover:text-white hover:translate-x-1 group"
+                                                            onClick={() => {
+                                                                if (window.innerWidth < 768) {
+                                                                    setIsOpen(false);
+                                                                }
+                                                            }}
+                                                        >
+                                                            <div className="h-1 w-1 rounded-full bg-emerald-400 mr-2.5 flex-shrink-0 group-hover:bg-white transition-colors"></div>
+                                                            <span className="truncate flex-1">
+                                                                {subItem.label}
+                                                            </span>
+                                                            {subItem.new && (
+                                                                <Badge className="ml-1.5 bg-orange-500 text-white text-xs px-1 py-0 h-3.5">
+                                                                    New
+                                                                </Badge>
+                                                            )}
+                                                            {subItem.badge && (
+                                                                <Badge
+                                                                    variant="secondary"
+                                                                    className={cn(
+                                                                        'ml-1.5 text-xs px-1 py-0 h-3.5',
+                                                                        subItem.badge === '!'
+                                                                            ? 'bg-red-500 text-white animate-pulse'
+                                                                            : 'bg-emerald-500 text-white'
+                                                                    )}
                                                                 >
-                                                                    <div className="h-1 w-1 rounded-full bg-emerald-400 mr-2.5 flex-shrink-0 group-hover:bg-white transition-colors"></div>
-                                                                    <span className="truncate flex-1">
-                                                                        {
-                                                                            subItem.label
-                                                                        }
-                                                                    </span>
-                                                                    {subItem.new && (
-                                                                        <Badge className="ml-1.5 bg-orange-500 text-white text-xs px-1 py-0 h-3.5">
-                                                                            New
-                                                                        </Badge>
-                                                                    )}
-                                                                    {subItem.badge && (
-                                                                        <Badge
-                                                                            variant="secondary"
-                                                                            className={cn(
-                                                                                'ml-1.5 text-xs px-1 py-0 h-3.5',
-                                                                                subItem.badge ===
-                                                                                    '!'
-                                                                                    ? 'bg-red-500 text-white animate-pulse'
-                                                                                    : 'bg-emerald-500 text-white'
-                                                                            )}
-                                                                        >
-                                                                            {
-                                                                                subItem.badge
-                                                                            }
-                                                                        </Badge>
-                                                                    )}
-                                                                </Link>
-                                                            </li>
-                                                        )
-                                                    )}
-                                                </ul>
-                                            )}
+                                                                    {subItem.badge}
+                                                                </Badge>
+                                                            )}
+                                                        </Link>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
                                     </div>
                                 ) : (
                                     <Link
@@ -445,9 +409,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                         <div
                             className={cn(
                                 'flex items-center transition-all duration-300',
-                                isOpen
-                                    ? 'opacity-100'
-                                    : 'opacity-0 md:opacity-0'
+                                isOpen ? 'opacity-100' : 'opacity-0 md:opacity-0'
                             )}
                         >
                             <div className="h-8 w-8 rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 flex items-center justify-center flex-shrink-0 shadow-md">
@@ -456,9 +418,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                             <div
                                 className={cn(
                                     'ml-2.5 overflow-hidden transition-all duration-300',
-                                    isOpen
-                                        ? 'w-auto opacity-100'
-                                        : 'w-0 opacity-0'
+                                    isOpen ? 'w-auto opacity-100' : 'w-0 opacity-0'
                                 )}
                             >
                                 <p className="text-xs font-semibold text-white whitespace-nowrap">
@@ -469,9 +429,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                                 </p>
                                 <div className="flex items-center mt-0.5">
                                     <div className="h-1.5 w-1.5 rounded-full bg-green-400 mr-1.5"></div>
-                                    <span className="text-xs text-emerald-300">
-                                        Đang hoạt động
-                                    </span>
+                                    <span className="text-xs text-emerald-300">Đang hoạt động</span>
                                 </div>
                             </div>
                         </div>

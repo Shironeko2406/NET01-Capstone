@@ -34,10 +34,12 @@ namespace ClinictManagementSystem.Services
                     return ResponseHandler.Failure<bool>("Bác sĩ không còn khả dụng trong khung giờ đã chọn.");
                 }
 
+                var patientId = _claimService.GetCurrentUserId();
+
 
                 var appointment = new Appointment
                 {
-                    PatientId = createAppoinmentDTO.PatientId,
+                    PatientId = patientId,
                     DoctorId = createAppoinmentDTO.DoctorId,
                     SpecialtyId = createAppoinmentDTO.SpecialtyId,
                     AppointmentDate = createAppoinmentDTO.AppointmentDate.Date,

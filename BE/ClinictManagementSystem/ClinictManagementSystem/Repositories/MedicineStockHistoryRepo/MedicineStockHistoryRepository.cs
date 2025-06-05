@@ -7,7 +7,7 @@ namespace ClinictManagementSystem.Repositories.MedicineStockHistoryRepo
 {
     public class MedicineStockHistoryRepository : GenericRepository<MedicineStockHistory>, IMedicineStockHistoryRepository
     {
-        public MedicineStockHistoryRepository(AppDbContext context, ICurrentTime timeService) : base(context, timeService)
+        public MedicineStockHistoryRepository(AppDbContext context, ICurrentTime timeService, IClaimsService claimsService) : base(context, timeService, claimsService)
         {
         }
     }

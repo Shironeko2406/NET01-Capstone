@@ -13,7 +13,7 @@ namespace ClinictManagementSystem.Repositories.UsersRepo
     public class UsersRepository : GenericRepository<Users>, IUsersRepository
     {
         private readonly AppDbContext _dbContext;
-        public UsersRepository(AppDbContext context, ICurrentTime timeService) : base(context, timeService)
+        public UsersRepository(AppDbContext context, ICurrentTime timeService, IClaimsService claimsService) : base(context, timeService, claimsService)
         {
             _dbContext = context;
         }

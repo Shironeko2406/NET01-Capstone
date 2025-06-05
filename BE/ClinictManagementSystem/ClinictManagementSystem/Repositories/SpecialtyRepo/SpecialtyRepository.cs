@@ -7,7 +7,7 @@ namespace ClinictManagementSystem.Repositories.SpecialtyRepo
 {
     public class SpecialtyRepository : GenericRepository<Specialties>, ISpecialtyRepository
     {
-        public SpecialtyRepository(AppDbContext context, ICurrentTime timeService) : base(context, timeService)
+        public SpecialtyRepository(AppDbContext context, ICurrentTime timeService, IClaimsService claimsService) : base(context, timeService, claimsService)
         {
         }
     }

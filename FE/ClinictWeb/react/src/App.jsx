@@ -11,6 +11,13 @@ import TempReceptionist from './Receptionist/TempUIReceptionist/TempReceptionist
 import HomeReceptionist from './Receptionist/Page/HomeReceptionist';
 import ProtectedRoute from './Utils/ProtectedRoute';
 import AnonymousRoute from './Utils/AnonymousRoute';
+import ServiceManagement from './Admin/Page/ServiceManagement';
+import SpecialtyManagement from './Admin/Page/SpecialtyManagement';
+import UserManagement from './Admin/Page/UserManager';
+import MedicineTypeManagement from './Admin/Page/MedicineTypeManagement';
+import CreateUser from './Admin/Page/CreateUser';
+import MedicineManagement from './Admin/Page/MedicineManagement';
+import MedicineStockHistoryManagement from './Admin/Page/MedicineStockHistoryManagement';
 
 function App() {
     return (
@@ -23,11 +30,19 @@ function App() {
                 </Route>
 
                 {/* Admin routes */}
-                <Route
-                    element={<ProtectedRoute requiredRole="Administrator" />}
-                >
+                <Route element={<ProtectedRoute requiredRole="Administrator" />}>
                     <Route path="admin" element={<TempAdmin />}>
-                        <Route index element={<HomeAdmin />} />
+                        <Route path="" element={<HomeAdmin />} />
+                        <Route path="services" element={<ServiceManagement />} />
+                        <Route path="specialty" element={<SpecialtyManagement />} />
+                        <Route path="user" element={<UserManagement />} />
+                        <Route path="user/create" element={<CreateUser />} />
+                        <Route path="medicine-type" element={<MedicineTypeManagement />} />
+                        <Route path="medicine" element={<MedicineManagement />} />
+                        <Route
+                            path="medicine/history"
+                            element={<MedicineStockHistoryManagement />}
+                        />
                     </Route>
                 </Route>
 
@@ -39,9 +54,7 @@ function App() {
                 </Route>
 
                 {/* Lab Technician routes */}
-                <Route
-                    element={<ProtectedRoute requiredRole="LabTechnician" />}
-                >
+                <Route element={<ProtectedRoute requiredRole="LabTechnician" />}>
                     <Route path="labTech" element={<TempLabTechnician />}>
                         <Route index element={<HomeLabTechnician />} />
                     </Route>

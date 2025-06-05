@@ -7,7 +7,7 @@ namespace ClinictManagementSystem.Repositories.PrescriptionDetailsRepo
     public class PrescriptionDetailsRepository : GenericRepository<PrescriptionDetails>, IPrescriptionDetailsRepository
     {
         private readonly AppDbContext _dbContext;
-        public PrescriptionDetailsRepository(AppDbContext context, ICurrentTime timeService) : base(context, timeService)
+        public PrescriptionDetailsRepository(AppDbContext context, ICurrentTime timeService, IClaimsService claimsService) : base(context, timeService, claimsService)
         {
             _dbContext = context;
         }

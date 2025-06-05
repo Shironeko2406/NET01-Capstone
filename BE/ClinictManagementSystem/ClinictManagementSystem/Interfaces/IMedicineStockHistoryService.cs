@@ -7,5 +7,7 @@ namespace ClinictManagementSystem.Interfaces
     public interface IMedicineStockHistoryService
     {
         Task<ApiResponse<bool>> CreateMedicineHistoryStockAsync(CreateMedicineManageStockDTO createMedicineManageStockDTO);
+        Task<ApiResponse<Pagination<GetMedicineStockHistoryDTO>>> GetMedicineStockHistoryFilterAsync(MedicineStockHistoryFilterDTO medicineStockHistoryFilterDTO);
+        Task<string> GenerateTransactionCodeAsync();
     }
 }
