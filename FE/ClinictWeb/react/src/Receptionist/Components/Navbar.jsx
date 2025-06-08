@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { logout } from '../../Utils/UtilFunction';
 
 const Navbar = ({ onMenuButtonClick, sidebarOpen }) => {
     return (
@@ -22,11 +23,7 @@ const Navbar = ({ onMenuButtonClick, sidebarOpen }) => {
                 className="mr-4 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 h-8 w-8"
                 onClick={onMenuButtonClick}
             >
-                {sidebarOpen ? (
-                    <ChevronLeft size={18} />
-                ) : (
-                    <ChevronRight size={18} />
-                )}
+                {sidebarOpen ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
                 <span className="sr-only">Toggle menu</span>
             </Button>
 
@@ -89,8 +86,7 @@ const Navbar = ({ onMenuButtonClick, sidebarOpen }) => {
                                                 Thông báo mới #{i}
                                             </p>
                                             <p className="text-xs text-emerald-600">
-                                                Bạn có một thông báo mới từ hệ
-                                                thống.
+                                                Bạn có một thông báo mới từ hệ thống.
                                             </p>
                                             <p className="text-xs text-emerald-400">
                                                 {i * 2} giờ trước
@@ -136,20 +132,19 @@ const Navbar = ({ onMenuButtonClick, sidebarOpen }) => {
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="cursor-pointer hover:bg-emerald-50">
-                            <span className="text-emerald-700">
-                                Hồ sơ cá nhân
-                            </span>
+                            <span className="text-emerald-700">Hồ sơ cá nhân</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem className="cursor-pointer hover:bg-emerald-50">
-                            <span className="text-emerald-700">
-                                Cài đặt tài khoản
-                            </span>
+                            <span className="text-emerald-700">Cài đặt tài khoản</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem className="cursor-pointer hover:bg-emerald-50">
                             <span className="text-emerald-700">Trợ giúp</span>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="cursor-pointer hover:bg-red-50">
+                        <DropdownMenuItem
+                            className="cursor-pointer hover:bg-red-50"
+                            onClick={logout}
+                        >
                             <span className="text-red-600">Đăng xuất</span>
                         </DropdownMenuItem>
                     </DropdownMenuContent>

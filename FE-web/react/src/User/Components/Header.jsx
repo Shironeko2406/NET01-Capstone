@@ -1,24 +1,76 @@
-// src/components/Header.jsx
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
     DropdownMenuSeparator,
+    DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
-import { Menu, X, ChevronDown, ArrowLeft } from 'lucide-react';
+import { Menu, X, ChevronDown, ArrowLeft, User, Settings, LogOut } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { brandData, navigationData } from '../../Utils/Data/NavigationData';
 import MobileMenu from './MobileMenu';
+import { getDataJSONStorage, logout } from '../../Utils/UtilFunction';
+import { USER_LOGIN } from '../../Utils/Interceptor';
 
 const Header = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const location = useLocation(); // Get current route
-    const navigate = useNavigate(); // For navigation
+    const location = useLocation();
+    const navigate = useNavigate();
+    const loggedInPatient = getDataJSONStorage(USER_LOGIN);
 
     const isBookingPage = location.pathname === '/booking';
+
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    };
+
+    const UserAvatar = () => (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                    <Avatar className="h-10 w-10">
+                        <AvatarImage
+                            src={loggedInPatient?.Avatar}
+                            alt={loggedInPatient?.FullName || 'User'}
+                        />
+                        <AvatarFallback className="bg-gradient-to-br from-sky-500 to-blue-600 text-white">
+                            <User />
+                        </AvatarFallback>
+                    </Avatar>
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">
+                            {loggedInPatient?.FullName || 'Người dùng'}
+                        </p>
+                        <p className="text-xs leading-none text-muted-foreground">
+                            {loggedInPatient?.Email || 'email@example.com'}
+                        </p>
+                    </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate('/profile')} className="cursor-pointer">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Thông tin tài khoản</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="cursor-pointer text-red-600 focus:text-red-600"
+                >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Đăng xuất</span>
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
 
     return (
         <>
@@ -116,22 +168,29 @@ const Header = () => {
                                     ))}
                                 </nav>
 
-                                {/* Desktop Auth Buttons */}
+                                {/* Desktop Auth Section */}
                                 <div className="hidden lg:flex items-center space-x-3">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => navigate('/login')}
-                                        className="border-sky-200 text-sky-700 hover:bg-sky-50 hover:border-sky-300 font-medium px-6"
-                                    >
-                                        Đăng nhập
-                                    </Button>
-                                    <Button
-                                        size="sm"
-                                        className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 shadow-md hover:shadow-lg transition-all duration-200 font-medium px-6"
-                                    >
-                                        Đăng ký miễn phí
-                                    </Button>
+                                    {loggedInPatient ? (
+                                        <UserAvatar />
+                                    ) : (
+                                        <>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => navigate('/login')}
+                                                className="border-sky-200 text-sky-700 hover:bg-sky-50 hover:border-sky-300 font-medium px-6"
+                                            >
+                                                Đăng nhập
+                                            </Button>
+                                            <Button
+                                                size="sm"
+                                                onClick={() => navigate('/register')}
+                                                className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 shadow-md hover:shadow-lg transition-all duration-200 font-medium px-6"
+                                            >
+                                                Đăng ký
+                                            </Button>
+                                        </>
+                                    )}
                                 </div>
 
                                 {/* Mobile Menu Button */}
@@ -155,7 +214,11 @@ const Header = () => {
 
             {/* Mobile Menu */}
             {mobileMenuOpen && !isBookingPage && (
-                <MobileMenu setMobileMenuOpen={setMobileMenuOpen} />
+                <MobileMenu
+                    setMobileMenuOpen={setMobileMenuOpen}
+                    loggedInPatient={loggedInPatient}
+                    onLogout={handleLogout}
+                />
             )}
         </>
     );

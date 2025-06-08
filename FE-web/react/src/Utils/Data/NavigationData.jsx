@@ -1,13 +1,4 @@
-import {
-    Heart,
-    Stethoscope,
-    Calendar,
-    Users,
-    FileText,
-    Phone,
-    Settings,
-    Shield,
-} from 'lucide-react';
+import { Heart, Stethoscope, Calendar, FileText } from 'lucide-react';
 
 export const navigationData = [
     {
@@ -17,7 +8,7 @@ export const navigationData = [
         subItems: [
             {
                 title: 'Đặt lịch khám',
-                href: '#appointment',
+                href: '/booking',
                 description: 'Đặt lịch và quản lý cuộc hẹn dễ dàng',
                 icon: Calendar,
             },
