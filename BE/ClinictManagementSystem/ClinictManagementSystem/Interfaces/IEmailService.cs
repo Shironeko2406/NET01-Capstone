@@ -5,5 +5,7 @@ namespace ClinictManagementSystem.Interfaces
     public interface IEmailService
     {
         Task<bool> SendEmailRegisterUserAsync(string toEmail, string fullName, string username, string password);
+        Task<bool> SendEmailRegisterAndAppointmentAsync(RegisterAndAppointmentEmailDTO registerAndAppointmentEmailDTO);
+
     }
 }

@@ -8,6 +8,7 @@ namespace ClinictManagementSystem.Interfaces
     public interface IAppointmentService
     {
         Task<ApiResponse<bool>> CreateAppoinment(CreateAppoinmentDTO createAppoinmentDTO);
+        Task<ApiResponse<bool>> CreateAppointmentByReceptionist(CreateAppointmentByReceptionistDTO createAppointmentByReceptionistDTO);
         Task<ApiResponse<bool>> UpdateAppointmentStatusAsync(Guid appointmentId, AppointmentStatusEnum appointmentStatusEnum);
         Task<ApiResponse<Pagination<GetAppointmentDTO>>> GetAppoinmentFilterByUserLoginAsync(FilterAppoinmentByPatientLoginDTO filterAppoinmentByPatientLoginDTO);
         Task<ApiResponse<Pagination<AppointmentManagementDTO>>> GetAppointmentsForAdminAsync(FilterAppointmentAdminDTO filterAppointmentAdminDTO);

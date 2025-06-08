@@ -1,8 +1,10 @@
 ﻿using ClinictManagementSystem.Commons;
 using ClinictManagementSystem.Enums;
 using ClinictManagementSystem.Handler;
+using ClinictManagementSystem.Helper;
 using ClinictManagementSystem.Interfaces;
 using ClinictManagementSystem.Models.DTO.AppoinmentDTO;
+using ClinictManagementSystem.Models.DTO.EmailDTO;
 using ClinictManagementSystem.Models.Entity;
 using ClinictManagementSystem.Repositories.UnitOfWork;
 using System.Linq.Expressions;
@@ -14,12 +16,22 @@ namespace ClinictManagementSystem.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentTime _currentTime;
         private readonly IClaimsService _claimService;
-        public AppointmentService(IUnitOfWork unitOfWork, ICurrentTime currentTime, IClaimsService claimService)
+        private readonly IUserService _userService;
+        private readonly IEmailService _emailService;
+        public AppointmentService(
+            IUnitOfWork unitOfWork,
+            ICurrentTime currentTime,
+            IClaimsService claimService,
+            IUserService userService,
+            IEmailService emailService)
         {
             _unitOfWork = unitOfWork;
             _currentTime = currentTime;
             _claimService = claimService;
+            _userService = userService;
+            _emailService = emailService;
         }
+
         public async Task<ApiResponse<bool>> CreateAppoinment(CreateAppoinmentDTO createAppoinmentDTO)
         {
             try
@@ -388,5 +400,103 @@ namespace ClinictManagementSystem.Services
                 return ResponseHandler.Failure<bool>($"An error occurred: {ex.Message}");
             }
         }
+
+        public async Task<ApiResponse<bool>> CreateAppointmentByReceptionist(CreateAppointmentByReceptionistDTO createAppointmentByReceptionistDTO)
+        {
+            try
+            {
+                // 1. Kiểm tra bác sĩ có thuộc chuyên khoa không
+                var isDoctorInSpecialty = await _unitOfWork.UsersRepository.CheckDoctorInSpecialtyAsync(createAppointmentByReceptionistDTO.DoctorId, createAppointmentByReceptionistDTO.SpecialtyId);
+                if (!isDoctorInSpecialty)
+                {
+                    return ResponseHandler.Failure<bool>("Bác sĩ không thuộc chuyên khoa đã chọn.");
+                }
+
+                // 2. Kiểm tra bác sĩ có rảnh trong khung giờ đã chọn không
+                var isDoctorAvailable = await _unitOfWork.UsersRepository.CheckDoctorAvailableAsync(createAppointmentByReceptionistDTO.DoctorId, createAppointmentByReceptionistDTO.AppointmentDate, createAppointmentByReceptionistDTO.StartTime, createAppointmentByReceptionistDTO.EndTime);
+                if (!isDoctorAvailable)
+                {
+                    return ResponseHandler.Failure<bool>("Bác sĩ không khả dụng trong khung giờ đã chọn.");
+                }
+
+                // 3. Tạo tài khoản người dùng mới (bệnh nhân)
+                var credentials = await _userService.GenerateUserCredentials(createAppointmentByReceptionistDTO.FullName);
+
+                var patientRole = await _unitOfWork.RoleRepository.GetByNameAsync("Patient");
+                if (patientRole == null)
+                {
+                    return ResponseHandler.Failure<bool>("Không tìm thấy quyền 'Patient'.");
+                }
+
+                var newUser = new Users
+                {
+                    FullName = createAppointmentByReceptionistDTO.FullName,
+                    Username = credentials.Username,
+                    PasswordHash = PasswordHelper.HashPassword(credentials.Password),
+                    Email = createAppointmentByReceptionistDTO.Email,
+                    DateOfBirth = createAppointmentByReceptionistDTO.DateOfBirth,
+                    Gender = createAppointmentByReceptionistDTO.Gender,
+                    PhoneNumber = createAppointmentByReceptionistDTO.PhoneNumber,
+                    Address = createAppointmentByReceptionistDTO.Address,
+                    Status = UserStatusEnum.Active,
+                    UserRoles = new List<UserRole>
+                    {
+                       new UserRole { RoleId = patientRole.RoleId }
+                    }
+                };
+
+                await _unitOfWork.UsersRepository.AddAsync(newUser);
+                await _unitOfWork.SaveChangeAsync();
+
+                // 4. Tạo lịch khám bệnh
+                var appointment = new Appointment
+                {
+                    PatientId = newUser.UserId,
+                    DoctorId = createAppointmentByReceptionistDTO.DoctorId,
+                    SpecialtyId = createAppointmentByReceptionistDTO.SpecialtyId,
+                    AppointmentDate = createAppointmentByReceptionistDTO.AppointmentDate.Date,
+                    AppointmentCode = await GenerateRandomAppointmentCodeAsync(),
+                    StartTime = createAppointmentByReceptionistDTO.StartTime,
+                    EndTime = createAppointmentByReceptionistDTO.EndTime,
+                    Note = createAppointmentByReceptionistDTO.Note,
+                    Status = AppointmentStatusEnum.Booked
+                };
+
+                await _unitOfWork.AppoinmentRepository.AddAsync(appointment);
+                await _unitOfWork.SaveChangeAsync();
+
+                // 5. Gọi service gửi email thông báo tài khoản & lịch hẹn
+                var doctor = await _unitOfWork.UsersRepository.GetByIdAsync(createAppointmentByReceptionistDTO.DoctorId);
+                var specialty = await _unitOfWork.SpecialtyRepository.GetByIdAsync(createAppointmentByReceptionistDTO.SpecialtyId);
+
+                var emailDto = new RegisterAndAppointmentEmailDTO
+                {
+                    ToEmail = createAppointmentByReceptionistDTO.Email,
+                    FullName = createAppointmentByReceptionistDTO.FullName,
+                    Username = credentials.Username,
+                    Password = credentials.Password,
+                    DoctorName = doctor?.FullName ?? "Bác sĩ",
+                    SpecialtyName = specialty?.Name ?? "Chuyên khoa",
+                    AppointmentDate = createAppointmentByReceptionistDTO.AppointmentDate,
+                    StartTime = createAppointmentByReceptionistDTO.StartTime,
+                    EndTime = createAppointmentByReceptionistDTO.EndTime,
+                    AppointmentCode = appointment.AppointmentCode,
+                };
+
+                var emailSent = await _emailService.SendEmailRegisterAndAppointmentAsync(emailDto);
+
+                if (!emailSent)
+                {
+                    Console.WriteLine("Warning: Gửi email thông báo không thành công.");
+                }
+
+                return ResponseHandler.Success(true, "Tạo lịch hẹn và tài khoản bệnh nhân thành công.");
+            }
+            catch (Exception ex)
+            {
+                return ResponseHandler.Failure<bool>($"Đã xảy ra lỗi: {ex.Message}");
+            }
+        }
+
     }
 }

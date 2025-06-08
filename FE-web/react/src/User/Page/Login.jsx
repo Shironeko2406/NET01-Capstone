@@ -22,7 +22,9 @@ const Login = () => {
             password: Yup.string().required('Mật khẩu không được để trống'),
         }),
         onSubmit: values => {
-            run(LoginActionAsync(values), () => {});
+            run(LoginActionAsync(values), () => {
+                navigate('/login');
+            });
         },
     });
 

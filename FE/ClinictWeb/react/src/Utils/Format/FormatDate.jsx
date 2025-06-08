@@ -3,7 +3,7 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import 'dayjs/locale/vi';
 import { DEFAULT_TZ } from '../Interceptor';
-
+import { upperFirst } from 'lodash';
 // Kích hoạt plugin
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -36,4 +36,23 @@ const getNow = () => {
     return dayjs().tz(DEFAULT_TZ).format('YYYY-MM-DD HH:mm:ss');
 };
 
-export { formatDate, formatDateTime, formatCustom, getStartOfCurrentMonth, getNow };
+const formatAppointmentDate = date => {
+    const formatted = dayjs(date).format('dddd, DD/MM/YYYY');
+    return upperFirst(formatted);
+};
+
+const calculateAge = dateOfBirth => {
+    if (!dateOfBirth) return 0;
+    const today = dayjs();
+    return today.diff(dateOfBirth, 'year');
+};
+
+export {
+    formatDate,
+    formatDateTime,
+    formatCustom,
+    getStartOfCurrentMonth,
+    getNow,
+    calculateAge,
+    formatAppointmentDate,
+};

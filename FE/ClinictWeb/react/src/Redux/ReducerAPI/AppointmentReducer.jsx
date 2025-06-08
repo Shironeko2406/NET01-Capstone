@@ -23,10 +23,10 @@ export const { setAppointments } = AppointmentReducer.actions;
 
 export default AppointmentReducer.reducer;
 
-export const CreateAppointmentActionAsync = newApt => {
+export const CreateAppointmentForPatientActionAsync = newApt => {
     return async dispatch => {
         try {
-            const res = await httpClient.post(`/api/v1/appointment/login`, newApt);
+            const res = await httpClient.post(`/api/v1/receptionist/appointment`, newApt);
             if (res.isSuccess && res.data) {
                 return { success: true, data: null, message: res.message };
             } else if (res.isSuccess && !res.data) {
@@ -37,34 +37,6 @@ export const CreateAppointmentActionAsync = newApt => {
         } catch (error) {
             console.error(error);
             return { success: false, message: 'System error' };
-        }
-    };
-};
-
-export const GetAppointmentActionAsync = filter => {
-    return async dispatch => {
-        try {
-            const res = await httpClient.get(`/api/v1/appointment/patient`, {
-                params: {
-                    Search: filter.search,
-                    PageIndex: filter.pageIndex,
-                    PageSize: filter.pageSize,
-                    StartDate: filter.startDate,
-                    EndDate: filter.endDate,
-                    SortBy: filter.sortBy,
-                    specialtyId: filter.specialtyId,
-                    AppointmentStatusEnum: filter.appointmentStatusEnum,
-                },
-            });
-            if (res.isSuccess && res.data) {
-                dispatch(setAppointments(res.data));
-                return true;
-            } else {
-                return false;
-            }
-        } catch (error) {
-            console.error(error);
-            return false;
         }
     };
 };

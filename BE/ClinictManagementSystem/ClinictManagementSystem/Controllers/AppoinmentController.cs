@@ -66,5 +66,13 @@ namespace ClinictManagementSystem.Controllers
         {
             return await _appointmentService.UpdateAppointmentConclusionAsync(appointmentId, updateConclusionDTO);
         }
+
+        [SwaggerOperation(Summary = "Phân quyền Receptionist")]
+        [Authorize(Roles = AppRole.Receptionist)]
+        [HttpPost("~/api/v1/receptionist/appointment")]
+        public async Task<ApiResponse<bool>> CreateAppointmentByReceptionist(CreateAppointmentByReceptionistDTO createAppointmentByReceptionistDTO)
+        {
+            return await _appointmentService.CreateAppointmentByReceptionist(createAppointmentByReceptionistDTO);
+        }
     }
 }

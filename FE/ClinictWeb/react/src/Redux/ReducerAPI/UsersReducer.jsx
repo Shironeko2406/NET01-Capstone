@@ -3,6 +3,7 @@ import { httpClient } from '../../Utils/Interceptor';
 
 const initialState = {
     users: [],
+    doctors: [],
     totalPagesCount: 0,
     totalItemsCount: 0,
 };
@@ -16,10 +17,13 @@ const UsersReducer = createSlice({
             state.totalItemsCount = action.payload.totalItemsCount;
             state.totalPagesCount = action.payload.totalPagesCount;
         },
+        setDoctorAvailable: (state, action) => {
+            state.doctors = action.payload;
+        },
     },
 });
 
-export const { setUsers } = UsersReducer.actions;
+export const { setUsers, setDoctorAvailable } = UsersReducer.actions;
 
 export default UsersReducer.reducer;
 
@@ -61,6 +65,30 @@ export const CreateUsersInternalActionAsync = newUser => {
         } catch (error) {
             console.error(error);
             return { success: false, message: 'System error' };
+        }
+    };
+};
+
+export const GetDoctorAvailableActionAsync = filter => {
+    return async dispatch => {
+        try {
+            const res = await httpClient.get(`/api/v1/user/doctor-avaiable`, {
+                params: {
+                    SpecialtyId: filter.specialtyId,
+                    Date: filter.date,
+                    StartTime: filter.startTime,
+                    EndTime: filter.endTime,
+                },
+            });
+            if (res.isSuccess && res.data) {
+                dispatch(setDoctorAvailable(res.data));
+                return true;
+            } else {
+                return false;
+            }
+        } catch (error) {
+            console.error(error);
+            return false;
         }
     };
 };

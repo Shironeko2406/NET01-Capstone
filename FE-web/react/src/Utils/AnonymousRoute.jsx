@@ -1,32 +1,18 @@
-import { Outlet, Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { TOKEN_AUTHOR, USER_LOGIN } from './Interceptor';
 import { getDataJSONStorage, getDataTextStorage } from './UtilFunction';
 
-const AnonymousRoute = () => {
+const AnonymousRoute = ({ children }) => {
+    const userLogin = getDataJSONStorage(USER_LOGIN);
     const accessToken = getDataTextStorage(TOKEN_AUTHOR);
-    const userLogin = getDataJSONStorage(USER_LOGIN); // Fetch the user data from storage
+    const location = useLocation();
 
-    if (accessToken && userLogin) {
-        const role = userLogin?.role;
-
-        // Redirect based on the role
-        switch (role) {
-            case 'Administrator':
-                return <Navigate to="/admin" replace />;
-            case 'Doctor':
-                return <Navigate to="/doctor" replace />;
-            case 'Receptionist':
-                return <Navigate to="/receptionist" replace />;
-            case 'Patient':
-                return <Navigate to="/patient" replace />;
-            case 'LabTechnician':
-                return <Navigate to="/labTech" replace />;
-            default:
-                return <Navigate to="/" replace />;
-        }
+    if (userLogin && accessToken) {
+        const previousPage = location.state?.from?.pathname || '/';
+        return <Navigate to={previousPage} replace />;
     }
 
-    return <Outlet />;
+    return children;
 };
 
 export default AnonymousRoute;

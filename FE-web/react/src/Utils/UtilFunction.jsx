@@ -28,7 +28,6 @@ const removeDataTextStorage = storeName => {
 
 const logout = () => {
     localStorage.clear();
-    window.location.href = '/';
 };
 
 function setCookie(name, value, days) {

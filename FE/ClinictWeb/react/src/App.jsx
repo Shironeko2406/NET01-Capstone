@@ -18,6 +18,7 @@ import MedicineTypeManagement from './Admin/Page/MedicineTypeManagement';
 import CreateUser from './Admin/Page/CreateUser';
 import MedicineManagement from './Admin/Page/MedicineManagement';
 import MedicineStockHistoryManagement from './Admin/Page/MedicineStockHistoryManagement';
+import BookAppointmentForPatient from './Receptionist/Page/BookAppointmentForPatient';
 
 function App() {
     return (
@@ -63,7 +64,8 @@ function App() {
                 {/* Receptionist routes */}
                 <Route element={<ProtectedRoute requiredRole="Receptionist" />}>
                     <Route path="receptionist" element={<TempReceptionist />}>
-                        <Route index element={<HomeReceptionist />} />
+                        <Route path="" element={<HomeReceptionist />} />
+                        <Route path="booking" element={<BookAppointmentForPatient />} />
                     </Route>
                 </Route>
             </Routes>

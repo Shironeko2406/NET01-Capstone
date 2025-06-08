@@ -4,6 +4,7 @@ import UsersReducer from './ReducerAPI/UsersReducer';
 import AuthenticationReducer from './ReducerAPI/AuthenticationReducer';
 import SpecialtyReducer from './ReducerAPI/SpecialtyReducer';
 import AppointmentReducer from './ReducerAPI/AppointmentReducer';
+import MedicineTypeReducer from './ReducerAPI/MedicineTypeReducer';
 
 export const store = configureStore({
     reducer: {
@@ -13,5 +14,6 @@ export const store = configureStore({
         AuthenticationReducer,
         SpecialtyReducer,
         AppointmentReducer,
+        MedicineTypeReducer,
     },
 });
