@@ -4,9 +4,10 @@ namespace ClinictManagementSystem.Models.DTO.AppoinmentDTO
 {
     public class FilterAppointmentAdminDTO
     {
-        public string? Search { get; set; } 
-        public DateTime? StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
+        public string? Search { get; set; }
+        public DateTime? AppointmentDate { get; set; }
+        public TimeSpan? StartTime { get; set; }
+        public TimeSpan? EndTime { get; set; }
         public AppointmentStatusEnum? Status { get; set; }
 
         public Guid? DoctorId { get; set; }

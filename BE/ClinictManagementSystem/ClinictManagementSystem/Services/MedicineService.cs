@@ -165,5 +165,27 @@ namespace ClinictManagementSystem.Services
                 return ResponseHandler.Failure<Pagination<GetMedicineFilterDTO>>("Lỗi khi lọc thuốc: " + ex.Message);
             }
         }
+
+        public async Task<bool> UpdateReservedQuantityAsync(Guid medicineId, int delta, bool ignoreStockCheck = false)
+        {
+            var medicine = await _unitOfWork.MedicineRepository.GetByIdAsync(medicineId);
+            if (medicine == null)
+                throw new Exception("Không tìm thấy thuốc."); // Hoặc return false
+
+            if (delta > 0 && !ignoreStockCheck)
+            {
+                var availableStock = medicine.StockQuantity - medicine.ReservedQuantity;
+                if (availableStock < delta)
+                    throw new Exception("Không đủ tồn kho để đặt thêm thuốc."); // Hoặc return false
+            }
+
+            medicine.ReservedQuantity += delta;
+
+            if (medicine.ReservedQuantity < 0)
+                medicine.ReservedQuantity = 0;
+
+            return true;
+        }
+
     }
 }

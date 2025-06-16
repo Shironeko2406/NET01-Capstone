@@ -18,6 +18,7 @@ namespace ClinictManagementSystem.Models.Entity
         public int Price { get; set; }
         public int StockQuantity { get; set; }
         public int MinQuantity { get; set; }
+        public int ReservedQuantity { get; set; } = 0;
         public ICollection<PrescriptionDetails> PrescriptionDetails { get; set; }
         public ICollection<MedicineStockHistory> MedicineStockHistory { get; set; }
     }

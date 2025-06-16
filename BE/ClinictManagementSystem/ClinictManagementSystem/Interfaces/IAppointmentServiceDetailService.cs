@@ -11,5 +11,7 @@ namespace ClinictManagementSystem.Interfaces
         Task<ApiResponse<bool>> UpdateAppointmentServiceById(Guid id, AppointmentServiceUpdateDTO appointmentServiceUpdateDTO);
         Task<ApiResponse<bool>> UpdateAppointmentServiceStatusAsync(Guid id, AppointmentServiceStatusEnum appointmentServiceStatusEnum);
         Task<ApiResponse<List<AppointmentServiceResponseDTO>>> GetAppointmentServicesByAppointmentIdAsync(Guid appointmentId);
+        Task<ApiResponse<bool>> DeleteAppointmentServiceByIdAsync(Guid id);
+
     }
 }

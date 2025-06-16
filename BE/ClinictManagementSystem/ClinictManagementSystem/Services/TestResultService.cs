@@ -9,10 +9,12 @@ namespace ClinictManagementSystem.Services
     public class TestResultService : ITestResultService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IClaimsService _claimsService;
 
-        public TestResultService(IUnitOfWork unitOfWork)
+        public TestResultService(IUnitOfWork unitOfWork, IClaimsService claimsService)
         {
             _unitOfWork = unitOfWork;
+            _claimsService = claimsService;
         }
 
         public async Task<ApiResponse<bool>> UpdateTestResultAsync(Guid testResultId, UpdateTestResultDTO updateTestResultDTO)
@@ -25,6 +27,8 @@ namespace ClinictManagementSystem.Services
 
                 testResult.Result = updateTestResultDTO.Result;
                 testResult.ResultDate = updateTestResultDTO.ResultDate;
+                var userId = _claimsService.GetCurrentUserId(); 
+                testResult.UpdateBy = userId;
 
                 await _unitOfWork.TestResultRepository.UpdateAsync(testResult);
                 await _unitOfWork.SaveChangeAsync();

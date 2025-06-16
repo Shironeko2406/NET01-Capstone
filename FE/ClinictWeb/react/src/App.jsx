@@ -8,7 +8,6 @@ import HomeDoctor from './Doctor/Page/HomeDoctor';
 import TempLabTechnician from './LabTechnician/TemUILabTechnician/TempLabTechnician';
 import HomeLabTechnician from './LabTechnician/Page/HomeLabTechnician';
 import TempReceptionist from './Receptionist/TempUIReceptionist/TempReceptionist';
-import HomeReceptionist from './Receptionist/Page/HomeReceptionist';
 import ProtectedRoute from './Utils/ProtectedRoute';
 import AnonymousRoute from './Utils/AnonymousRoute';
 import ServiceManagement from './Admin/Page/ServiceManagement';
@@ -19,6 +18,10 @@ import CreateUser from './Admin/Page/CreateUser';
 import MedicineManagement from './Admin/Page/MedicineManagement';
 import MedicineStockHistoryManagement from './Admin/Page/MedicineStockHistoryManagement';
 import BookAppointmentForPatient from './Receptionist/Page/BookAppointmentForPatient';
+import AppointmentManagement from './Receptionist/Page/AppointmentManagement';
+import AppointmentDoctor from './Doctor/Page/AppointmentDoctor';
+import AppointmentDetail from './Doctor/Page/AppointmentDetail';
+import AppointmentDetail2 from './Doctor/Page/AppointmentDetail2';
 
 function App() {
     return (
@@ -50,7 +53,9 @@ function App() {
                 {/* Doctor routes */}
                 <Route element={<ProtectedRoute requiredRole="Doctor" />}>
                     <Route path="doctor" element={<TempDoctor />}>
-                        <Route index element={<HomeDoctor />} />
+                        <Route path="" element={<HomeDoctor />} />
+                        <Route path="appointment" element={<AppointmentDoctor />} />
+                        <Route path="appointment/detail" element={<AppointmentDetail2 />} />
                     </Route>
                 </Route>
 
@@ -64,7 +69,7 @@ function App() {
                 {/* Receptionist routes */}
                 <Route element={<ProtectedRoute requiredRole="Receptionist" />}>
                     <Route path="receptionist" element={<TempReceptionist />}>
-                        <Route path="" element={<HomeReceptionist />} />
+                        <Route path="" element={<AppointmentManagement />} />
                         <Route path="booking" element={<BookAppointmentForPatient />} />
                     </Route>
                 </Route>

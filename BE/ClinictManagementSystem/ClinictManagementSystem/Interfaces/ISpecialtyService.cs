@@ -10,5 +10,6 @@ namespace ClinictManagementSystem.Interfaces
         Task<ApiResponse<bool>> DeleteSpecialtyByIdAsync(Guid specialtyId);
         Task<ApiResponse<bool>> UpdateSpecialtyByIdAsync(Guid specialtyId, UpdateSpecialtyDTO updateSpecialtyDTO);
         Task<ApiResponse<List<GetSpecialtyDTO>>> GetAllSpecialtyAsync();
+        Task<ApiResponse<List<GetSpecialtyDTO>>> GetDoctorSpecialtiesByLoginAsync();
     }
 }

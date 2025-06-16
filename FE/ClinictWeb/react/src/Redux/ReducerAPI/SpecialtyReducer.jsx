@@ -36,6 +36,23 @@ export const GetSpecialtiesActionAsync = () => {
     };
 };
 
+export const GetSpecialtiesDoctorLoginActionAsync = () => {
+    return async dispatch => {
+        try {
+            const res = await httpClient.get(`/api/v1/doctor/specialty/login`);
+            if (res.isSuccess && res.data) {
+                dispatch(setSpecialties(res.data));
+                return true;
+            } else {
+                return false;
+            }
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    };
+};
+
 export const CreateSpecialtyActionAsync = newSpecialty => {
     return async dispatch => {
         try {

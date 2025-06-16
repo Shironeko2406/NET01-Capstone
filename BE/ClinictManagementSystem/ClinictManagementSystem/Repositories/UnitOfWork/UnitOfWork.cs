@@ -14,6 +14,7 @@ using ClinictManagementSystem.Repositories.SpecialtyRepo;
 using ClinictManagementSystem.Repositories.TestResultRepo;
 using ClinictManagementSystem.Repositories.UsersRepo;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 
 namespace ClinictManagementSystem.Repositories.UnitOfWork
@@ -21,6 +22,7 @@ namespace ClinictManagementSystem.Repositories.UnitOfWork
     public class UnitOfWork : IUnitOfWork
     {
         private readonly AppDbContext _dbContext;
+        private IDbContextTransaction? _currentTransaction;
         private readonly IUsersRepository _usersRepository;
         private readonly IServiceRepository _serviceRepository;
         private readonly ISpecialtyRepository _specialtyRepository;
@@ -94,6 +96,35 @@ namespace ClinictManagementSystem.Repositories.UnitOfWork
         public async Task<int> SaveChangeAsync()
         {
             return await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task BeginTransactionAsync()
+        {
+            // Nếu đã có transaction đang mở, không mở thêm
+            if (_currentTransaction == null)
+            {
+                _currentTransaction = await _dbContext.Database.BeginTransactionAsync();
+            }
+        }
+
+        public async Task CommitAsync()
+        {
+            if (_currentTransaction != null)
+            {
+                await _currentTransaction.CommitAsync();
+                await _currentTransaction.DisposeAsync();
+                _currentTransaction = null;
+            }
+        }
+
+        public async Task RollbackAsync()
+        {
+            if (_currentTransaction != null)
+            {
+                await _currentTransaction.RollbackAsync();
+                await _currentTransaction.DisposeAsync();
+                _currentTransaction = null;
+            }
         }
     }
 }

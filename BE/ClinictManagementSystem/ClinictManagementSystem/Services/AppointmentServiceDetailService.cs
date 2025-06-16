@@ -50,16 +50,16 @@ namespace ClinictManagementSystem.Services
         {
             try
             {
-                var existingService = await _unitOfWork.AppointmentServicesRepository.GetByIdAsync(id);
+                var existingService = await _unitOfWork.AppointmentServicesRepository.FindSingleAsync(x => x.Id == id && !x.IsDeleted);
 
                 if (existingService == null)
                 {
-                    return ResponseHandler.Failure<bool>("Appointment service not found.");
+                    return ResponseHandler.Failure<bool>("Không tìm thấy dịch vụ khám.");
                 }
 
                 if (existingService.IsCompleted != AppointmentServiceStatusEnum.Assigned)
                 {
-                    return ResponseHandler.Failure<bool>("Only services with status 'Assigned' can be updated.");
+                    return ResponseHandler.Failure<bool>("Chỉ được phép cập nhật các dịch vụ đang ở trạng thái 'Đã chỉ định'.");
                 }
 
                 if (!string.IsNullOrWhiteSpace(appointmentServiceUpdateDTO.Note))
@@ -70,13 +70,14 @@ namespace ClinictManagementSystem.Services
                 await _unitOfWork.AppointmentServicesRepository.UpdateAsync(existingService);
                 await _unitOfWork.SaveChangeAsync();
 
-                return ResponseHandler.Success(true, "Appointment service updated successfully.");
+                return ResponseHandler.Success(true, "Cập nhật dịch vụ khám thành công.");
             }
             catch (Exception ex)
             {
-                return ResponseHandler.Failure<bool>($"An error occurred: {ex.Message}");
+                return ResponseHandler.Failure<bool>($"Đã xảy ra lỗi: {ex.Message}");
             }
         }
+
 
         public async Task<ApiResponse<bool>> UpdateAppointmentServiceStatusAsync(Guid id, AppointmentServiceStatusEnum appointmentServiceStatusEnum)
         {
@@ -109,8 +110,7 @@ namespace ClinictManagementSystem.Services
                 // Kiểm tra nếu chuyển sang Completed thì phải có TestResult.Result
                 if (appointmentServiceStatusEnum == AppointmentServiceStatusEnum.Completed)
                 {
-                    var testResult = await _unitOfWork.TestResultRepository
-                        .FindSingleAsync(tr => tr.AppointmentId == appointmentService.AppointmentId && tr.ServiceId == appointmentService.ServiceId);
+                    var testResult = await _unitOfWork.TestResultRepository.FindSingleAsync(tr => tr.AppointmentServiceId == appointmentService.Id);
 
                     if (testResult == null || string.IsNullOrWhiteSpace(testResult.Result))
                     {
@@ -121,17 +121,16 @@ namespace ClinictManagementSystem.Services
                 if (currentStatus == AppointmentServiceStatusEnum.Assigned && appointmentServiceStatusEnum == AppointmentServiceStatusEnum.InProgress)
                 {
                     // Kiểm tra nếu đã tồn tại TestResult thì không tạo nữa
-                    var existingTestResult = await _unitOfWork.TestResultRepository.FindSingleAsync(tr => tr.AppointmentId == appointmentService.AppointmentId && tr.ServiceId == appointmentService.ServiceId);
+                    var existingTestResult = await _unitOfWork.TestResultRepository.FindSingleAsync(tr => tr.AppointmentServiceId == appointmentService.Id);
 
                     if (existingTestResult == null)
                     {
-                        var testResult = new TestResult
+                        var newTestResult = new TestResult
                         {
-                            AppointmentId = appointmentService.AppointmentId,
-                            ServiceId = appointmentService.ServiceId,
+                            AppointmentServiceId = appointmentService.Id
                         };
 
-                        await _unitOfWork.TestResultRepository.AddAsync(testResult);
+                        await _unitOfWork.TestResultRepository.AddAsync(newTestResult);
                     }
                 }
 
@@ -175,7 +174,27 @@ namespace ClinictManagementSystem.Services
             }
         }
 
+        public async Task<ApiResponse<bool>> DeleteAppointmentServiceByIdAsync(Guid id)
+        {
+            try
+            {
+                var appointmentService = await _unitOfWork.AppointmentServicesRepository.FindSingleAsync(x => x.Id == id && !x.IsDeleted);
 
+                if (appointmentService == null)
+                {
+                    return ResponseHandler.Failure<bool>("Không tìm thấy dịch vụ khám.");
+                }
+
+                appointmentService.IsDeleted = true;
+                await _unitOfWork.SaveChangeAsync();
+
+                return ResponseHandler.Success(true, "Xóa dịch vụ khám thành công.");
+            }
+            catch (Exception ex)
+            {
+                return ResponseHandler.Failure<bool>($"Đã xảy ra lỗi: {ex.Message}");
+            }
+        }
 
     }
 }

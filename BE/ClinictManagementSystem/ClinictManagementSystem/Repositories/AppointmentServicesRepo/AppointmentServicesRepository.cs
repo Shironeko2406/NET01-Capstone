@@ -1,4 +1,5 @@
-﻿using ClinictManagementSystem.Interfaces;
+﻿using ClinictManagementSystem.Enums;
+using ClinictManagementSystem.Interfaces;
 using ClinictManagementSystem.Models.Entity;
 using ClinictManagementSystem.Repositories.DoctorScheduleRepo;
 using ClinictManagementSystem.Repositories.Generic;
@@ -15,6 +16,7 @@ namespace ClinictManagementSystem.Repositories.AppointmentServicesRepo
             IClaimsService claimsService)
             : base(context, timeService, claimsService)
         {
+            _dbContext = context;
         }
         public async Task<List<AppointmentServices>> GetByAppointmentIdWithServiceAsync(Guid appointmentId)
         {
@@ -23,6 +25,5 @@ namespace ClinictManagementSystem.Repositories.AppointmentServicesRepo
                 .Include(x => x.Service)
                 .ToListAsync();
         }
-
     }
 }

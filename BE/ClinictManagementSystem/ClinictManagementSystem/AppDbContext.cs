@@ -87,6 +87,13 @@ namespace ClinictManagementSystem
                 .HasForeignKey(m => m.CreatedBy)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<TestResult>()
+                .HasOne(tr => tr.AppointmentService)
+                .WithOne(aps => aps.TestResult)
+                .HasForeignKey<TestResult>(tr => tr.AppointmentServiceId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
             //--------------------- Dữ liệu thiết lập ----------------------------
 
             // Hardcoded Role GUIDs

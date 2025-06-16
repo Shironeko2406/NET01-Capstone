@@ -12,10 +12,12 @@ namespace ClinictManagementSystem.Services
     public class SpecialtyService : ISpecialtyService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IClaimsService _claimsService;
 
-        public SpecialtyService(IUnitOfWork unitOfWork)
+        public SpecialtyService(IUnitOfWork unitOfWork, IClaimsService claimsService)
         {
             _unitOfWork = unitOfWork;
+            _claimsService = claimsService;
         }
         public async Task<ApiResponse<bool>> CreateSpecialtyAsync(CreateSpecialtyDTO createSpecialtyDTO)
         {
@@ -79,6 +81,30 @@ namespace ClinictManagementSystem.Services
                 return ResponseHandler.Failure<List<GetSpecialtyDTO>>($"Đã xảy ra lỗi: {ex.Message}");
             }
         }
+
+        public async Task<ApiResponse<List<GetSpecialtyDTO>>> GetDoctorSpecialtiesByLoginAsync()
+        {
+            try
+            {
+                var doctorId = _claimsService.GetCurrentUserId();
+
+                var specialties = await _unitOfWork.SpecialtyRepository.GetSpecialtiesByDoctorIdAsync(doctorId);
+
+                var specialtyDtos = specialties.Select(s => new GetSpecialtyDTO
+                {
+                    SpecialtyId = s.SpecialtyId,
+                    Name = s.Name,
+                    Description = s.Description
+                }).ToList();
+
+                return ResponseHandler.Success(specialtyDtos, "Lấy danh sách chuyên khoa của bác sĩ thành công.");
+            }
+            catch (Exception ex)
+            {
+                return ResponseHandler.Failure<List<GetSpecialtyDTO>>($"Đã xảy ra lỗi: {ex.Message}");
+            }
+        }
+
 
         public async Task<ApiResponse<bool>> UpdateSpecialtyByIdAsync(Guid specialtyId, UpdateSpecialtyDTO updateSpecialtyDTO)
         {

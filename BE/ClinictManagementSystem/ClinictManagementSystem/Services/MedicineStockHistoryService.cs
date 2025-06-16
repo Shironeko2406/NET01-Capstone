@@ -38,10 +38,14 @@ namespace ClinictManagementSystem.Services
 
                     case MedicineStockHistoryTypeEnum.Export:
                         stockChange = -createMedicineManageStockDTO.Quantity;
-                        if (medicine.StockQuantity < createMedicineManageStockDTO.Quantity)
+
+                        var availableStock = medicine.StockQuantity - medicine.ReservedQuantity;
+
+                        if (availableStock < createMedicineManageStockDTO.Quantity)
                         {
-                            return ResponseHandler.Failure<bool>("Không đủ thuốc để xuất kho.");
+                            return ResponseHandler.Failure<bool>("Không đủ thuốc để xuất kho (đã có thuốc được đặt giữ).");
                         }
+
                         medicine.StockQuantity += stockChange;
                         break;
 
@@ -60,6 +64,7 @@ namespace ClinictManagementSystem.Services
                     Quantity = stockChange,
                     Type = createMedicineManageStockDTO.Type,
                     Note = createMedicineManageStockDTO.Note,
+                    TransactionCode = await GenerateTransactionCodeAsync()
                 };
 
                 await _unitOfWork.MedicineStockHistoryRepository.AddAsync(history);

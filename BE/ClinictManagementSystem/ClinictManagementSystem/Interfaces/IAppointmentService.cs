@@ -14,6 +14,8 @@ namespace ClinictManagementSystem.Interfaces
         Task<ApiResponse<Pagination<AppointmentManagementDTO>>> GetAppointmentsForAdminAsync(FilterAppointmentAdminDTO filterAppointmentAdminDTO);
         Task<ApiResponse<Pagination<GetAppointmentByDoctorDTO>>> GetAppoinmentFilterByDoctorLoginAsync(FilterAppoinmentByDoctorLoginDTO filterAppoinmentByDoctorLoginDTO);
         Task<ApiResponse<bool>> UpdateAppointmentConclusionAsync(Guid appointmentId, UpdateConclusionDTO updateConclusionDTO);
+        Task<ApiResponse<bool>> UpdateAppointmentSymptomsAsync(Guid appointmentId, UpdateSymptomDTO updateSymptomDTO);
         Task<string> GenerateRandomAppointmentCodeAsync();
+        Task<ApiResponse<GetAppointmentDetailDTO>> GetAppointmentDetailAsync(Guid appointmentId);
     }
 }

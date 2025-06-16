@@ -3,7 +3,7 @@ import Sidebar from '../Components/Sidebar';
 import Navbar from '../Components/Navbar';
 import { Outlet } from 'react-router-dom';
 
-const TempDoctor = () => {
+const TempAdmin = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     return (
         <div className="flex h-screen bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-900 dark:to-emerald-900">
@@ -17,7 +17,9 @@ const TempDoctor = () => {
                     onMenuButtonClick={() => setSidebarOpen(!sidebarOpen)}
                     sidebarOpen={sidebarOpen}
                 />
-                <Outlet />
+                <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
+                    <Outlet />
+                </div>
             </div>
 
             {/* Mobile overlay */}
@@ -31,4 +33,4 @@ const TempDoctor = () => {
     );
 };
 
-export default TempDoctor;
+export default TempAdmin;

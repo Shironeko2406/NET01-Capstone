@@ -37,6 +37,14 @@ namespace ClinictManagementSystem.Controllers
             return await _appointmentServiceDetailService.UpdateAppointmentServiceById(id, appointmentServiceUpdateDTO);
         }
 
+        [SwaggerOperation(Summary = "Xóa dịch vụ xét nghiệm appointment")]
+        [Authorize(Roles = AppRole.Doctor)]
+        [HttpDelete("services/{id}")]
+        public async Task<ApiResponse<bool>> DeleteAppointmentServiceByIdAsync(Guid id)
+        {
+            return await _appointmentServiceDetailService.DeleteAppointmentServiceByIdAsync(id);
+        }
+
         [SwaggerOperation(Summary = "Cập nhật trạng thái dịch vụ xét nghiệm appointment")]
         [Authorize(Roles = AppRole.Doctor + "," + AppRole.LabTechnician)]
         [HttpPatch("services/{id}/status")]

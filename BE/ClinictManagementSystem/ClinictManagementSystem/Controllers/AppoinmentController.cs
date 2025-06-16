@@ -43,9 +43,9 @@ namespace ClinictManagementSystem.Controllers
             return await _appointmentService.GetAppoinmentFilterByUserLoginAsync(filterAppoinmentByPatientLoginDTO);
         }
 
-        [SwaggerOperation(Summary = "quản lý appointments cho admin")]
-        [Authorize(Roles = AppRole.Admin)]
-        [HttpGet("admin")]
+        [SwaggerOperation(Summary = "quản lý appointments cho admin và receptionist")]
+        [Authorize(Roles = AppRole.Admin + "," + AppRole.Receptionist)]
+        [HttpGet]
         public async Task<ApiResponse<Pagination<AppointmentManagementDTO>>> GetAppointmentsForAdminAsync([FromQuery] FilterAppointmentAdminDTO filterAppointmentAdminDTO)
         {
             return await _appointmentService.GetAppointmentsForAdminAsync(filterAppointmentAdminDTO);
@@ -67,6 +67,14 @@ namespace ClinictManagementSystem.Controllers
             return await _appointmentService.UpdateAppointmentConclusionAsync(appointmentId, updateConclusionDTO);
         }
 
+        [SwaggerOperation(Summary = "Cập nhật triệu chứng appointment")]
+        [Authorize(Roles = AppRole.Doctor)]
+        [HttpPatch("{appointmentId}/symptom")]
+        public async Task<ApiResponse<bool>> UpdateAppointmentSymptomsAsync(Guid appointmentId, UpdateSymptomDTO updateSymptomDTO)
+        {
+            return await _appointmentService.UpdateAppointmentSymptomsAsync(appointmentId, updateSymptomDTO);
+        }
+
         [SwaggerOperation(Summary = "Phân quyền Receptionist")]
         [Authorize(Roles = AppRole.Receptionist)]
         [HttpPost("~/api/v1/receptionist/appointment")]
@@ -74,5 +82,14 @@ namespace ClinictManagementSystem.Controllers
         {
             return await _appointmentService.CreateAppointmentByReceptionist(createAppointmentByReceptionistDTO);
         }
+
+        [SwaggerOperation(Summary = "Chi tiết lịch khám")]
+        [Authorize(Roles = AppRole.Admin + "," + AppRole.Receptionist + "," + AppRole.Doctor + "," + AppRole.Patient)]
+        [HttpGet("{appointmentId}")]
+        public async Task<ApiResponse<GetAppointmentDetailDTO>> GetAppointmentDetailAsync(Guid appointmentId)
+        {
+            return await _appointmentService.GetAppointmentDetailAsync(appointmentId);
+        }
+
     }
 }
