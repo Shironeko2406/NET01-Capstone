@@ -27,6 +27,7 @@ namespace ClinictManagementSystem.Services
                 var booked = await appointmentRepo.CountByStatusAsync(AppointmentStatusEnum.Booked);
                 var waiting = await appointmentRepo.CountByStatusAsync(AppointmentStatusEnum.Waiting);
                 var inProgress = await appointmentRepo.CountByStatusAsync(AppointmentStatusEnum.InProgress);
+                var pendingPayment = await appointmentRepo.CountByStatusAsync(AppointmentStatusEnum.PendingPayment);
                 var completed = await appointmentRepo.CountByStatusAsync(AppointmentStatusEnum.Completed);
                 var cancelled = await appointmentRepo.CountByStatusAsync(AppointmentStatusEnum.Cancelled);
                 var todayCount = await appointmentRepo.CountTodayAsync(today);
@@ -39,6 +40,7 @@ namespace ClinictManagementSystem.Services
                     BookedCount = booked,
                     WaitingCount = waiting,
                     InProgressCount = inProgress,
+                    PendingPaymentCount = pendingPayment,
                     CompletedCount = completed,
                     CancelledCount = cancelled,
                     TodayCount = todayCount,

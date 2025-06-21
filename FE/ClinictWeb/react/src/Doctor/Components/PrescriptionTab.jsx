@@ -4,55 +4,64 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Edit, FileText, Pill, Plus, Save, Trash2 } from 'lucide-react';
 import { Form, Input } from 'antd';
-import { useSelector } from 'react-redux';
-import { formatCurrency } from '../../Utils/Format/FormatCurrency';
+import { useDispatch, useSelector } from 'react-redux';
+import { formatCurrencyVN } from '../../Utils/Format/FormatCurrency';
+import { setIsPrescriptionSaved } from '../../Redux/ReducerAPI/AppointmentReducer';
+import { useEffect } from 'react';
+import { getMedicineUnitTranslate } from '../../Utils/Translate&FormatColor/MedicineUtil';
 
 const { TextArea } = Input;
 
 const PrescriptionTab = ({
     prescriptionForm,
-    isPrescriptionSaved,
-    setIsPrescriptionSaved,
     setIsPrescriptionDialogOpen,
     handleRemoveMedication,
     handleSavePrescription,
 }) => {
-    const { prescription } = useSelector(state => state.AppointmentReducer);
+    const { appointmentInfo, prescription, isPrescriptionSaved } = useSelector(
+        state => state.AppointmentReducer
+    );
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        if (prescription?.notes) {
+            prescriptionForm.setFieldsValue({ notes: prescription.notes });
+        }
+    }, [prescription?.notes]);
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Đơn thuốc */}
-            <Card className="shadow-sm border-slate-200">
-                <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-t-lg">
-                    <div className="flex items-center justify-between">
-                        <CardTitle className="flex items-center gap-3">
-                            <div className="p-2 bg-green-100 rounded-lg">
-                                <Pill className="h-5 w-5 text-green-600" />
-                            </div>
-                            Đơn thuốc
-                        </CardTitle>
-                        {!isPrescriptionSaved ? (
+            <Card className="shadow-sm border-slate-200 p-0">
+                <CardHeader className="py-4 bg-gradient-to-r from-green-50 via-green-50 to-emerald-50 rounded-t-lg flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-3 text-base font-semibold text-gray-800">
+                        <div className="p-2 bg-green-100 rounded-lg shadow-sm">
+                            <Pill className="h-5 w-5 text-green-600" />
+                        </div>
+                        Đơn thuốc
+                    </CardTitle>
+                    {appointmentInfo.status === 'InProgress' &&
+                        (!isPrescriptionSaved ? (
                             <Button
                                 onClick={() => setIsPrescriptionDialogOpen(true)}
-                                className="gap-2 bg-green-600 hover:bg-green-700"
+                                className="gap-2 bg-gradient-to-r from-green-600 to-green-600 hover:from-green-700 hover:to-green-700 shadow-md transition-all duration-200 hover:shadow-lg"
                             >
                                 <Plus className="h-4 w-4" />
                                 Thêm thuốc
                             </Button>
                         ) : (
                             <Button
-                                onClick={() => setIsPrescriptionSaved(false)}
+                                onClick={() => dispatch(setIsPrescriptionSaved(false))}
                                 variant="outline"
-                                className="gap-2"
+                                className="gap-2 border-green-600 text-green-600 hover:bg-green-50 shadow-md transition-all duration-200 hover:shadow-lg"
                             >
                                 <Edit className="h-4 w-4" />
                                 Chỉnh sửa
                             </Button>
-                        )}
-                    </div>
+                        ))}
                 </CardHeader>
                 <CardContent className="p-6">
-                    {prescription.prescriptionDetails.length > 0 ? (
+                    {prescription?.prescriptionDetails.length > 0 ? (
                         <div className="space-y-4">
                             {prescription.prescriptionDetails.map(medication => (
                                 <div
@@ -85,7 +94,8 @@ const PrescriptionTab = ({
                                                         Số lượng:
                                                     </span>
                                                     <span className="ml-2 font-medium">
-                                                        {medication.quantity} {medication.unit}
+                                                        {medication.quantity}{' '}
+                                                        {getMedicineUnitTranslate(medication.unit)}
                                                     </span>
                                                 </div>
                                                 <div>
@@ -101,7 +111,7 @@ const PrescriptionTab = ({
                                                         Thành tiền:
                                                     </span>
                                                     <span className="ml-2 font-bold text-emerald-600">
-                                                        {formatCurrency(
+                                                        {formatCurrencyVN(
                                                             medication.price * medication.quantity
                                                         )}
                                                     </span>
@@ -148,10 +158,10 @@ const PrescriptionTab = ({
             </Card>
 
             {/* Hướng dẫn sử dụng thuốc */}
-            <Card className="shadow-sm border-slate-200">
-                <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-lg">
-                    <CardTitle className="flex items-center gap-3">
-                        <div className="p-2 bg-blue-100 rounded-lg">
+            <Card className="shadow-sm border-slate-200 p-0">
+                <CardHeader className="py-4 bg-gradient-to-r from-blue-50 via-blue-50 to-indigo-50 rounded-t-lg flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-3 text-base font-semibold text-gray-800">
+                        <div className="p-2 bg-blue-100 rounded-lg shadow-sm">
                             <FileText className="h-5 w-5 text-blue-600" />
                         </div>
                         Hướng dẫn sử dụng thuốc
@@ -162,16 +172,19 @@ const PrescriptionTab = ({
                         form={prescriptionForm}
                         layout="vertical"
                         onFinish={handleSavePrescription}
-                        initialValues={{
-                            instructions: prescription.notes,
-                        }}
                     >
-                        <Form.Item label="Hướng dẫn sử dụng thuốc" name="instructions">
+                        <Form.Item
+                            label={
+                                <span className="font-medium text-gray-700">
+                                    Hướng dẫn sử dụng thuốc
+                                </span>
+                            }
+                            name="notes"
+                        >
                             <TextArea
-                                rows={6}
+                                rows={4}
                                 placeholder="Hướng dẫn cách sử dụng thuốc, lưu ý đặc biệt..."
                                 disabled={isPrescriptionSaved}
-                                className="resize-none focus:ring-2 focus:ring-blue-500"
                             />
                         </Form.Item>
                     </Form>

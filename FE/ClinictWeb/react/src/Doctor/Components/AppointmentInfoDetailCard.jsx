@@ -2,8 +2,12 @@ import React, { memo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, MapPin, Heart, User, Phone, AlertTriangle } from 'lucide-react';
-import { calculateAge, formatDate } from '../../Utils/Format/FormatDate';
+import { calculateAge, formatAppointmentDate } from '../../Utils/Format/FormatDate';
 import { useSelector } from 'react-redux';
+import {
+    getAppointmentStatusColor,
+    getAppointmentStatusTranslate,
+} from '../../Utils/Translate&FormatColor/AppointmentUtil';
 
 const AppointmentInfoDetailCard = () => {
     const { appointmentInfo } = useSelector(state => state.AppointmentReducer);
@@ -26,25 +30,25 @@ const AppointmentInfoDetailCard = () => {
                             <div className="flex items-center gap-3">
                                 <span className="text-slate-600 min-w-[60px]">Họ tên:</span>
                                 <span className="font-semibold text-slate-900">
-                                    {appointmentInfo.patientName}
+                                    {appointmentInfo?.patientName}
                                 </span>
                             </div>
                             <div className="flex items-center gap-3">
                                 <span className="text-slate-600 min-w-[60px]">Tuổi:</span>
                                 <span className="font-medium text-slate-800">
-                                    {calculateAge(appointmentInfo.patientDob)} tuổi
+                                    {calculateAge(appointmentInfo?.patientDob)} tuổi
                                 </span>
                             </div>
                             <div className="flex items-center gap-3">
                                 <span className="text-slate-600 min-w-[60px]">Giới tính:</span>
                                 <span className="font-medium text-slate-800">
-                                    {appointmentInfo.patientGender === 'Female' ? 'Nữ' : 'Nam'}
+                                    {appointmentInfo?.patientGender === 'Female' ? 'Nữ' : 'Nam'}
                                 </span>
                             </div>
                             <div className="flex items-center gap-3">
                                 <Phone className="h-4 w-4 text-slate-500" />
                                 <span className="font-medium text-slate-800">
-                                    {appointmentInfo.patientPhone}
+                                    {appointmentInfo?.patientPhone}
                                 </span>
                             </div>
                         </div>
@@ -62,24 +66,27 @@ const AppointmentInfoDetailCard = () => {
                             <div className="flex items-center gap-3">
                                 <Calendar className="h-4 w-4 text-slate-500" />
                                 <span className="font-medium text-slate-800">
-                                    {formatDate(appointmentInfo.appointmentDate)}
+                                    {formatAppointmentDate(appointmentInfo?.appointmentDate)}
                                 </span>
                             </div>
                             <div className="flex items-center gap-3">
                                 <Clock className="h-4 w-4 text-slate-500" />
                                 <span className="font-medium text-slate-800">
-                                    {appointmentInfo.startTime.slice(0, 5)} -{' '}
-                                    {appointmentInfo.endTime.slice(0, 5)}
+                                    {appointmentInfo?.startTime.slice(0, 5)} -{' '}
+                                    {appointmentInfo?.endTime.slice(0, 5)}
                                 </span>
                             </div>
                             <div className="flex items-center gap-3">
                                 <MapPin className="h-4 w-4 text-slate-500" />
                                 <span className="font-medium text-slate-800">
-                                    Phòng khám {appointmentInfo.specialtyName}
+                                    Phòng khám {appointmentInfo?.specialtyName}
                                 </span>
                             </div>
-                            <Badge variant="secondary" className="w-fit">
-                                {appointmentInfo.status}
+                            <Badge
+                                className={getAppointmentStatusColor(appointmentInfo?.status)}
+                                variant="secondary"
+                            >
+                                {getAppointmentStatusTranslate(appointmentInfo?.status)}
                             </Badge>
                         </div>
                     </div>
@@ -93,7 +100,7 @@ const AppointmentInfoDetailCard = () => {
                             <h3 className="text-lg font-semibold text-slate-900">Lý do khám</h3>
                         </div>
                         <p className="text-slate-700 bg-slate-50 p-3 rounded-lg">
-                            {appointmentInfo.note}
+                            {appointmentInfo?.note}
                         </p>
                         <div>
                             <h4 className="text-sm font-medium text-slate-600 mb-2 flex items-center gap-2">
@@ -104,7 +111,7 @@ const AppointmentInfoDetailCard = () => {
                                 variant="outline"
                                 className="text-xs bg-blue-50 text-blue-700 border-blue-200"
                             >
-                                {appointmentInfo.doctorName} - {appointmentInfo.specialtyName}
+                                {appointmentInfo?.doctorName} - {appointmentInfo?.specialtyName}
                             </Badge>
                         </div>
                     </div>

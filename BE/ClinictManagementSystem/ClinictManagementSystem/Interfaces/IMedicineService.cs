@@ -10,6 +10,7 @@ namespace ClinictManagementSystem.Interfaces
     {
         Task<ApiResponse<bool>> CreateMedicineAsync(CreateMedicineDTO createMedicineDTO);
         Task<ApiResponse<Pagination<GetMedicineFilterDTO>>> GetMedicineFilterAsync(FilterMedicineDTO filterMedicineDTO);
+        Task<ApiResponse<List<GetMedicineDTO>>> GetMedicineAsync();
         Task<string> GenerateMedicineCodeAsync();
         Task<bool> UpdateReservedQuantityAsync(Guid medicineId, int delta, bool ignoreStockCheck = false);
     }

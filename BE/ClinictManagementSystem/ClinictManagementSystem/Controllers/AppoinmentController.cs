@@ -29,6 +29,7 @@ namespace ClinictManagementSystem.Controllers
         }
 
         [SwaggerOperation(Summary = "Cập nhật trạng thái lịch khám")]
+        [Authorize(Roles = AppRole.Admin + "," + AppRole.Doctor)]
         [HttpPut("{id}/status")]
         public async Task<ApiResponse<bool>> UpdateAppointmentStatusAsync(Guid id, AppointmentStatusEnum appointmentStatusEnum)
         {
@@ -83,8 +84,15 @@ namespace ClinictManagementSystem.Controllers
             return await _appointmentService.CreateAppointmentByReceptionist(createAppointmentByReceptionistDTO);
         }
 
+        [SwaggerOperation(Summary = "Phân quyền LabTechnician")]
+        //[Authorize(Roles = AppRole.Receptionist)]
+        [HttpGet("labTech")]
+        public async Task<ApiResponse<Pagination<GetAppointmentForLabTech>>> GetAppointmentsForLabTechnicianAsync([FromQuery]FilterAppointmentLabTechDTO filterAppointmentLabTechDTO)
+        {
+            return await _appointmentService.GetAppointmentsForLabTechnicianAsync(filterAppointmentLabTechDTO);
+        }
+
         [SwaggerOperation(Summary = "Chi tiết lịch khám")]
-        [Authorize(Roles = AppRole.Admin + "," + AppRole.Receptionist + "," + AppRole.Doctor + "," + AppRole.Patient)]
         [HttpGet("{appointmentId}")]
         public async Task<ApiResponse<GetAppointmentDetailDTO>> GetAppointmentDetailAsync(Guid appointmentId)
         {

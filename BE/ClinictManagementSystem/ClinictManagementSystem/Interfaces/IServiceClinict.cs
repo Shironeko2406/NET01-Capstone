@@ -9,7 +9,7 @@ namespace ClinictManagementSystem.Interfaces
         Task<ApiResponse<bool>> DeleteServiceByIdAsync(Guid serviceId);
         Task<ApiResponse<bool>> UpdateServiceByIdAsync(Guid serviceId, UpdateServiceDTO updateServiceDto);
         Task<ApiResponse<Pagination<GetServiceDTO>>> GetServiceAsync(ServiceFiltercs serviceFiltercs);
-        Task<ApiResponse<List<GetAllServiceDTO>>> GetAllServiceAsync();
+        Task<ApiResponse<List<GetServiceDTO>>> GetAllServiceAsync();
 
     }
 }

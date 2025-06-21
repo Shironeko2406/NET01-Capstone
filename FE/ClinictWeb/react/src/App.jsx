@@ -4,9 +4,7 @@ import TempAdmin from './Admin/TempUIAdmin/TempAdmin';
 import Login from './Admin/Page/Login';
 import Register from './Admin/Page/Register';
 import TempDoctor from './Doctor/TempUIDoctor/TempDoctor';
-import HomeDoctor from './Doctor/Page/HomeDoctor';
 import TempLabTechnician from './LabTechnician/TemUILabTechnician/TempLabTechnician';
-import HomeLabTechnician from './LabTechnician/Page/HomeLabTechnician';
 import TempReceptionist from './Receptionist/TempUIReceptionist/TempReceptionist';
 import ProtectedRoute from './Utils/ProtectedRoute';
 import AnonymousRoute from './Utils/AnonymousRoute';
@@ -21,7 +19,8 @@ import BookAppointmentForPatient from './Receptionist/Page/BookAppointmentForPat
 import AppointmentManagement from './Receptionist/Page/AppointmentManagement';
 import AppointmentDoctor from './Doctor/Page/AppointmentDoctor';
 import AppointmentDetail from './Doctor/Page/AppointmentDetail';
-import AppointmentDetail2 from './Doctor/Page/AppointmentDetail2';
+import AppointmentLabTech from './LabTechnician/Page/AppointmentLabTech';
+import TestResultOfLabService from './LabTechnician/Page/TestResultOfAppointment';
 
 function App() {
     return (
@@ -53,16 +52,19 @@ function App() {
                 {/* Doctor routes */}
                 <Route element={<ProtectedRoute requiredRole="Doctor" />}>
                     <Route path="doctor" element={<TempDoctor />}>
-                        <Route path="" element={<HomeDoctor />} />
-                        <Route path="appointment" element={<AppointmentDoctor />} />
-                        <Route path="appointment/detail" element={<AppointmentDetail2 />} />
+                        <Route path="" element={<AppointmentDoctor />} />
+                        <Route path="appointment/detail" element={<AppointmentDetail />} />
                     </Route>
                 </Route>
 
                 {/* Lab Technician routes */}
                 <Route element={<ProtectedRoute requiredRole="LabTechnician" />}>
                     <Route path="labTech" element={<TempLabTechnician />}>
-                        <Route index element={<HomeLabTechnician />} />
+                        <Route path="" element={<AppointmentLabTech />} />
+                        <Route
+                            path="appointment/:appointmentId/labService"
+                            element={<TestResultOfLabService />}
+                        />
                     </Route>
                 </Route>
 

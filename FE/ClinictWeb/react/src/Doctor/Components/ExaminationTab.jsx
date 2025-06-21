@@ -1,43 +1,38 @@
-import React, { memo } from 'react';
-import { useSelector } from 'react-redux';
-import { TabsContent } from '@/components/ui/tabs';
+import React, { memo, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Edit, Save, CheckCircle, Stethoscope } from 'lucide-react';
 import { Form, Input } from 'antd';
 import { Label } from '@/components/ui/label';
+import { setIsExaminationSaved } from '../../Redux/ReducerAPI/AppointmentReducer';
 
 const { TextArea } = Input;
 
-const ExaminationTab = ({
-    examinationForm,
-    isExaminationSaved,
-    setIsExaminationSaved,
-    handleSaveExamination,
-}) => {
-    const { appointmentInfo } = useSelector(state => state.AppointmentReducer);
+const ExaminationTab = ({ examinationForm, handleSaveExamination }) => {
+    const { appointmentInfo, isExaminationSaved } = useSelector(state => state.AppointmentReducer);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        if (appointmentInfo?.symptoms) {
+            examinationForm.setFieldsValue({ symptoms: appointmentInfo.symptoms });
+        }
+    }, [appointmentInfo?.symptoms]);
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Form ghi triệu chứng */}
             <Card className="shadow-sm border-slate-200 p-0">
-                <CardHeader className="py-4 bg-blue-50 rounded-t-lg flex items-center">
+                <CardHeader className="py-4 bg-gradient-to-r from-blue-50 via-blue-50 to-blue-50 rounded-t-lg flex items-center justify-between">
                     <CardTitle className="flex items-center gap-3 text-base font-semibold text-slate-800">
-                        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-100">
-                            <Stethoscope className="h-4 w-4 text-blue-600" />
+                        <div className="p-2 bg-blue-100 rounded-lg shadow-sm">
+                            <Stethoscope className="h-5 w-5 text-blue-600" />
                         </div>
                         Ghi chú triệu chứng chính
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="px-6 pb-6 space-y-4">
-                    <Form
-                        form={examinationForm}
-                        layout="vertical"
-                        onFinish={handleSaveExamination}
-                        initialValues={{
-                            symptoms: appointmentInfo.symptoms || '',
-                        }}
-                    >
+                    <Form form={examinationForm} layout="vertical" onFinish={handleSaveExamination}>
                         <Form.Item
                             label={
                                 <span className="font-medium text-gray-700">Triệu chứng khám</span>
@@ -50,41 +45,41 @@ const ExaminationTab = ({
                             <TextArea
                                 rows={4}
                                 placeholder="Mô tả triệu chứng chính của bệnh nhân..."
-                                className="resize-none text-sm"
                                 disabled={isExaminationSaved}
                             />
                         </Form.Item>
                     </Form>
 
                     <div className="pt-2">
-                        {!isExaminationSaved ? (
-                            <Button
-                                onClick={() => examinationForm.submit()}
-                                className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg"
-                            >
-                                <Save className="h-4 w-4" />
-                                Lưu triệu chứng
-                            </Button>
-                        ) : (
-                            <Button
-                                onClick={() => setIsExaminationSaved(false)}
-                                className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg"
-                            >
-                                <Edit className="h-4 w-4" />
-                                Chỉnh sửa
-                            </Button>
-                        )}
+                        {appointmentInfo.status === 'InProgress' &&
+                            (!isExaminationSaved ? (
+                                <Button
+                                    onClick={() => examinationForm.submit()}
+                                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg"
+                                >
+                                    <Save className="h-4 w-4" />
+                                    Lưu triệu chứng
+                                </Button>
+                            ) : (
+                                <Button
+                                    onClick={() => dispatch(setIsExaminationSaved(false))}
+                                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg"
+                                >
+                                    <Edit className="h-4 w-4" />
+                                    Chỉnh sửa
+                                </Button>
+                            ))}
                     </div>
                 </CardContent>
             </Card>
 
             {/* Hiển thị triệu chứng đã lưu */}
-            {appointmentInfo.symptoms && (
+            {appointmentInfo?.symptoms && (
                 <Card className="shadow-sm border-emerald-200 p-0">
-                    <CardHeader className="py-4 bg-emerald-50 rounded-t-lg flex items-center">
+                    <CardHeader className="py-4 bg-gradient-to-r from-emerald-50 via-emerald-50 to-emerald-50 rounded-t-lg flex items-center justify-between">
                         <CardTitle className="flex items-center gap-3 text-base font-semibold text-emerald-800">
-                            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-100">
-                                <CheckCircle className="h-4 w-4 text-emerald-600" />
+                            <div className="p-2 bg-emerald-100 rounded-lg shadow-sm">
+                                <CheckCircle className="h-5 w-5 text-emerald-600" />
                             </div>
                             Thông tin đã lưu
                         </CardTitle>

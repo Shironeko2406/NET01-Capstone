@@ -2,10 +2,10 @@
 
 namespace ClinictManagementSystem.Models.DTO.MedicineDTO
 {
-    public class GetMedicineFilterDTO
+    public class GetMedicineDTO
     {
         public Guid MedicineId { get; set; }
-        public string MedicineCode { get; set; } 
+        public string MedicineCode { get; set; }
         public string Name { get; set; }
         public Guid MedicineTypeId { get; set; }
         public string MedicineTypeName { get; set; }
@@ -15,6 +15,6 @@ namespace ClinictManagementSystem.Models.DTO.MedicineDTO
 
         public int StockQuantity { get; set; }
         public int MinQuantity { get; set; }
-        public MedicineStatusEnum Status { get; set; } 
+        public MedicineStatusEnum Status { get; set; }
     }
 }

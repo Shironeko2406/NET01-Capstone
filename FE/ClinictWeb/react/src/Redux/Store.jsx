@@ -9,6 +9,9 @@ import MedicineReducer from './ReducerAPI/MedicineReducer';
 import MedicineStockHistoryReducer from './ReducerAPI/MedicineStockHistoryReducer';
 import AppointmentReducer from './ReducerAPI/AppointmentReducer';
 import StatisticReducer from './ReducerAPI/StatisticReducer';
+import AppointmentServiceReducer from './ReducerAPI/AppointmentServiceReducer';
+import PrescriptionReducer from './ReducerAPI/PrescriptionReducer';
+import TestResultReducer from './ReducerAPI/TestResultReducer';
 
 export const store = configureStore({
     reducer: {
@@ -23,5 +26,8 @@ export const store = configureStore({
         MedicineStockHistoryReducer,
         AppointmentReducer,
         StatisticReducer,
+        AppointmentServiceReducer,
+        PrescriptionReducer,
+        TestResultReducer,
     },
 });

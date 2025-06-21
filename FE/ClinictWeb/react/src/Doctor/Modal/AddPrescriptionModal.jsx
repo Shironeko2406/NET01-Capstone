@@ -12,7 +12,12 @@ import {
 } from '@/components/ui/dialog';
 import { Pill, Plus, CheckCircle, AlertCircle, AlertTriangle } from 'lucide-react';
 import { useSelector } from 'react-redux';
-import { formatCurrency } from '../../Utils/Format/FormatCurrency';
+import {
+    getMedicineStatusColor,
+    getMedicineStatusTranslate,
+    getMedicineUnitTranslate,
+} from '../../Utils/Translate&FormatColor/MedicineUtil';
+import { formatCurrencyVN } from '../../Utils/Format/FormatCurrency';
 
 const PrescriptionModal = ({
     isOpen,
@@ -24,8 +29,6 @@ const PrescriptionModal = ({
     handleAddMedication,
     handleDosageInstructionsChange,
     handleDosageInstructionsBlur,
-    getStatusColor,
-    getStatusText,
 }) => {
     const { prescription } = useSelector(state => state.AppointmentReducer);
     const { medicines } = useSelector(state => state.MedicineReducer);
@@ -64,7 +67,7 @@ const PrescriptionModal = ({
                 <div className="flex-1 overflow-hidden">
                     <div className="space-y-3 max-h-[70vh] overflow-y-auto pr-2">
                         {filteredMedicines.map(medication => {
-                            const existingMedicine = prescription.prescriptionDetails.find(
+                            const existingMedicine = prescription?.prescriptionDetails.find(
                                 m => m.medicineId === medication.medicineId
                             );
                             const isSelected = !!existingMedicine;
@@ -94,12 +97,12 @@ const PrescriptionModal = ({
                                                     {medication.medicineCode}
                                                 </Badge>
                                                 <Badge
-                                                    variant="secondary"
-                                                    className={`text-xs flex-shrink-0 ${getStatusColor(
+                                                    className={`text-xs ${getMedicineStatusColor(
                                                         medication.status
                                                     )}`}
+                                                    variant="secondary"
                                                 >
-                                                    {getStatusText(medication.status)}
+                                                    {getMedicineStatusTranslate(medication.status)}
                                                 </Badge>
                                                 {isSelected && (
                                                     <Badge className="text-xs bg-green-600 text-white flex-shrink-0">
@@ -121,14 +124,14 @@ const PrescriptionModal = ({
                                                 <div>
                                                     <span className="text-slate-600">Đơn vị:</span>
                                                     <span className="ml-2 font-medium">
-                                                        {medication.unit}
+                                                        {getMedicineUnitTranslate(medication.unit)}
                                                     </span>
                                                 </div>
                                                 <div>
                                                     <span className="text-slate-600">Giá:</span>
                                                     <span className="ml-2 font-bold text-emerald-600">
-                                                        {formatCurrency(medication.price)}/
-                                                        {medication.unit}
+                                                        {formatCurrencyVN(medication.price)}/
+                                                        {getMedicineUnitTranslate(medication.unit)}
                                                     </span>
                                                 </div>
                                                 <div className="flex items-center gap-2">
@@ -145,7 +148,8 @@ const PrescriptionModal = ({
                                                             medication.minQuantity && (
                                                             <AlertCircle className="h-3 w-3" />
                                                         )}
-                                                        {medication.stockQuantity} {medication.unit}
+                                                        {medication.stockQuantity}{' '}
+                                                        {getMedicineUnitTranslate(medication.unit)}
                                                     </span>
                                                 </div>
                                             </div>
@@ -161,7 +165,9 @@ const PrescriptionModal = ({
                                                     <div className="text-sm text-green-800 flex flex-col sm:flex-row sm:gap-4">
                                                         <span>
                                                             Số lượng: {existingMedicine.quantity}{' '}
-                                                            {medication.unit}
+                                                            {getMedicineUnitTranslate(
+                                                                medication.unit
+                                                            )}
                                                         </span>
                                                         <span>
                                                             Cách dùng:{' '}
@@ -286,7 +292,7 @@ const PrescriptionModal = ({
                 <DialogFooter className="mt-auto p-4 border-t border-gray-200 flex flex-col sm:flex-row gap-2 sm:gap-0 justify-center">
                     <div className="flex items-center text-sm text-slate-600 mb-2 sm:mb-0 sm:mr-auto">
                         <span>Tổng: {filteredMedicines.length} thuốc</span>
-                        {prescription.prescriptionDetails.length > 0 && (
+                        {prescription?.prescriptionDetails.length > 0 && (
                             <span className="ml-4 text-green-600 font-medium">
                                 Đã chọn: {prescription.prescriptionDetails.length} thuốc
                             </span>

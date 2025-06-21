@@ -10,11 +10,13 @@ namespace ClinictManagementSystem.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IClaimsService _claimsService;
+        private readonly ICurrentTime _currentTime;
 
-        public TestResultService(IUnitOfWork unitOfWork, IClaimsService claimsService)
+        public TestResultService(IUnitOfWork unitOfWork, IClaimsService claimsService, ICurrentTime currentTime)
         {
             _unitOfWork = unitOfWork;
             _claimsService = claimsService;
+            _currentTime = currentTime;
         }
 
         public async Task<ApiResponse<bool>> UpdateTestResultAsync(Guid testResultId, UpdateTestResultDTO updateTestResultDTO)
@@ -23,21 +25,21 @@ namespace ClinictManagementSystem.Services
             {
                 var testResult = await _unitOfWork.TestResultRepository.GetByIdAsync(testResultId);
                 if (testResult == null)
-                    return ResponseHandler.Failure<bool>("Test result not found.");
+                    return ResponseHandler.Failure<bool>("Không tìm thấy kết quả xét nghiệm.");
 
                 testResult.Result = updateTestResultDTO.Result;
-                testResult.ResultDate = updateTestResultDTO.ResultDate;
+                testResult.ResultDate = _currentTime.GetCurrentTime();
                 var userId = _claimsService.GetCurrentUserId(); 
                 testResult.UpdateBy = userId;
 
                 await _unitOfWork.TestResultRepository.UpdateAsync(testResult);
                 await _unitOfWork.SaveChangeAsync();
 
-                return ResponseHandler.Success(true, "Test result updated successfully.");
+                return ResponseHandler.Success(true, "Cập nhật kết quả xét nghiệm thành công.");
             }
             catch (Exception ex)
             {
-                return ResponseHandler.Failure<bool>($"An error occurred: {ex.Message}");
+                return ResponseHandler.Failure<bool>($"Đã xảy ra lỗi: {ex.Message}");
             }
         }
     }

@@ -49,7 +49,7 @@ namespace ClinictManagementSystem.Controllers
         }
 
         [HttpGet("all")]
-        public async Task<ApiResponse<List<GetAllServiceDTO>>> GetAllServiceAsync()
+        public async Task<ApiResponse<List<GetServiceDTO>>> GetAllServiceAsync()
         {
             return await _serviceClinict.GetAllServiceAsync();
         }

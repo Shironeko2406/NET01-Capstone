@@ -22,7 +22,6 @@ const AddLabServiceModal = ({
     open,
     onOpenChange,
     selectedServicesInDialog,
-    serviceNotesRef,
     handleServiceSelectionChange,
     handleNoteChange,
     handleNoteBlur,
@@ -83,7 +82,7 @@ const AddLabServiceModal = ({
                                         </div>
                                     </div>
                                     <span className="font-bold text-emerald-600 text-lg">
-                                        {formatCurrency(service.price)}
+                                        {formatCurrency(service.price)}₫
                                     </span>
                                 </div>
 
@@ -94,9 +93,6 @@ const AddLabServiceModal = ({
                                         </Label>
                                         <TextArea
                                             placeholder="Nhập ghi chú cho dịch vụ xét nghiệm..."
-                                            defaultValue={
-                                                serviceNotesRef.current[service.serviceId] || ''
-                                            }
                                             onChange={e =>
                                                 handleNoteChange(service.serviceId, e.target.value)
                                             }
@@ -104,7 +100,6 @@ const AddLabServiceModal = ({
                                                 handleNoteBlur(service.serviceId, e.target.value)
                                             }
                                             rows={2}
-                                            className="resize-none text-sm"
                                         />
                                     </div>
                                 )}

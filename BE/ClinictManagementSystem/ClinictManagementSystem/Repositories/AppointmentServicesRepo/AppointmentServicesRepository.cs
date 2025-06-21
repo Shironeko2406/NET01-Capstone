@@ -23,6 +23,7 @@ namespace ClinictManagementSystem.Repositories.AppointmentServicesRepo
             return await _dbContext.AppointmentServices
                 .Where(x => x.AppointmentId == appointmentId && !x.IsDeleted)
                 .Include(x => x.Service)
+                .Include(x => x.TestResult)
                 .ToListAsync();
         }
     }
