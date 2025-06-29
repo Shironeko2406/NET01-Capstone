@@ -63,7 +63,6 @@ namespace ClinictManagementSystem.Repositories.Generic
             if (entity != null)
             {
                 _dbSet.Remove(entity);
-                await _context.SaveChangesAsync();
             }
         }
 
@@ -155,6 +154,20 @@ namespace ClinictManagementSystem.Repositories.Generic
         public async Task<TEntity?> FindSingleAsync(Expression<Func<TEntity, bool>> predicate)
         {
             return await _dbSet.FirstOrDefaultAsync(predicate);
+        }
+
+        public async Task<int> CountAsync(Expression<Func<TEntity, bool>>? predicate = null)
+        {
+            if (predicate == null)
+            {
+                return await _dbSet.CountAsync();
+            }
+            return await _dbSet.CountAsync(predicate);
+        }
+
+        public void HardRemoveRange(List<TEntity> entities)
+        {
+            _dbSet.RemoveRange(entities);
         }
 
     }

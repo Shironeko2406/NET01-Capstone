@@ -15,7 +15,7 @@ namespace ClinictManagementSystem.Models.Entity
         public Guid DoctorId { get; set; }
         [ForeignKey("DoctorId")]
         public Users Doctor { get; set; }
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
 
         public ICollection<PrescriptionDetails> PrescriptionDetails { get; set; }
     }

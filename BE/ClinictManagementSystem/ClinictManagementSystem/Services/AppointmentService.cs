@@ -4,7 +4,11 @@ using ClinictManagementSystem.Handler;
 using ClinictManagementSystem.Helper;
 using ClinictManagementSystem.Interfaces;
 using ClinictManagementSystem.Models.DTO.AppoinmentDTO;
+using ClinictManagementSystem.Models.DTO.AppointmentServicesDTO;
 using ClinictManagementSystem.Models.DTO.EmailDTO;
+using ClinictManagementSystem.Models.DTO.PrescriptionDetailsDTO;
+using ClinictManagementSystem.Models.DTO.PrescriptionDTO;
+using ClinictManagementSystem.Models.DTO.TestResultDTO;
 using ClinictManagementSystem.Models.Entity;
 using ClinictManagementSystem.Repositories.UnitOfWork;
 using System.Linq.Expressions;
@@ -18,18 +22,21 @@ namespace ClinictManagementSystem.Services
         private readonly IClaimsService _claimService;
         private readonly IUserService _userService;
         private readonly IEmailService _emailService;
+        private readonly IInvoiceService _invoiceService;
         public AppointmentService(
             IUnitOfWork unitOfWork,
             ICurrentTime currentTime,
             IClaimsService claimService,
             IUserService userService,
-            IEmailService emailService)
+            IEmailService emailService,
+            IInvoiceService invoiceService)
         {
             _unitOfWork = unitOfWork;
             _currentTime = currentTime;
             _claimService = claimService;
             _userService = userService;
             _emailService = emailService;
+            _invoiceService = invoiceService;
         }
 
         public async Task<ApiResponse<bool>> CreateAppoinment(CreateAppoinmentDTO createAppoinmentDTO)
@@ -76,7 +83,7 @@ namespace ClinictManagementSystem.Services
         {
             try
             {
-                var appointment = await _unitOfWork.AppoinmentRepository.GetByIdAsync(appointmentId);
+                var appointment = await _unitOfWork.AppoinmentRepository.GetAppointmentDetailByIdAsync(appointmentId);
 
                 if (appointment == null)
                     return ResponseHandler.Failure<bool>("Không tìm thấy lịch hẹn.");
@@ -89,7 +96,7 @@ namespace ClinictManagementSystem.Services
                 {
                     case AppointmentStatusEnum.Cancelled:
                         if (currentStatus != AppointmentStatusEnum.Booked)
-                            return ResponseHandler.Failure<bool>("Chỉ có thể huỷ lịch ở trạng thái Booked.");
+                            return ResponseHandler.Failure<bool>("Chỉ có thể huỷ lịch ở trạng thái Đã đặt lịch.");
 
                         if ((appointmentDateTime - now).TotalHours < 24)
                             return ResponseHandler.Failure<bool>("Bạn chỉ có thể huỷ lịch trước ít nhất 24 giờ.");
@@ -97,20 +104,69 @@ namespace ClinictManagementSystem.Services
 
                     case AppointmentStatusEnum.Waiting:
                         if (currentStatus != AppointmentStatusEnum.Booked)
-                            return ResponseHandler.Failure<bool>("Chỉ có thể chuyển sang Waiting từ trạng thái Booked.");
+                            return ResponseHandler.Failure<bool>("Chỉ có thể chuyển sang Đang chờ khám từ trạng thái Đã đặt lịch.");
 
                         if (now < appointmentDateTime)
-                            return ResponseHandler.Failure<bool>("Chỉ có thể chuyển sang trạng thái Waiting khi đến thời gian khám.");
+                            return ResponseHandler.Failure<bool>("Chỉ có thể chuyển sang trạng thái Đang chờ khám khi đến thời gian khám.");
                         break;
 
                     case AppointmentStatusEnum.InProgress:
                         if (currentStatus != AppointmentStatusEnum.Waiting)
-                            return ResponseHandler.Failure<bool>("Chỉ có thể chuyển sang InProgress từ trạng thái Waiting.");
+                            return ResponseHandler.Failure<bool>("Chỉ có thể chuyển sang Đang khám từ trạng thái Đang chờ khám.");
+
+                        var hasPrescription = await _unitOfWork.PrescriptionRepository.AnyAsync(x => x.AppointmentId == appointmentId);
+
+                        if (!hasPrescription)
+                        {
+                            var prescription = new Prescription
+                            {
+                                AppointmentId = appointmentId,
+                                DoctorId = _claimService.GetCurrentUserId(), 
+                            };
+
+                            await _unitOfWork.PrescriptionRepository.AddAsync(prescription);
+                        }
+                        break;
+
+                    case AppointmentStatusEnum.PendingPayment:
+                        if (currentStatus != AppointmentStatusEnum.InProgress)
+                            return ResponseHandler.Failure<bool>("Chỉ có thể chuyển sang Chờ thanh toán từ trạng thái Đang khám.");
+
+                        var invalidServices = appointment.AppointmentServices
+                            .Where(s =>
+                                s.IsCompleted != AppointmentServiceStatusEnum.Completed ||
+                                s.TestResult == null ||
+                                string.IsNullOrWhiteSpace(s.TestResult.Result)
+                            ).ToList();
+
+                        if (invalidServices.Any())
+                            return ResponseHandler.Failure<bool>("Không thể chuyển sang Chờ thanh toán vì có dịch vụ chưa hoàn thành hoặc chưa có kết quả xét nghiệm.");
+
+                        if (string.IsNullOrWhiteSpace(appointment.Symptoms) || string.IsNullOrWhiteSpace(appointment.GeneralConclusion))
+                            return ResponseHandler.Failure<bool>("Vui lòng nhập đầy đủ Triệu chứng và Kết luận tổng quát trước khi hoàn tất khám.");
+
+                        if (appointment.Prescription == null)
+                            return ResponseHandler.Failure<bool>("Vui lòng tạo đơn thuốc trước khi chuyển sang Chờ thanh toán.");
+
+                        var total = await _invoiceService.CalculateInvoiceTotalAsync(appointmentId);
+                        var hasInvoice = await _unitOfWork.InvoiceRepository.AnyAsync(x => x.AppointmentId == appointmentId);
+
+                        if (!hasInvoice)
+                        {
+                            var invoice = new Invoice
+                            {
+                                AppointmentId = appointmentId,
+                                TotalAmount = total,
+                                PaymentStatus = PaymentStatusEnum.Unpaid,
+                            };
+
+                            await _unitOfWork.InvoiceRepository.AddAsync(invoice);
+                        }
                         break;
 
                     case AppointmentStatusEnum.Completed:
-                        if (currentStatus != AppointmentStatusEnum.InProgress)
-                            return ResponseHandler.Failure<bool>("Chỉ có thể hoàn tất lịch hẹn từ trạng thái InProgress.");
+                        if (currentStatus != AppointmentStatusEnum.PendingPayment)
+                            return ResponseHandler.Failure<bool>("Chỉ có thể hoàn tất lịch hẹn từ trạng thái Chờ thanh toán.");
                         break;
 
                     default:
@@ -127,6 +183,7 @@ namespace ClinictManagementSystem.Services
                 return ResponseHandler.Failure<bool>($"Lỗi: {ex.Message}");
             }
         }
+
 
         public async Task<string> GenerateRandomAppointmentCodeAsync()
         {
@@ -225,7 +282,6 @@ namespace ClinictManagementSystem.Services
         {
             try
             {
-                // Build filter expression
                 Expression<Func<Appointment, bool>> filter = x =>
                     (string.IsNullOrEmpty(filterAppointmentAdminDTO.Search) ||
                         x.AppointmentCode.Contains(filterAppointmentAdminDTO.Search) ||
@@ -233,8 +289,9 @@ namespace ClinictManagementSystem.Services
                         x.Patient.FullName.Contains(filterAppointmentAdminDTO.Search) ||
                         x.Specialty.Name.Contains(filterAppointmentAdminDTO.Search)) &&
 
-                    (!filterAppointmentAdminDTO.StartDate.HasValue || x.AppointmentDate >= filterAppointmentAdminDTO.StartDate.Value) &&
-                    (!filterAppointmentAdminDTO.EndDate.HasValue || x.AppointmentDate <= filterAppointmentAdminDTO.EndDate.Value) &&
+                    (!filterAppointmentAdminDTO.AppointmentDate.HasValue || x.AppointmentDate.Date == filterAppointmentAdminDTO.AppointmentDate.Value.Date) &&
+                    (!filterAppointmentAdminDTO.StartTime.HasValue || x.StartTime >= filterAppointmentAdminDTO.StartTime.Value) &&
+                    (!filterAppointmentAdminDTO.EndTime.HasValue || x.EndTime <= filterAppointmentAdminDTO.EndTime.Value) &&
                     (!filterAppointmentAdminDTO.Status.HasValue || x.Status == filterAppointmentAdminDTO.Status.Value) &&
                     (!filterAppointmentAdminDTO.DoctorId.HasValue || x.DoctorId == filterAppointmentAdminDTO.DoctorId.Value) &&
                     (!filterAppointmentAdminDTO.PatientId.HasValue || x.PatientId == filterAppointmentAdminDTO.PatientId.Value) &&
@@ -385,15 +442,15 @@ namespace ClinictManagementSystem.Services
         {
             try
             {
-                var appointment = await _unitOfWork.AppoinmentRepository.GetByIdAsync(appointmentId);
+                var appointment = await _unitOfWork.AppoinmentRepository.FindSingleAsync(x => x.AppointmentId == appointmentId && !x.IsDeleted);
 
                 if (appointment == null)
-                    return ResponseHandler.Failure<bool>("Appointment not found.");
+                    return ResponseHandler.Failure<bool>("Không tìm thấy lịch khám.");
 
                 appointment.GeneralConclusion = updateConclusionDTO.GeneralConclusion;
 
                 await _unitOfWork.SaveChangeAsync();
-                return ResponseHandler.Success(true, "General conclusion updated successfully.");
+                return ResponseHandler.Success(true, "Cập nhật kết luận thành công.");
             }
             catch (Exception ex)
             {
@@ -498,5 +555,186 @@ namespace ClinictManagementSystem.Services
             }
         }
 
+        public async Task<ApiResponse<Pagination<GetAppointmentForLabTech>>> GetAppointmentsForLabTechnicianAsync(FilterAppointmentLabTechDTO filterAppointmentLabTechDTO)
+        {
+            try
+            {
+                Expression<Func<Appointment, bool>> predicate = x =>
+                    (string.IsNullOrEmpty(filterAppointmentLabTechDTO.Search) ||
+                        x.AppointmentCode.Contains(filterAppointmentLabTechDTO.Search) ||
+                        x.Patient.FullName.Contains(filterAppointmentLabTechDTO.Search) ||
+                        x.Doctor.FullName.Contains(filterAppointmentLabTechDTO.Search) ||
+                        x.Specialty.Name.Contains(filterAppointmentLabTechDTO.Search)) &&
+
+                    (!filterAppointmentLabTechDTO.AppointmentDate.HasValue || x.AppointmentDate.Date == filterAppointmentLabTechDTO.AppointmentDate.Value.Date) &&
+                    (!filterAppointmentLabTechDTO.Status.HasValue || x.Status == filterAppointmentLabTechDTO.Status.Value);
+
+                string include = "Doctor,Patient,Specialty,AppointmentServices.Service,AppointmentServices.TestResult";
+
+                var result = await _unitOfWork.AppoinmentRepository.GetAppointmentsWithFilterAsync(
+                    filter: predicate,
+                    includeProperties: "Doctor,Patient,Specialty,AppointmentServices,AppointmentServices.Service,AppointmentServices.TestResult",
+                    pageIndex: filterAppointmentLabTechDTO.PageIndex,
+                    pageSize: filterAppointmentLabTechDTO.PageSize,
+                    relatedDataFilter: s => !s.IsDeleted, 
+                    relatedDataProperty: "AppointmentServices" 
+                );
+
+
+                var mappedAppointments = result.Items.Select(appointment => new GetAppointmentForLabTech
+                {
+                    AppointmentId = appointment.AppointmentId,
+                    AppointmentCode = appointment.AppointmentCode,
+                    AppointmentDate = appointment.AppointmentDate,
+                    StartTime = appointment.StartTime,
+                    EndTime = appointment.EndTime,
+                    Status = appointment.Status,
+                    LabTestStatus = !appointment.AppointmentServices.Any()
+                        ? LabTestStatusEnum.NotStarted
+                        : appointment.AppointmentServices.All(s => s.IsCompleted == AppointmentServiceStatusEnum.Completed)
+                            ? LabTestStatusEnum.Completed
+                            : LabTestStatusEnum.InProgress,
+
+                    PatientId = appointment.PatientId,
+                    PatientName = appointment.Patient.FullName,
+
+                    DoctorId = appointment.DoctorId,
+                    DoctorName = appointment.Doctor.FullName,
+
+                    SpecialtyName = appointment.Specialty.Name,
+
+                    Services = appointment.AppointmentServices.Select(service => new AppointmentServiceDetailDTO
+                    {
+                        AppointmentServiceId = service.Id,
+                        ServiceId = service.ServiceId,
+                        ServiceName = service.Service.Name,
+                        ServiceDescription = service.Service.Description,
+                        Status = service.IsCompleted,
+                        Price = service.Service.Price,
+                        Note = service.Note,
+                        TestResult = service.TestResult != null ? new GetTestResultDTO
+                        {
+                            TestResultId = service.TestResult.TestResultId,
+                            Result = service.TestResult.Result,
+                            ResultDate = service.TestResult.ResultDate,
+                            CreatedBy = service.TestResult.UpdatedByUser?.FullName
+                        } : null
+                    }).ToList()
+                }).ToList();
+
+                var response = new Pagination<GetAppointmentForLabTech>
+                {
+                    PageIndex = result.PageIndex,
+                    PageSize = result.PageSize,
+                    TotalItemsCount = result.TotalItemsCount,
+                    Items = mappedAppointments
+                };
+
+                return ResponseHandler.Success(response);
+            }
+            catch (Exception ex)
+            {
+                return ResponseHandler.Failure<Pagination<GetAppointmentForLabTech>>($"Lỗi khi lấy lịch hẹn cho Lab Technician: {ex.Message}");
+            }
+        }
+
+
+        public async Task<ApiResponse<GetAppointmentDetailDTO>> GetAppointmentDetailAsync(Guid appointmentId)
+        {
+            try
+            {
+                var appointment = await _unitOfWork.AppoinmentRepository.GetAppointmentDetailByIdAsync(appointmentId);
+
+                if (appointment == null)
+                {
+                    return ResponseHandler.Failure<GetAppointmentDetailDTO>("Không tìm thấy lịch hẹn.");
+                }
+
+                var result = new GetAppointmentDetailDTO
+                {
+                    AppointmentId = appointment.AppointmentId,
+                    AppointmentCode = appointment.AppointmentCode,
+                    AppointmentDate = appointment.AppointmentDate,
+                    StartTime = appointment.StartTime,
+                    EndTime = appointment.EndTime,
+                    Status = appointment.Status,
+                    Note = appointment.Note,
+                    Symptoms = appointment.Symptoms,
+                    GeneralConclusion = appointment.GeneralConclusion,
+
+                    PatientId = appointment.PatientId,
+                    PatientName = appointment.Patient.FullName,
+                    PatientPhone = appointment.Patient.PhoneNumber,
+                    PatientGender = appointment.Patient.Gender,
+                    PatientDob = appointment.Patient.DateOfBirth,
+
+                    DoctorId = appointment.DoctorId,
+                    DoctorName = appointment.Doctor.FullName,
+                    DoctorAvatar = appointment.Doctor.Avatar,
+
+                    SpecialtyName = appointment.Specialty.Name,
+                    invoiceId = appointment.Invoice?.InvoiceId,
+
+                    Services = appointment.AppointmentServices.Select(aps => new AppointmentServiceDetailDTO
+                    {
+                        AppointmentServiceId = aps.Id,
+                        ServiceId = aps.ServiceId,
+                        ServiceName = aps.Service.Name,
+                        Price = aps.Service.Price,
+                        ServiceDescription = aps.Service?.Description,
+                        Status = aps.IsCompleted,
+                        Note = aps.Note,
+                        TestResult = aps.TestResult == null ? null : new GetTestResultDTO
+                        {
+                            TestResultId = aps.TestResult.TestResultId,
+                            Result = aps.TestResult.Result,
+                            ResultDate = aps.TestResult.ResultDate,
+                            CreatedBy = aps.TestResult.UpdatedByUser?.Username
+                        }
+                    }).ToList(),
+
+                    Prescription = appointment.Prescription == null ? null : new GetPrescriptionDTO
+                    {
+                        PrescriptionId = appointment.Prescription.PrescriptionId,
+                        Notes = appointment.Prescription.Notes,
+                        PrescriptionDetails = appointment.Prescription.PrescriptionDetails.Select(pd => new GetPrescriptionDetailDTO
+                        {
+                            MedicineId = pd.MedicineId,
+                            MedicineName = pd.Medicine?.Name,
+                            Quantity = pd.Quantity,
+                            DosageInstructions = pd.DosageInstructions,
+                            Unit = pd.Medicine?.Unit,
+                            Price = pd.Medicine.Price
+                        }).ToList()
+                    }
+                };
+
+                return ResponseHandler.Success(result, "Lấy chi tiết lịch hẹn thành công.");
+            }
+            catch (Exception ex)
+            {
+                return ResponseHandler.Failure<GetAppointmentDetailDTO>($"Lỗi: {ex.Message}");
+            }
+        }
+
+        public async Task<ApiResponse<bool>> UpdateAppointmentSymptomsAsync(Guid appointmentId, UpdateSymptomDTO updateSymptomDTO)
+        {
+            try
+            {
+                var appointment = await _unitOfWork.AppoinmentRepository.FindSingleAsync(x => x.AppointmentId == appointmentId && !x.IsDeleted);
+
+                if (appointment == null)
+                    return ResponseHandler.Failure<bool>("Không tìm thấy lịch khám.");
+
+                appointment.Symptoms = updateSymptomDTO.Symptoms;
+
+                await _unitOfWork.SaveChangeAsync();
+                return ResponseHandler.Success(true, "Cập nhật triệu chứng thành công.");
+            }
+            catch (Exception ex)
+            {
+                return ResponseHandler.Failure<bool>($"An error occurred: {ex.Message}");
+            }
+        }
     }
 }

@@ -16,10 +16,13 @@ const ServiceReducer = createSlice({
             state.totalItemsCount = action.payload.totalItemsCount;
             state.totalPagesCount = action.payload.totalPagesCount;
         },
+        setListServices: (state, action) => {
+            state.services = action.payload;
+        },
     },
 });
 
-export const { setServices } = ServiceReducer.actions;
+export const { setServices, setListServices } = ServiceReducer.actions;
 
 export default ServiceReducer.reducer;
 
@@ -46,21 +49,38 @@ export const GetServicesActionAsync = filter => {
     };
 };
 
+export const GetAllServicesActionAsync = () => {
+    return async dispatch => {
+        try {
+            const res = await httpClient.get(`/api/v1/service/all`);
+            if (res.isSuccess && res.data) {
+                dispatch(setListServices(res.data));
+                return true;
+            } else {
+                return false;
+            }
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    };
+};
+
 export const DeleteServiceActionAsync = (id, filter) => {
     return async dispatch => {
         try {
             const res = await httpClient.delete(`/api/v1/service/${id}`);
             if (res.isSuccess && res.data) {
                 await dispatch(GetServicesActionAsync(filter));
-                return { success: true, data: null, message: res.message }; // ✅ Thành công thực sự
+                return { success: true, data: null, message: res.message };
             } else if (res.isSuccess && !res.data) {
-                return { success: false, data: null, message: res.message }; // ✅ Lỗi logic (sai tài khoản)
+                return { success: false, data: null, message: res.message };
             } else {
-                return { success: false, message: res.message }; // ❌ Lỗi hệ thống
+                return { success: false, message: res.message };
             }
         } catch (error) {
             console.error(error);
-            return { success: false, message: 'System error' }; // ❌ Lỗi hệ thống
+            return { success: false, message: 'System error' };
         }
     };
 };
@@ -69,6 +89,25 @@ export const CreateServiceActionAsync = (newService, filter) => {
     return async dispatch => {
         try {
             const res = await httpClient.post(`/api/v1/service`, newService);
+            if (res.isSuccess && res.data) {
+                await dispatch(GetServicesActionAsync(filter));
+                return { success: true, data: null, message: res.message };
+            } else if (res.isSuccess && !res.data) {
+                return { success: false, data: null, message: res.message };
+            } else {
+                return { success: false, message: res.message };
+            }
+        } catch (error) {
+            console.error(error);
+            return { success: false, message: 'System error' };
+        }
+    };
+};
+
+export const UpdateServiceActionAsync = (serviceId, data, filter) => {
+    return async dispatch => {
+        try {
+            const res = await httpClient.put(`/api/v1/service/${serviceId}`, data);
             if (res.isSuccess && res.data) {
                 await dispatch(GetServicesActionAsync(filter));
                 return { success: true, data: null, message: res.message };

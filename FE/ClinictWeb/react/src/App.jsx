@@ -4,11 +4,8 @@ import TempAdmin from './Admin/TempUIAdmin/TempAdmin';
 import Login from './Admin/Page/Login';
 import Register from './Admin/Page/Register';
 import TempDoctor from './Doctor/TempUIDoctor/TempDoctor';
-import HomeDoctor from './Doctor/Page/HomeDoctor';
 import TempLabTechnician from './LabTechnician/TemUILabTechnician/TempLabTechnician';
-import HomeLabTechnician from './LabTechnician/Page/HomeLabTechnician';
 import TempReceptionist from './Receptionist/TempUIReceptionist/TempReceptionist';
-import HomeReceptionist from './Receptionist/Page/HomeReceptionist';
 import ProtectedRoute from './Utils/ProtectedRoute';
 import AnonymousRoute from './Utils/AnonymousRoute';
 import ServiceManagement from './Admin/Page/ServiceManagement';
@@ -19,6 +16,12 @@ import CreateUser from './Admin/Page/CreateUser';
 import MedicineManagement from './Admin/Page/MedicineManagement';
 import MedicineStockHistoryManagement from './Admin/Page/MedicineStockHistoryManagement';
 import BookAppointmentForPatient from './Receptionist/Page/BookAppointmentForPatient';
+import AppointmentManagement from './Receptionist/Page/AppointmentManagement';
+import AppointmentDoctor from './Doctor/Page/AppointmentDoctor';
+import AppointmentDetail from './Doctor/Page/AppointmentDetail';
+import AppointmentLabTech from './LabTechnician/Page/AppointmentLabTech';
+import TestResultOfLabService from './LabTechnician/Page/TestResultOfAppointment';
+import UpdateUser from './Admin/Page/UpdateUser';
 
 function App() {
     return (
@@ -38,6 +41,7 @@ function App() {
                         <Route path="specialty" element={<SpecialtyManagement />} />
                         <Route path="user" element={<UserManagement />} />
                         <Route path="user/create" element={<CreateUser />} />
+                        <Route path="user/edit" element={<UpdateUser />} />
                         <Route path="medicine-type" element={<MedicineTypeManagement />} />
                         <Route path="medicine" element={<MedicineManagement />} />
                         <Route
@@ -50,21 +54,26 @@ function App() {
                 {/* Doctor routes */}
                 <Route element={<ProtectedRoute requiredRole="Doctor" />}>
                     <Route path="doctor" element={<TempDoctor />}>
-                        <Route index element={<HomeDoctor />} />
+                        <Route path="" element={<AppointmentDoctor />} />
+                        <Route path="appointment/detail" element={<AppointmentDetail />} />
                     </Route>
                 </Route>
 
                 {/* Lab Technician routes */}
                 <Route element={<ProtectedRoute requiredRole="LabTechnician" />}>
                     <Route path="labTech" element={<TempLabTechnician />}>
-                        <Route index element={<HomeLabTechnician />} />
+                        <Route path="" element={<AppointmentLabTech />} />
+                        <Route
+                            path="appointment/:appointmentId/labService"
+                            element={<TestResultOfLabService />}
+                        />
                     </Route>
                 </Route>
 
                 {/* Receptionist routes */}
                 <Route element={<ProtectedRoute requiredRole="Receptionist" />}>
                     <Route path="receptionist" element={<TempReceptionist />}>
-                        <Route path="" element={<HomeReceptionist />} />
+                        <Route path="" element={<AppointmentManagement />} />
                         <Route path="booking" element={<BookAppointmentForPatient />} />
                     </Route>
                 </Route>

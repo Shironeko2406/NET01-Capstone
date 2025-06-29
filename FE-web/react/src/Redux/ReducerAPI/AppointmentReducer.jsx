@@ -5,6 +5,9 @@ const initialState = {
     appointments: [],
     totalPagesCount: 0,
     totalItemsCount: 0,
+    appointmentInfo: null,
+    appointmentService: [],
+    prescription: null,
 };
 
 const AppointmentReducer = createSlice({
@@ -16,10 +19,15 @@ const AppointmentReducer = createSlice({
             state.totalItemsCount = action.payload.totalItemsCount;
             state.totalPagesCount = action.payload.totalPagesCount;
         },
+        setAppointmentDetail: (state, action) => {
+            state.appointmentInfo = action.payload;
+            state.appointmentService = action.payload.services;
+            state.prescription = action.payload.prescription;
+        },
     },
 });
 
-export const { setAppointments } = AppointmentReducer.actions;
+export const { setAppointments, setAppointmentDetail } = AppointmentReducer.actions;
 
 export default AppointmentReducer.reducer;
 
@@ -58,6 +66,23 @@ export const GetAppointmentActionAsync = filter => {
             });
             if (res.isSuccess && res.data) {
                 dispatch(setAppointments(res.data));
+                return true;
+            } else {
+                return false;
+            }
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    };
+};
+
+export const GetAppointmentDetailByIdActionAsync = id => {
+    return async dispatch => {
+        try {
+            const res = await httpClient.get(`/api/v1/appointment/${id}`);
+            if (res.isSuccess && res.data) {
+                dispatch(setAppointmentDetail(res.data));
                 return true;
             } else {
                 return false;

@@ -13,5 +13,14 @@ namespace ClinictManagementSystem.Repositories.DoctorSpecialtyRepo
         {
             await _context.DoctorSpecialties.AddAsync(doctorSpecialty);
         }
+        public async Task AddRangeAsync(List<DoctorSpecialties> entities)
+        {
+            await _context.DoctorSpecialties.AddRangeAsync(entities);
+        }
+
+        public void HardRemoveRange(List<DoctorSpecialties> entities)
+        {
+            _context.DoctorSpecialties.RemoveRange(entities);
+        }
     }
 }

@@ -27,10 +27,16 @@ namespace ClinictManagementSystem.Controllers
             return await _medicineService.CreateMedicineAsync(createMedicineDTO);
         }
 
+        [Authorize(Roles = AppRole.Admin)]
         [HttpGet("filter")]
         public async Task<ApiResponse<Pagination<GetMedicineFilterDTO>>> GetMedicineFilterAsync([FromQuery] FilterMedicineDTO filterMedicineDTO)
         {
             return await _medicineService.GetMedicineFilterAsync(filterMedicineDTO);
+        }
+        [HttpGet]
+        public async Task<ApiResponse<List<GetMedicineDTO>>> GetMedicineAsync()
+        {
+            return await _medicineService.GetMedicineAsync();
         }
     }
 }

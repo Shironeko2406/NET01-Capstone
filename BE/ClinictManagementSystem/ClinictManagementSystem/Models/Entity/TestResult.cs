@@ -8,15 +8,15 @@ namespace ClinictManagementSystem.Models.Entity
         [Key]
         public Guid TestResultId { get; set; }
 
-        public Guid AppointmentId { get; set; }
-        [ForeignKey("AppointmentId")]
-        public Appointment Appointment { get; set; }
+        [ForeignKey("AppointmentService")]
+        public Guid AppointmentServiceId { get; set; }
 
-        public Guid ServiceId { get; set; }
-        [ForeignKey("ServiceId")]
-        public Service Service { get; set; }
+        public AppointmentServices AppointmentService { get; set; }
 
         public string? Result { get; set; }
         public DateTime? ResultDate { get; set; }
+        public Guid? UpdateBy { get; set; }
+        [ForeignKey("UpdateBy")]
+        public Users? UpdatedByUser { get; set; }
     }
 }

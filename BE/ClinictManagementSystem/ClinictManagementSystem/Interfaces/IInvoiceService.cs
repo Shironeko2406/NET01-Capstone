@@ -5,5 +5,7 @@ namespace ClinictManagementSystem.Interfaces
     public interface IInvoiceService
     {
         Task<bool> UpdatePaymentStatusAsync(Guid invoiceId, PaymentStatusEnum paymentStatusEnum);
+        Task<int> CalculateInvoiceTotalAsync(Guid appointmentId);
+
     }
 }

@@ -9,6 +9,9 @@ import BookingSuccessPage from './User/Page/BookingSuccessPage';
 import AppointmentManagement from './User/Page/AppoinmentManagement';
 import AnonymousRoute from './Utils/AnonymousRoute';
 import ProtectedRoute from './Utils/ProtectedRoute';
+import AppoitnmentDetail from './User/Page/AppoitnmentDetail';
+import PaymentSuccess from './User/Page/PaymentSuccess';
+import PaymentFailure from './User/Page/PaymentFailure';
 
 function App() {
     return (
@@ -58,6 +61,30 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <AppointmentManagement />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/appointment/detail"
+                        element={
+                            <ProtectedRoute>
+                                <AppoitnmentDetail />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/payment-success"
+                        element={
+                            <ProtectedRoute>
+                                <PaymentSuccess />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/payment-failure"
+                        element={
+                            <ProtectedRoute>
+                                <PaymentFailure />
                             </ProtectedRoute>
                         }
                     />

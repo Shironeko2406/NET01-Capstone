@@ -3,6 +3,7 @@ using ClinictManagementSystem.Enums;
 using ClinictManagementSystem.Handler;
 using ClinictManagementSystem.Interfaces;
 using ClinictManagementSystem.Models.DTO.AppointmentServicesDTO;
+using ClinictManagementSystem.Models.DTO.TestResultDTO;
 using ClinictManagementSystem.Models.Entity;
 using ClinictManagementSystem.Repositories.UnitOfWork;
 
@@ -50,16 +51,16 @@ namespace ClinictManagementSystem.Services
         {
             try
             {
-                var existingService = await _unitOfWork.AppointmentServicesRepository.GetByIdAsync(id);
+                var existingService = await _unitOfWork.AppointmentServicesRepository.FindSingleAsync(x => x.Id == id && !x.IsDeleted);
 
                 if (existingService == null)
                 {
-                    return ResponseHandler.Failure<bool>("Appointment service not found.");
+                    return ResponseHandler.Failure<bool>("Không tìm thấy dịch vụ khám.");
                 }
 
                 if (existingService.IsCompleted != AppointmentServiceStatusEnum.Assigned)
                 {
-                    return ResponseHandler.Failure<bool>("Only services with status 'Assigned' can be updated.");
+                    return ResponseHandler.Failure<bool>("Chỉ được phép cập nhật các dịch vụ đang ở trạng thái 'Đã chỉ định'.");
                 }
 
                 if (!string.IsNullOrWhiteSpace(appointmentServiceUpdateDTO.Note))
@@ -70,13 +71,14 @@ namespace ClinictManagementSystem.Services
                 await _unitOfWork.AppointmentServicesRepository.UpdateAsync(existingService);
                 await _unitOfWork.SaveChangeAsync();
 
-                return ResponseHandler.Success(true, "Appointment service updated successfully.");
+                return ResponseHandler.Success(true, "Cập nhật dịch vụ khám thành công.");
             }
             catch (Exception ex)
             {
-                return ResponseHandler.Failure<bool>($"An error occurred: {ex.Message}");
+                return ResponseHandler.Failure<bool>($"Đã xảy ra lỗi: {ex.Message}");
             }
         }
+
 
         public async Task<ApiResponse<bool>> UpdateAppointmentServiceStatusAsync(Guid id, AppointmentServiceStatusEnum appointmentServiceStatusEnum)
         {
@@ -84,7 +86,7 @@ namespace ClinictManagementSystem.Services
             {
                 var appointmentService = await _unitOfWork.AppointmentServicesRepository.GetByIdAsync(id);
                 if (appointmentService == null)
-                    return ResponseHandler.Failure<bool>("Appointment service not found.");
+                    return ResponseHandler.Failure<bool>("Không tìm thấy dịch vụ xét nghiệm.");
 
                 var currentStatus = appointmentService.IsCompleted;
 
@@ -92,57 +94,55 @@ namespace ClinictManagementSystem.Services
                 {
                     case AppointmentServiceStatusEnum.Assigned:
                         if (appointmentServiceStatusEnum != AppointmentServiceStatusEnum.InProgress && appointmentServiceStatusEnum != AppointmentServiceStatusEnum.Cancelled)
-                            return ResponseHandler.Failure<bool>("Assigned service can only be updated to InProgress or Cancelled.");
+                            return ResponseHandler.Failure<bool>("Trạng thái 'Đã chỉ định' chỉ có thể cập nhật thành 'Đang thực hiện' hoặc 'Đã huỷ'.");
                         break;
 
                     case AppointmentServiceStatusEnum.InProgress:
                         if (appointmentServiceStatusEnum != AppointmentServiceStatusEnum.Completed && appointmentServiceStatusEnum != AppointmentServiceStatusEnum.Cancelled)
-                            return ResponseHandler.Failure<bool>("InProgress service can only be updated to Completed or Cancelled.");
+                            return ResponseHandler.Failure<bool>("Trạng thái 'Đang thực hiện' chỉ có thể cập nhật thành 'Hoàn thành' hoặc 'Đã huỷ'.");
                         break;
 
                     case AppointmentServiceStatusEnum.Completed:
-                        return ResponseHandler.Failure<bool>("Completed service status cannot be changed.");
+                        return ResponseHandler.Failure<bool>("Không thể thay đổi trạng thái của dịch vụ đã hoàn thành.");
 
                     case AppointmentServiceStatusEnum.Cancelled:
-                        return ResponseHandler.Failure<bool>("Cancelled service status cannot be changed.");
+                        return ResponseHandler.Failure<bool>("Không thể thay đổi trạng thái của dịch vụ đã huỷ.");
                 }
                 // Kiểm tra nếu chuyển sang Completed thì phải có TestResult.Result
                 if (appointmentServiceStatusEnum == AppointmentServiceStatusEnum.Completed)
                 {
-                    var testResult = await _unitOfWork.TestResultRepository
-                        .FindSingleAsync(tr => tr.AppointmentId == appointmentService.AppointmentId && tr.ServiceId == appointmentService.ServiceId);
+                    var testResult = await _unitOfWork.TestResultRepository.FindSingleAsync(tr => tr.AppointmentServiceId == appointmentService.Id);
 
                     if (testResult == null || string.IsNullOrWhiteSpace(testResult.Result))
                     {
-                        return ResponseHandler.Failure<bool>("Cannot mark service as Completed because the test result is missing or empty.");
+                        return ResponseHandler.Failure<bool>("Không thể chuyển sang trạng thái 'Hoàn thành' vì kết quả xét nghiệm còn thiếu hoặc rỗng.");
                     }
                 }
 
                 if (currentStatus == AppointmentServiceStatusEnum.Assigned && appointmentServiceStatusEnum == AppointmentServiceStatusEnum.InProgress)
                 {
                     // Kiểm tra nếu đã tồn tại TestResult thì không tạo nữa
-                    var existingTestResult = await _unitOfWork.TestResultRepository.FindSingleAsync(tr => tr.AppointmentId == appointmentService.AppointmentId && tr.ServiceId == appointmentService.ServiceId);
+                    var existingTestResult = await _unitOfWork.TestResultRepository.FindSingleAsync(tr => tr.AppointmentServiceId == appointmentService.Id);
 
                     if (existingTestResult == null)
                     {
-                        var testResult = new TestResult
+                        var newTestResult = new TestResult
                         {
-                            AppointmentId = appointmentService.AppointmentId,
-                            ServiceId = appointmentService.ServiceId,
+                            AppointmentServiceId = appointmentService.Id
                         };
 
-                        await _unitOfWork.TestResultRepository.AddAsync(testResult);
+                        await _unitOfWork.TestResultRepository.AddAsync(newTestResult);
                     }
                 }
 
                 appointmentService.IsCompleted = appointmentServiceStatusEnum;
                 await _unitOfWork.SaveChangeAsync();
 
-                return ResponseHandler.Success(true, $"Appointment service status updated to {appointmentServiceStatusEnum}.");
+                return ResponseHandler.Success(true, $"Cập nhật trạng thái dịch vụ xét nghiệm thành công.");
             }
             catch (Exception ex)
             {
-                return ResponseHandler.Failure<bool>($"An error occurred: {ex.Message}");
+                return ResponseHandler.Failure<bool>($"Đã xảy ra lỗi: {ex.Message}");
             }
         }
 
@@ -164,8 +164,16 @@ namespace ClinictManagementSystem.Services
                     ServiceId = s.ServiceId,
                     ServiceName = s.Service.Name,
                     Note = s.Note,
-                    Status = s.IsCompleted
+                    Status = s.IsCompleted,
+                    TestResult = s.TestResult != null ? new GetTestResultDTO
+                    {
+                        TestResultId = s.TestResult.TestResultId,
+                        Result = s.TestResult.Result,
+                        ResultDate = s.TestResult.ResultDate,
+                        CreatedBy = s.TestResult.UpdatedByUser?.Username
+                    } : null
                 }).ToList();
+
 
                 return ResponseHandler.Success(result, "Retrieved appointment services successfully.");
             }
@@ -175,7 +183,27 @@ namespace ClinictManagementSystem.Services
             }
         }
 
+        public async Task<ApiResponse<bool>> DeleteAppointmentServiceByIdAsync(Guid id)
+        {
+            try
+            {
+                var appointmentService = await _unitOfWork.AppointmentServicesRepository.FindSingleAsync(x => x.Id == id && !x.IsDeleted);
 
+                if (appointmentService == null)
+                {
+                    return ResponseHandler.Failure<bool>("Không tìm thấy dịch vụ khám.");
+                }
+
+                appointmentService.IsDeleted = true;
+                await _unitOfWork.SaveChangeAsync();
+
+                return ResponseHandler.Success(true, "Xóa dịch vụ khám thành công.");
+            }
+            catch (Exception ex)
+            {
+                return ResponseHandler.Failure<bool>($"Đã xảy ra lỗi: {ex.Message}");
+            }
+        }
 
     }
 }

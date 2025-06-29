@@ -71,6 +71,42 @@ namespace ClinictManagementSystem.Services
             return code;
         }
 
+        public async Task<ApiResponse<List<GetMedicineDTO>>> GetMedicineAsync()
+        {
+            try
+            {
+                var medicines = await _unitOfWork.MedicineRepository.GetAllAsync();
+
+                var mappedItems = medicines.Select(x => new GetMedicineDTO
+                {
+                    MedicineId = x.MedicineId,
+                    MedicineCode = x.MedicineCode,
+                    Name = x.Name,
+                    MedicineTypeId = x.MedicineTypeId,
+                    MedicineTypeName = x.MedicineType?.Name ?? string.Empty,
+                    Unit = x.Unit,
+                    Price = x.Price,
+                    StockQuantity = x.StockQuantity,
+                    MinQuantity = x.MinQuantity,
+                    Status = x.StockQuantity == 0
+                                ? MedicineStatusEnum.OutOfStock
+                                : (x.StockQuantity <= x.MinQuantity
+                                    ? MedicineStatusEnum.LowStock
+                                    : MedicineStatusEnum.InStock)
+                }).ToList();
+
+                if (!mappedItems.Any())
+                    return ResponseHandler.Success(mappedItems, "Không có thuốc nào!");
+
+                return ResponseHandler.Success(mappedItems);
+            }
+            catch (Exception ex)
+            {
+                return ResponseHandler.Failure<List<GetMedicineDTO>>("Lỗi khi lấy danh sách thuốc: " + ex.Message);
+            }
+        }
+
+
         public async Task<ApiResponse<Pagination<GetMedicineFilterDTO>>> GetMedicineFilterAsync(FilterMedicineDTO filterMedicineDTO)
         {
             try
@@ -165,5 +201,27 @@ namespace ClinictManagementSystem.Services
                 return ResponseHandler.Failure<Pagination<GetMedicineFilterDTO>>("Lỗi khi lọc thuốc: " + ex.Message);
             }
         }
+
+        public async Task<bool> UpdateReservedQuantityAsync(Guid medicineId, int delta, bool ignoreStockCheck = false)
+        {
+            var medicine = await _unitOfWork.MedicineRepository.GetByIdAsync(medicineId);
+            if (medicine == null)
+                throw new Exception("Không tìm thấy thuốc."); // Hoặc return false
+
+            if (delta > 0 && !ignoreStockCheck)
+            {
+                var availableStock = medicine.StockQuantity - medicine.ReservedQuantity;
+                if (availableStock < delta)
+                    throw new Exception("Không đủ tồn kho để đặt thêm thuốc."); // Hoặc return false
+            }
+
+            medicine.ReservedQuantity += delta;
+
+            if (medicine.ReservedQuantity < 0)
+                medicine.ReservedQuantity = 0;
+
+            return true;
+        }
+
     }
 }

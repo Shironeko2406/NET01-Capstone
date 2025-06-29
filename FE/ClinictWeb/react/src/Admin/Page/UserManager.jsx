@@ -22,6 +22,7 @@ import {
 } from '../../Utils/Translate&FormatColor/RoleUtil';
 import { getGenderColor, getGenderTranslate } from '../../Utils/Translate&FormatColor/GenderUlti';
 import { pageSizeOptions } from '../../Utils/Data/DataExport';
+import { useNavigate } from 'react-router-dom';
 
 const UserManagement = () => {
     const dispatch = useDispatch();
@@ -35,6 +36,7 @@ const UserManagement = () => {
     });
 
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         dispatch(GetUsersActionAsync(filter));
@@ -89,6 +91,12 @@ const UserManagement = () => {
         return count;
     };
 
+    const handleEditUser = user => {
+        navigate('/admin/user/edit', {
+            state: { userEdit: user },
+        });
+    };
+
     return (
         <>
             {/* Header */}
@@ -97,7 +105,10 @@ const UserManagement = () => {
                     <h1 className="text-2xl font-bold text-gray-900 mb-1">Quản lý người dùng</h1>
                     <p className="text-sm text-gray-500">Quản lý danh sách người dùng hệ thống</p>
                 </div>
-                <Button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg">
+                <Button
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg"
+                    onClick={() => navigate('/admin/user/create')}
+                >
                     <Plus className="w-4 h-4 mr-2" />
                     Thêm người dùng
                 </Button>
@@ -247,17 +258,12 @@ const UserManagement = () => {
                                         {formatDate(user.dateOfBirth)}
                                     </td>
                                     <td className="px-6 py-4">
-                                        <div className="flex flex-wrap gap-1">
-                                            {user.roles?.map((role, index) => (
-                                                <Badge
-                                                    key={index}
-                                                    className={`text-xs ${getRoleColor(role)}`}
-                                                    variant="secondary"
-                                                >
-                                                    {getRoleTranslate(role)}
-                                                </Badge>
-                                            ))}
-                                        </div>
+                                        <Badge
+                                            className={`text-xs ${getRoleColor(user.role)}`}
+                                            variant="secondary"
+                                        >
+                                            {getRoleTranslate(user.role)}
+                                        </Badge>
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center justify-center gap-1">
@@ -265,6 +271,7 @@ const UserManagement = () => {
                                                 variant="ghost"
                                                 size="sm"
                                                 className="h-8 w-8 p-0"
+                                                onClick={() => handleEditUser(user)}
                                             >
                                                 <Edit className="w-4 h-4" />
                                             </Button>

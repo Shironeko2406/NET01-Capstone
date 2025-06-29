@@ -36,5 +36,8 @@ namespace ClinictManagementSystem.Repositories.UnitOfWork
 
 
         public Task<int> SaveChangeAsync();
+        public Task BeginTransactionAsync();
+        public Task CommitAsync();
+        public Task RollbackAsync();
     }
 }

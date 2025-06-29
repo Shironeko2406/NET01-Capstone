@@ -20,6 +20,7 @@ import AddMedicineTypeModal from '../Modal/AddMedicineTypeModal';
 import { useAsyncAction } from '../../Hooks/UseAsyncAction';
 import { pageSizeOptions } from '../../Utils/Data/DataExport';
 import { generatePaginationNumbers } from '../../Utils/GeneratePagination';
+import EditMedicineTypeModal from '../Modal/EditMedicineTypeModal';
 
 const MedicineTypeManagement = () => {
     const dispatch = useDispatch();
@@ -31,6 +32,8 @@ const MedicineTypeManagement = () => {
     });
     const [searchInput, setSearchInput] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [selectedMedicineType, setSelectedMedicineType] = useState(null);
     const { run } = useAsyncAction();
 
     useEffect(() => {
@@ -87,6 +90,16 @@ const MedicineTypeManagement = () => {
 
     const handleDelete = medicineTypeId => {
         run(DeleteMedicineTypeActionAsync(medicineTypeId), () => {});
+    };
+
+    const handleEdit = medicineType => {
+        setSelectedMedicineType(medicineType);
+        setIsEditModalOpen(true);
+    };
+
+    const handleCloseEditModal = () => {
+        setIsEditModalOpen(false);
+        setSelectedMedicineType(null);
     };
 
     return (
@@ -177,6 +190,7 @@ const MedicineTypeManagement = () => {
                                                 variant="ghost"
                                                 size="sm"
                                                 className="h-8 w-8 p-0"
+                                                onClick={() => handleEdit(medicineType)}
                                             >
                                                 <Edit className="w-4 h-4" />
                                             </Button>
@@ -261,6 +275,11 @@ const MedicineTypeManagement = () => {
             </div>
 
             <AddMedicineTypeModal open={isModalOpen} onOpenChange={setIsModalOpen} />
+            <EditMedicineTypeModal
+                open={isEditModalOpen}
+                onOpenChange={handleCloseEditModal}
+                medicineType={selectedMedicineType}
+            />
         </>
     );
 };

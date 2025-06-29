@@ -20,5 +20,6 @@ namespace ClinictManagementSystem.Models.Entity
 
         public Appointment Appointment { get; set; }
         public Service Service { get; set; }
+        public TestResult TestResult { get; set; }
     }
 }

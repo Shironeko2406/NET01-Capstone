@@ -42,15 +42,34 @@ export const DeleteMedicineTypeActionAsync = id => {
             const res = await httpClient.delete(`/api/v1/medicineType/${id}`);
             if (res.isSuccess && res.data) {
                 await dispatch(GetMedicineTypesActionAsync());
-                return { success: true, data: null, message: res.message }; // ✅ Thành công thực sự
+                return { success: true, data: null, message: res.message };
             } else if (res.isSuccess && !res.data) {
-                return { success: false, data: null, message: res.message }; // ✅ Lỗi logic (sai tài khoản)
+                return { success: false, data: null, message: res.message };
             } else {
-                return { success: false, message: res.message }; // ❌ Lỗi hệ thống
+                return { success: false, message: res.message };
             }
         } catch (error) {
             console.error(error);
-            return { success: false, message: 'System error' }; // ❌ Lỗi hệ thống
+            return { success: false, message: 'System error' };
+        }
+    };
+};
+
+export const UpdateMedicineTypeActionAsync = (id, dataUpdate) => {
+    return async dispatch => {
+        try {
+            const res = await httpClient.put(`/api/v1/medicineType/${id}`, dataUpdate);
+            if (res.isSuccess && res.data) {
+                await dispatch(GetMedicineTypesActionAsync());
+                return { success: true, data: null, message: res.message };
+            } else if (res.isSuccess && !res.data) {
+                return { success: false, data: null, message: res.message };
+            } else {
+                return { success: false, message: res.message };
+            }
+        } catch (error) {
+            console.error(error);
+            return { success: false, message: 'System error' };
         }
     };
 };

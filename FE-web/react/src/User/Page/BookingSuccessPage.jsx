@@ -255,7 +255,7 @@ const BookingSuccessPage = () => {
                         </Button>
                         <Button
                             size="lg"
-                            onClick={() => navigate('/my-appointments')}
+                            onClick={() => navigate('/appointment')}
                             className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg"
                         >
                             <Calendar className="h-5 w-5 mr-2" />

@@ -62,23 +62,25 @@ namespace ClinictManagementSystem.Services
             }
         }
 
-        public async Task<ApiResponse<List<GetAllServiceDTO>>> GetAllServiceAsync()
+        public async Task<ApiResponse<List<GetServiceDTO>>> GetAllServiceAsync()
         {
             try
             {
                 var services = await _unitOfWork.ServiceRepository.GetAllAsync();
 
-                var serviceDtos = services.Select(s => new GetAllServiceDTO
+                var serviceDtos = services.Select(s => new GetServiceDTO
                 {
                     ServiceId = s.ServiceId, 
-                    Name = s.Name
+                    Name = s.Name,
+                    Price = s.Price,
+                    Description = s.Description
                 }).ToList();
 
                 return ResponseHandler.Success(serviceDtos, "Lấy danh sách tất cả dịch vụ thành công.");
             }
             catch (Exception ex)
             {
-                return ResponseHandler.Failure<List<GetAllServiceDTO>>($"Đã xảy ra lỗi: {ex.Message}");
+                return ResponseHandler.Failure<List<GetServiceDTO>>($"Đã xảy ra lỗi: {ex.Message}");
             }
         }
 
@@ -87,8 +89,7 @@ namespace ClinictManagementSystem.Services
             try
             {
                 // Lấy tất cả dịch vụ chưa bị xóa
-                var services = await _unitOfWork.ServiceRepository
-                    .FindAsync(s => !s.IsDeleted);
+                var services = await _unitOfWork.ServiceRepository.FindAsync(s => !s.IsDeleted);
 
                 // Chuyển sang DTO
                 var result = services.Select(s => new GetServiceDTO

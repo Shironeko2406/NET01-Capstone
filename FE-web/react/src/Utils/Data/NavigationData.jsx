@@ -1,6 +1,11 @@
-import { Heart, Stethoscope, Calendar, FileText } from 'lucide-react';
+import { Heart, Stethoscope, Calendar, FileText, Home } from 'lucide-react';
 
 export const navigationData = [
+    {
+        title: 'Trang chủ',
+        href: '/',
+        icon: Home,
+    },
     {
         title: 'Tính năng',
         href: '#features',
@@ -14,27 +19,8 @@ export const navigationData = [
             },
             {
                 title: 'Hồ sơ y tế',
-                href: '#medical-records',
+                href: '/appointment',
                 description: 'Lưu trữ và quản lý hồ sơ bệnh án điện tử',
-                icon: FileText,
-            },
-        ],
-    },
-    {
-        title: 'Dịch vụ',
-        href: '#services',
-        icon: Stethoscope,
-        subItems: [
-            {
-                title: 'Chuyên khoa',
-                href: '#specialist',
-                description: 'Các dịch vụ chuyên khoa chuyên sâu',
-                icon: Stethoscope,
-            },
-            {
-                title: 'Xét nghiệm',
-                href: '#laboratory',
-                description: 'Dịch vụ xét nghiệm và chẩn đoán',
                 icon: FileText,
             },
         ],

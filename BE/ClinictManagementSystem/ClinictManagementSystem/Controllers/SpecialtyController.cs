@@ -1,6 +1,7 @@
 ﻿using ClinictManagementSystem.Commons;
 using ClinictManagementSystem.Interfaces;
 using ClinictManagementSystem.Models.DTO.SpecialtyDTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -44,6 +45,15 @@ namespace ClinictManagementSystem.Controllers
         public async Task<ApiResponse<List<GetSpecialtyDTO>>> GetAllSpecialtyAsync()
         {
             return await _specialtyService.GetAllSpecialtyAsync();
+        }
+
+        [SwaggerOperation(Summary = "Lấy chuyên khoa bác sĩ login")]
+        [Authorize(Roles = AppRole.Doctor)]
+        [HttpGet("~/api/v1/doctor/specialty/login")]
+        public async Task<ApiResponse<List<GetSpecialtyDTO>>> GetDoctorSpecialtiesByLoginAsync()
+
+        {
+            return await _specialtyService.GetDoctorSpecialtiesByLoginAsync();
         }
     }
 }

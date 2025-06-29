@@ -29,6 +29,7 @@ namespace ClinictManagementSystem.Controllers
         }
 
         [SwaggerOperation(Summary = "Cập nhật trạng thái lịch khám")]
+        [Authorize(Roles = AppRole.Admin + "," + AppRole.Doctor + "," + AppRole.Receptionist)]
         [HttpPut("{id}/status")]
         public async Task<ApiResponse<bool>> UpdateAppointmentStatusAsync(Guid id, AppointmentStatusEnum appointmentStatusEnum)
         {
@@ -43,9 +44,9 @@ namespace ClinictManagementSystem.Controllers
             return await _appointmentService.GetAppoinmentFilterByUserLoginAsync(filterAppoinmentByPatientLoginDTO);
         }
 
-        [SwaggerOperation(Summary = "quản lý appointments cho admin")]
-        [Authorize(Roles = AppRole.Admin)]
-        [HttpGet("admin")]
+        [SwaggerOperation(Summary = "quản lý appointments cho admin và receptionist")]
+        [Authorize(Roles = AppRole.Admin + "," + AppRole.Receptionist)]
+        [HttpGet]
         public async Task<ApiResponse<Pagination<AppointmentManagementDTO>>> GetAppointmentsForAdminAsync([FromQuery] FilterAppointmentAdminDTO filterAppointmentAdminDTO)
         {
             return await _appointmentService.GetAppointmentsForAdminAsync(filterAppointmentAdminDTO);
@@ -67,6 +68,14 @@ namespace ClinictManagementSystem.Controllers
             return await _appointmentService.UpdateAppointmentConclusionAsync(appointmentId, updateConclusionDTO);
         }
 
+        [SwaggerOperation(Summary = "Cập nhật triệu chứng appointment")]
+        [Authorize(Roles = AppRole.Doctor)]
+        [HttpPatch("{appointmentId}/symptom")]
+        public async Task<ApiResponse<bool>> UpdateAppointmentSymptomsAsync(Guid appointmentId, UpdateSymptomDTO updateSymptomDTO)
+        {
+            return await _appointmentService.UpdateAppointmentSymptomsAsync(appointmentId, updateSymptomDTO);
+        }
+
         [SwaggerOperation(Summary = "Phân quyền Receptionist")]
         [Authorize(Roles = AppRole.Receptionist)]
         [HttpPost("~/api/v1/receptionist/appointment")]
@@ -74,5 +83,21 @@ namespace ClinictManagementSystem.Controllers
         {
             return await _appointmentService.CreateAppointmentByReceptionist(createAppointmentByReceptionistDTO);
         }
+
+        [SwaggerOperation(Summary = "Phân quyền LabTechnician")]
+        //[Authorize(Roles = AppRole.Receptionist)]
+        [HttpGet("labTech")]
+        public async Task<ApiResponse<Pagination<GetAppointmentForLabTech>>> GetAppointmentsForLabTechnicianAsync([FromQuery]FilterAppointmentLabTechDTO filterAppointmentLabTechDTO)
+        {
+            return await _appointmentService.GetAppointmentsForLabTechnicianAsync(filterAppointmentLabTechDTO);
+        }
+
+        [SwaggerOperation(Summary = "Chi tiết lịch khám")]
+        [HttpGet("{appointmentId}")]
+        public async Task<ApiResponse<GetAppointmentDetailDTO>> GetAppointmentDetailAsync(Guid appointmentId)
+        {
+            return await _appointmentService.GetAppointmentDetailAsync(appointmentId);
+        }
+
     }
 }

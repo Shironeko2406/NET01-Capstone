@@ -20,6 +20,7 @@ import { useAsyncAction } from '../../Hooks/UseAsyncAction';
 import AddServiceModal from '../Modal/AddServiceModal';
 import { pageSizeOptions } from '../../Utils/Data/DataExport';
 import { generatePaginationNumbers } from '../../Utils/GeneratePagination';
+import EditServiceModal from '../Modal/EditServiceModal';
 
 const ServiceManagement = () => {
     const dispatch = useDispatch();
@@ -33,11 +34,13 @@ const ServiceManagement = () => {
     });
     const [searchInput, setSearchInput] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [selectedService, setSelectedService] = useState(null);
     const { run } = useAsyncAction();
 
     useEffect(() => {
         dispatch(GetServicesActionAsync(filter));
-    }, [filter, dispatch, services]);
+    }, [filter, dispatch]);
 
     const handleSearchSubmit = e => {
         e.preventDefault();
@@ -69,8 +72,18 @@ const ServiceManagement = () => {
         }));
     };
 
-    const handleDelete = (serviceId, filter) => {
+    const handleDelete = serviceId => {
         run(DeleteServiceActionAsync(serviceId, filter), () => {});
+    };
+
+    const handleEdit = service => {
+        setSelectedService(service);
+        setIsEditModalOpen(true);
+    };
+
+    const handleCloseEditModal = () => {
+        setIsEditModalOpen(false);
+        setSelectedService(null);
     };
 
     return (
@@ -174,6 +187,7 @@ const ServiceManagement = () => {
                                                 variant="ghost"
                                                 size="sm"
                                                 className="h-8 w-8 p-0"
+                                                onClick={() => handleEdit(service)}
                                             >
                                                 <Edit className="w-4 h-4" />
                                             </Button>
@@ -257,7 +271,13 @@ const ServiceManagement = () => {
                     </div>
                 </div>
             </div>
-            <AddServiceModal open={isModalOpen} onOpenChange={setIsModalOpen} />
+            <AddServiceModal filter={filter} open={isModalOpen} onOpenChange={setIsModalOpen} />
+            <EditServiceModal
+                open={isEditModalOpen}
+                onOpenChange={handleCloseEditModal}
+                service={selectedService}
+                filter={filter}
+            />
         </>
     );
 };

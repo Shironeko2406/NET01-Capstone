@@ -16,10 +16,13 @@ const MedicineReducer = createSlice({
             state.totalItemsCount = action.payload.totalItemsCount;
             state.totalPagesCount = action.payload.totalPagesCount;
         },
+        setListMedicine: (state, action) => {
+            state.medicines = action.payload;
+        },
     },
 });
 
-export const { setMedicine } = MedicineReducer.actions;
+export const { setMedicine, setListMedicine } = MedicineReducer.actions;
 
 export default MedicineReducer.reducer;
 
@@ -46,6 +49,42 @@ export const GetMedicinesActionAsync = filter => {
         } catch (error) {
             console.error(error);
             return false;
+        }
+    };
+};
+
+export const GetAllMedicineActionAsync = () => {
+    return async dispatch => {
+        try {
+            const res = await httpClient.get(`/api/v1/medicine`);
+            if (res.isSuccess && res.data) {
+                dispatch(setListMedicine(res.data));
+                return true;
+            } else {
+                return false;
+            }
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    };
+};
+
+export const CreateMedicineActionAsync = (newMedicine, filter) => {
+    return async dispatch => {
+        try {
+            const res = await httpClient.post(`/api/v1/medicine`, newMedicine);
+            if (res.isSuccess && res.data) {
+                await dispatch(GetMedicinesActionAsync(filter));
+                return { success: true, data: null, message: res.message };
+            } else if (res.isSuccess && !res.data) {
+                return { success: false, data: null, message: res.message };
+            } else {
+                return { success: false, message: res.message };
+            }
+        } catch (error) {
+            console.error(error);
+            return { success: false, message: 'System error' };
         }
     };
 };

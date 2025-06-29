@@ -24,18 +24,18 @@ import {
     appointmentStatuses,
     appointmentTabConfig,
     getStatusBadge,
-    getStatusFromTabValue,
 } from '../../Utils/Translate&FormatColor/StatusAppointmentUtil';
 import FilterAppointmentModal from '../Modal/FilterAppointmentModal';
 import { formatAppointmentDate } from '../../Utils/Format/FormatDate';
+import { useNavigate } from 'react-router-dom';
 
-export default function AppointmentManagement() {
+const AppointmentManagement = () => {
     const dispatch = useDispatch();
     const { appointments, totalPagesCount, totalItemsCount } = useSelector(
         state => state.AppointmentReducer
     );
     const { specialties } = useSelector(state => state.SpecialtyReducer);
-
+    const navigate = useNavigate();
     const [filter, setFilter] = useState({
         search: '',
         pageIndex: 1,
@@ -82,7 +82,6 @@ export default function AppointmentManagement() {
     };
 
     const handleTabChange = tabValue => {
-        const status = getStatusFromTabValue(tabValue);
         setFilter({
             search: '',
             pageIndex: 1,
@@ -91,7 +90,7 @@ export default function AppointmentManagement() {
             endDate: '',
             sortBy: '',
             specialtyId: '',
-            appointmentStatusEnum: status,
+            appointmentStatusEnum: tabValue,
         });
         setSearchInput('');
         setActiveTab(tabValue);
@@ -155,16 +154,21 @@ export default function AppointmentManagement() {
 
             {/* Tabs */}
             <Tabs value={activeTab} onValueChange={handleTabChange} className="mb-8">
-                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-6 bg-white/80 backdrop-blur-sm rounded-xl p-1.5 shadow-sm border border-sky-100/50 h-auto min-h-12 gap-2">
+                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-7 bg-white/80 backdrop-blur-sm rounded-xl p-1.5 shadow-sm border border-sky-100/50 h-auto min-h-12 gap-2">
                     {appointmentTabConfig.map(tab => {
                         const Icon = tab.icon;
                         return (
                             <TabsTrigger
                                 key={tab.value}
                                 value={tab.value}
-                                className={`rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:${tab.gradientFrom} data-[state=active]:${tab.gradientTo} data-[state=active]:text-white font-medium text-xs sm:text-sm px-2 sm:px-3 py-2 transition-all duration-200 data-[state=active]:shadow-md`}
+                                className={`
+                                    rounded-lg font-medium text-xs sm:text-sm px-2 py-2.5 
+                                    transition-all duration-200 hover:bg-gray-50
+                                    data-[state=active]:text-white data-[state=active]:shadow-md
+                                    ${tab.activeClass}
+                                `}
                             >
-                                <Icon className="h-3.5 w-3.5 mr-1 sm:mr-1.5" />
+                                <Icon className="h-4 w-4 mr-1.5" />
                                 <span className="truncate">{tab.label}</span>
                             </TabsTrigger>
                         );
@@ -283,6 +287,11 @@ export default function AppointmentManagement() {
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
+                                                        onClick={() =>
+                                                            navigate(
+                                                                `/appointment/detail?id=${appointment.appointmentId}`
+                                                            )
+                                                        }
                                                         className="flex-1 border-sky-200 text-sky-700 hover:bg-sky-50 rounded-xl font-medium"
                                                     >
                                                         <MessageSquare className="h-4 w-4 mr-2" />
@@ -422,4 +431,6 @@ export default function AppointmentManagement() {
             />
         </div>
     );
-}
+};
+
+export default AppointmentManagement;
