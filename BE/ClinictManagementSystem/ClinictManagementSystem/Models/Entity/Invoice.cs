@@ -17,5 +17,5 @@ namespace ClinictManagementSystem.Models.Entity
         public PaymentStatusEnum PaymentStatus { get; set; }
         //public DateTime InvoiceDate { get; set; }
         public DateTime? PaymentDate { get; set; }
-}
+    }
 }

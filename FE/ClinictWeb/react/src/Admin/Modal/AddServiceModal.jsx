@@ -15,7 +15,7 @@ import { useAsyncAction } from '../../Hooks/UseAsyncAction';
 import { CreateServiceActionAsync } from '../../Redux/ReducerAPI/ServiceReducer';
 import { Button } from '@/components/ui/button';
 
-const AddServiceModal = ({ open, onOpenChange }) => {
+const AddServiceModal = ({ filter, open, onOpenChange }) => {
     const { run } = useAsyncAction();
     const formik = useFormik({
         initialValues: {
@@ -32,7 +32,7 @@ const AddServiceModal = ({ open, onOpenChange }) => {
             description: Yup.string(),
         }),
         onSubmit: (values, { resetForm }) => {
-            run(CreateServiceActionAsync(values), () => {
+            run(CreateServiceActionAsync(values, filter), () => {
                 onOpenChange(false);
                 resetForm();
             });

@@ -5,5 +5,6 @@ namespace ClinictManagementSystem.Repositories.MedicineStockHistoryRepo
 {
     public interface IMedicineStockHistoryRepository : IGenericRepository<MedicineStockHistory>
     {
+        Task AddRangeMedicineStockHistoryAsync(List<MedicineStockHistory> entities);
     }
 }

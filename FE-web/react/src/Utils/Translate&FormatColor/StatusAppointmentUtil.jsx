@@ -1,4 +1,13 @@
-import { CalendarDays, Clock, Stethoscope, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import {
+    CalendarDays,
+    Clock,
+    Stethoscope,
+    CheckCircle,
+    XCircle,
+    AlertCircle,
+    CreditCard,
+    Wallet,
+} from 'lucide-react';
 
 const appointmentStatuses = [
     {
@@ -23,6 +32,13 @@ const appointmentStatuses = [
         icon: Stethoscope,
     },
     {
+        value: 'PendingPayment',
+        label: 'Đang chờ thanh toán',
+        color: 'bg-orange-100 text-orange-800 border-orange-200',
+        gradientColor: 'from-orange-500',
+        icon: Wallet,
+    },
+    {
         value: 'Completed',
         label: 'Đã khám xong',
         color: 'bg-green-100 text-green-800 border-green-200',
@@ -43,43 +59,43 @@ const appointmentTabConfig = [
         value: '',
         label: 'Tất cả',
         icon: CalendarDays,
-        gradientFrom: 'from-sky-500',
-        gradientTo: 'to-blue-600',
+        activeClass: 'data-[state=active]:bg-sky-500',
     },
     {
         value: 'Booked',
         label: 'Đã đặt',
         icon: CalendarDays,
-        gradientFrom: 'from-blue-500',
-        gradientTo: 'to-blue-600',
+        activeClass: 'data-[state=active]:bg-blue-500',
     },
     {
         value: 'Waiting',
         label: 'Chờ khám',
         icon: Clock,
-        gradientFrom: 'from-yellow-400',
-        gradientTo: 'to-orange-500',
+        activeClass: 'data-[state=active]:bg-amber-500',
     },
     {
         value: 'InProgress',
         label: 'Đang khám',
         icon: Stethoscope,
-        gradientFrom: 'from-purple-500',
-        gradientTo: 'to-violet-600',
+        activeClass: 'data-[state=active]:bg-purple-500',
+    },
+    {
+        value: 'PendingPayment',
+        label: 'Chờ thanh toán',
+        icon: CreditCard,
+        activeClass: 'data-[state=active]:bg-orange-500',
     },
     {
         value: 'Completed',
         label: 'Hoàn thành',
         icon: CheckCircle,
-        gradientFrom: 'from-green-500',
-        gradientTo: 'to-emerald-600',
+        activeClass: 'data-[state=active]:bg-green-500',
     },
     {
         value: 'Cancelled',
         label: 'Đã hủy',
         icon: XCircle,
-        gradientFrom: 'from-red-500',
-        gradientTo: 'to-red-600',
+        activeClass: 'data-[state=active]:bg-red-500',
     },
 ];
 
@@ -94,21 +110,34 @@ const getStatusBadge = status => {
     );
 };
 
-const getStatusFromTabValue = tabValue => {
-    switch (tabValue) {
-        case 'Booked':
-            return 'Booked';
-        case 'Waiting':
-            return 'Waiting';
-        case 'InProgress':
-            return 'InProgress';
-        case 'Completed':
-            return 'Completed';
-        case 'Cancelled':
-            return 'Cancelled';
-        default:
-            return '';
-    }
+const getAppointmentStatusColor = status => {
+    const colors = {
+        booked: 'bg-green-500 text-white',
+        waiting: 'bg-yellow-400 text-black',
+        inprogress: 'bg-blue-500 text-white',
+        pendingpayment: 'bg-orange-400 text-white',
+        completed: 'bg-gray-600 text-white',
+        cancelled: 'bg-red-500 text-white',
+    };
+    return colors[status?.toLowerCase()] || 'bg-gray-300 text-black';
 };
 
-export { getStatusFromTabValue, getStatusBadge, appointmentStatuses, appointmentTabConfig };
+const getAppointmentStatusTranslate = status => {
+    const labels = {
+        booked: 'Đã đặt lịch',
+        waiting: 'Đang chờ khám',
+        inprogress: 'Đang khám',
+        pendingpayment: 'Đang chờ thanh toán',
+        completed: 'Đã khám xong',
+        cancelled: 'Đã hủy',
+    };
+    return labels[status?.toLowerCase()] || 'Không xác định';
+};
+
+export {
+    getStatusBadge,
+    appointmentStatuses,
+    appointmentTabConfig,
+    getAppointmentStatusColor,
+    getAppointmentStatusTranslate,
+};

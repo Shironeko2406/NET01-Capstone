@@ -21,6 +21,8 @@ import {
     getStockHistoryTypeTranslate,
 } from '../../Utils/Translate&FormatColor/MedicineStockUtil';
 import { generatePaginationNumbers } from '../../Utils/GeneratePagination';
+import { Tooltip } from 'antd';
+import { truncateText } from '../../Utils/UtilFunction';
 
 const MedicineStockHistoryManagement = () => {
     const dispatch = useDispatch();
@@ -185,28 +187,28 @@ const MedicineStockHistoryManagement = () => {
                 </div>
 
                 <div className="overflow-x-auto">
-                    <table className="w-full">
+                    <table className="w-full table-fixed">
                         <thead className="bg-gray-50 border-b border-gray-200">
                             <tr>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                                <th className="w-24 px-6 py-4 text-left text-sm font-semibold text-gray-900">
                                     Mã GD
                                 </th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                                <th className="w-36 px-6 py-4 text-left text-sm font-semibold text-gray-900">
                                     Ngày giờ
                                 </th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                                <th className="w-24 px-6 py-4 text-left text-sm font-semibold text-gray-900">
                                     Loại
                                 </th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                                <th className="w-24 px-6 py-4 text-left text-sm font-semibold text-gray-900">
                                     Thuốc
                                 </th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                                <th className="w-24 px-6 py-4 text-left text-sm font-semibold text-gray-900">
                                     Số lượng
                                 </th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                                <th className="w-32 px-6 py-4 text-left text-sm font-semibold text-gray-900">
                                     Người thực hiện
                                 </th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                                <th className="w-48 px-6 py-4 text-left text-sm font-semibold text-gray-900">
                                     Ghi chú
                                 </th>
                             </tr>
@@ -217,15 +219,17 @@ const MedicineStockHistoryManagement = () => {
                                     key={history.medicineStockHistoryId}
                                     className="hover:bg-gray-50"
                                 >
-                                    <td className="px-6 py-4 text-sm text-gray-900">
+                                    <td className="px-6 py-4 text-sm text-gray-900 truncate">
                                         <div className="font-medium">{history.transactionCode}</div>
                                     </td>
                                     <td className="px-6 py-4 text-sm text-gray-900">
-                                        {formatDateTime(history.creationDate)}
+                                        <div className="whitespace-nowrap">
+                                            {formatDateTime(history.creationDate)}
+                                        </div>
                                     </td>
                                     <td className="px-6 py-4 text-sm text-gray-900">
                                         <Badge
-                                            className={`text-xs ${getStockHistoryColor(
+                                            className={`text-xs whitespace-nowrap ${getStockHistoryColor(
                                                 history.type
                                             )}`}
                                             variant="secondary"
@@ -240,14 +244,20 @@ const MedicineStockHistoryManagement = () => {
                                             {history.medicineCode}
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 text-sm text-gray-900">
+                                    <td className="px-6 py-4 text-sm text-gray-900 text-center">
                                         {history.quantity}
                                     </td>
                                     <td className="px-6 py-4 text-sm text-gray-900">
-                                        {history.createdByName}
+                                        <div className="truncate">{history.createdByName}</div>
                                     </td>
                                     <td className="px-6 py-4 text-sm text-gray-900">
-                                        {history.note || 'Không có ghi chú'}
+                                        {history.note ? (
+                                            <Tooltip title={history.note} placement="topLeft">
+                                                <div className="truncate">{history.note}</div>
+                                            </Tooltip>
+                                        ) : (
+                                            <div className="text-gray-400">Không có ghi chú</div>
+                                        )}
                                     </td>
                                 </tr>
                             ))}

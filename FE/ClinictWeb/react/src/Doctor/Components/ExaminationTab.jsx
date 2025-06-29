@@ -14,9 +14,7 @@ const ExaminationTab = ({ examinationForm, handleSaveExamination }) => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (appointmentInfo?.symptoms) {
-            examinationForm.setFieldsValue({ symptoms: appointmentInfo.symptoms });
-        }
+        examinationForm.setFieldsValue({ symptoms: appointmentInfo?.symptoms ?? '' });
     }, [appointmentInfo?.symptoms]);
 
     return (
@@ -51,7 +49,7 @@ const ExaminationTab = ({ examinationForm, handleSaveExamination }) => {
                     </Form>
 
                     <div className="pt-2">
-                        {appointmentInfo.status === 'InProgress' &&
+                        {appointmentInfo?.status === 'InProgress' &&
                             (!isExaminationSaved ? (
                                 <Button
                                     onClick={() => examinationForm.submit()}

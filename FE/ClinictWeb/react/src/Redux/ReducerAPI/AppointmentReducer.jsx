@@ -249,3 +249,34 @@ export const UpdateStatusAppointmentByIdActionAsync = (id, status) => {
         }
     };
 };
+
+export const UpdateStatusAppointmentByIdForManageActionAsync = (id, status, filter) => {
+    return async dispatch => {
+        try {
+            const res = await httpClient.put(
+                `/api/v1/appointment/${id}/status`,
+                {},
+                {
+                    params: {
+                        appointmentStatusEnum: status,
+                    },
+                }
+            );
+            if (res.isSuccess && res.data) {
+                if (status === 'Waiting') {
+                    await dispatch(GetAppointmentActionAsync(filter));
+                } else {
+                    await dispatch(GetAppointmentDoctorLoginActionAsync(filter));
+                }
+                return { success: true, data: null, message: res.message };
+            } else if (res.isSuccess && !res.data) {
+                return { success: false, data: null, message: res.message };
+            } else {
+                return { success: false, message: res.message };
+            }
+        } catch (error) {
+            console.error(error);
+            return { success: false, message: 'System error' };
+        }
+    };
+};

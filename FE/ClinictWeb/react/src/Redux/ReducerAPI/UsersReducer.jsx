@@ -92,3 +92,21 @@ export const GetDoctorAvailableActionAsync = filter => {
         }
     };
 };
+
+export const UpdateUserByIdActionAsync = (userId, dataUpdate) => {
+    return async dispatch => {
+        try {
+            const res = await httpClient.put(`/api/v1/admin/update-user/${userId}`, dataUpdate);
+            if (res.isSuccess && res.data) {
+                return { success: true, data: null, message: res.message };
+            } else if (res.isSuccess && !res.data) {
+                return { success: false, data: null, message: res.message };
+            } else {
+                return { success: false, message: res.message };
+            }
+        } catch (error) {
+            console.error(error);
+            return { success: false, message: 'System error' };
+        }
+    };
+};

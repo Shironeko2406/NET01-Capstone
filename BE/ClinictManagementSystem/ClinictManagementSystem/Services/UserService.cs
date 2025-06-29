@@ -215,7 +215,8 @@ namespace ClinictManagementSystem.Services
                     filter: filter,
                     role: filterUsersDTO.Role.ToString(),
                     pageIndex: filterUsersDTO.PageIndex,
-                    pageSize: filterUsersDTO.PageSize
+                    pageSize: filterUsersDTO.PageSize,
+                    includeProperties: "UserRoles.Role,DoctorSpecialties"
                 );
 
                 // 3. Map tay từ Users -> GetUsersDTO
@@ -230,7 +231,8 @@ namespace ClinictManagementSystem.Services
                     Gender = u.Gender.ToString(),
                     PhoneNumber = u.PhoneNumber,
                     Address = u.Address,
-                    Roles = u.UserRoles?.Select(ur => ur.Role.RoleName).ToList()
+                    Role = u.UserRoles?.FirstOrDefault()?.Role.RoleName,
+                    SpecialtyIds = u.DoctorSpecialties?.Select(ds => ds.SpecialtyId).ToList()
                 }).ToList();
 
                 // 4. Tạo pagination mới cho DTO
@@ -331,6 +333,56 @@ namespace ClinictManagementSystem.Services
                 return ResponseHandler.Failure<bool>($"Lỗi khi cập nhật thông tin người dùng: {ex.Message}");
             }
         }
+
+        public async Task<ApiResponse<bool>> UpdateUserByAdminAsync(Guid userId, UpdateUserByAdminDTO updateUserByAdminDTO)
+        {
+            try
+            {
+                var user = await _unitOfWork.UsersRepository.GetUserById(userId);
+                if (user == null)
+                    return ResponseHandler.Failure<bool>("Không tìm thấy người dùng.");
+
+                user.FullName = updateUserByAdminDTO.FullName;
+                user.Email = updateUserByAdminDTO.Email;
+                user.Avatar = updateUserByAdminDTO.Avatar;
+                user.DateOfBirth = updateUserByAdminDTO.DateOfBirth;
+                user.Gender = updateUserByAdminDTO.Gender;
+                user.PhoneNumber = updateUserByAdminDTO.PhoneNumber;
+                user.Address = updateUserByAdminDTO.Address;
+
+                var isDoctor = user.UserRoles.Any(r => r.Role.RoleName == AppRole.Doctor);
+
+                if (isDoctor)
+                {
+                    // Xóa các chuyên khoa cũ
+                    var oldSpecialties = user.DoctorSpecialties.ToList();
+                    if (oldSpecialties.Any())
+                        _unitOfWork.DoctorSpecialtyRepository.HardRemoveRange(oldSpecialties);
+
+                    // Thêm chuyên khoa mới nếu có
+                    if (updateUserByAdminDTO.SpecialtyIds != null && updateUserByAdminDTO.SpecialtyIds.Any())
+                    {
+                        var newSpecialties = updateUserByAdminDTO.SpecialtyIds.Select(id => new DoctorSpecialties
+                        {
+                            DoctorId = user.UserId,
+                            SpecialtyId = id
+                        }).ToList();
+
+                        await _unitOfWork.DoctorSpecialtyRepository.AddRangeAsync(newSpecialties);
+                    }
+                }
+
+                _unitOfWork.UsersRepository.UpdateAsync(user);
+                await _unitOfWork.SaveChangeAsync();
+
+                return ResponseHandler.Success(true, "Cập nhật người dùng thành công.");
+            }
+            catch (Exception ex)
+            {
+                return ResponseHandler.Failure<bool>($"Lỗi khi cập nhật người dùng: {ex.Message}");
+            }
+        }
+
 
         public async Task<ApiResponse<List<DoctorGetDTO>>> GetAvailableDoctorsAsync(DoctorAvailabilityFilterDTO doctorAvailabilityFilterDTO)
         {

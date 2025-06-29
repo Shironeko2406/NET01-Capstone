@@ -100,6 +100,7 @@ namespace ClinictManagementSystem.Services
                 Expression<Func<MedicineStockHistory, bool>> filter = x =>
                     (string.IsNullOrEmpty(medicineStockHistoryFilterDTO.Search) ||
                         x.TransactionCode.Contains(medicineStockHistoryFilterDTO.Search) ||
+                        x.Note.Contains(medicineStockHistoryFilterDTO.Search) ||
                         x.Medicine.MedicineCode.Contains(medicineStockHistoryFilterDTO.Search) ||
                         x.Medicine.Name.Contains(medicineStockHistoryFilterDTO.Search) ||
                         x.CreatedByUser.Username.Contains(medicineStockHistoryFilterDTO.Search)) &&

@@ -11,6 +11,7 @@
         public string Gender { get; set; }
         public string PhoneNumber { get; set; }
         public string Address { get; set; }
-        public List<string> Roles { get; set; } // Lấy tên Role
+        public string Role { get; set; }
+        public List<Guid> SpecialtyIds { get; set; }
     }
 }

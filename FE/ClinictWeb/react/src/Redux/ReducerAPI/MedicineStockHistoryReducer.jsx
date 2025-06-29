@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { httpClient } from '../../Utils/Interceptor';
+import { GetMedicinesActionAsync } from './MedicineReducer';
 
 const initialState = {
     listStockHistory: [],
@@ -46,6 +47,25 @@ export const GetMedicineStockHistoryActionAsync = filter => {
         } catch (error) {
             console.error(error);
             return false;
+        }
+    };
+};
+
+export const CreateStockHistoryActionAsync = (data, filter) => {
+    return async dispatch => {
+        try {
+            const res = await httpClient.post(`/api/v1/medicineStockHistory`, data);
+            if (res.isSuccess && res.data) {
+                await dispatch(GetMedicinesActionAsync(filter));
+                return { success: true, data: null, message: res.message };
+            } else if (res.isSuccess && !res.data) {
+                return { success: false, data: null, message: res.message };
+            } else {
+                return { success: false, message: res.message };
+            }
+        } catch (error) {
+            console.error(error);
+            return { success: false, message: 'System error' };
         }
     };
 };

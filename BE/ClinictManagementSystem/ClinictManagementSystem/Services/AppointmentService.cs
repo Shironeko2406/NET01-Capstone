@@ -673,6 +673,7 @@ namespace ClinictManagementSystem.Services
                     DoctorAvatar = appointment.Doctor.Avatar,
 
                     SpecialtyName = appointment.Specialty.Name,
+                    invoiceId = appointment.Invoice?.InvoiceId,
 
                     Services = appointment.AppointmentServices.Select(aps => new AppointmentServiceDetailDTO
                     {

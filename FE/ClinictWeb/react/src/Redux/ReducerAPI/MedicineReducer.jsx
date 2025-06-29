@@ -69,3 +69,22 @@ export const GetAllMedicineActionAsync = () => {
         }
     };
 };
+
+export const CreateMedicineActionAsync = (newMedicine, filter) => {
+    return async dispatch => {
+        try {
+            const res = await httpClient.post(`/api/v1/medicine`, newMedicine);
+            if (res.isSuccess && res.data) {
+                await dispatch(GetMedicinesActionAsync(filter));
+                return { success: true, data: null, message: res.message };
+            } else if (res.isSuccess && !res.data) {
+                return { success: false, data: null, message: res.message };
+            } else {
+                return { success: false, message: res.message };
+            }
+        } catch (error) {
+            console.error(error);
+            return { success: false, message: 'System error' };
+        }
+    };
+};

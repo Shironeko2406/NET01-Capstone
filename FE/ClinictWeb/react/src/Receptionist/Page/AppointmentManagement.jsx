@@ -31,9 +31,13 @@ import {
     Activity,
     BarChart3,
     Plus,
+    Clock,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { GetAppointmentActionAsync } from '../../Redux/ReducerAPI/AppointmentReducer';
+import {
+    GetAppointmentActionAsync,
+    UpdateStatusAppointmentByIdForManageActionAsync,
+} from '../../Redux/ReducerAPI/AppointmentReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { GetSpecialtiesActionAsync } from '../../Redux/ReducerAPI/SpecialtyReducer';
 import { pageSizeOptions } from '../../Utils/Data/DataExport';
@@ -46,6 +50,7 @@ import { formatAppointmentDate } from '../../Utils/Format/FormatDate';
 import { GetAppointmentStatisticActionAsync } from '../../Redux/ReducerAPI/StatisticReducer';
 import FilterAppointmentModal from '../Modal/FilterAppointmentModal';
 import AppointmentTabList from '../Components/AppointmentTabList';
+import { useAsyncAction } from '../../Hooks/UseAsyncAction';
 
 const AppointmentManagement = () => {
     const [activeTab, setActiveTab] = useState('');
@@ -67,8 +72,7 @@ const AppointmentManagement = () => {
     );
     const { specialties } = useSelector(state => state.SpecialtyReducer);
     const { appointmentStatistic } = useSelector(state => state.StatisticReducer);
-
-    console.log(filter);
+    const { run } = useAsyncAction();
 
     useEffect(() => {
         dispatch(GetAppointmentActionAsync(filter));
@@ -128,6 +132,13 @@ const AppointmentManagement = () => {
             pageSize: Number(size),
             pageIndex: 1,
         }));
+    };
+
+    const handleStartWaiting = appointmentId => {
+        run(
+            UpdateStatusAppointmentByIdForManageActionAsync(appointmentId, 'Waiting', filter),
+            () => {}
+        );
     };
 
     return (
@@ -464,6 +475,19 @@ const AppointmentManagement = () => {
                                                                                 <Eye className="mr-2 h-4 w-4" />
                                                                                 Xem chi tiết
                                                                             </DropdownMenuItem>
+                                                                            {appointment.status ===
+                                                                                'Booked' && (
+                                                                                <DropdownMenuItem
+                                                                                    onClick={() =>
+                                                                                        handleStartWaiting(
+                                                                                            appointment.appointmentId
+                                                                                        )
+                                                                                    }
+                                                                                >
+                                                                                    <Clock className="mr-2 h-4 w-4" />
+                                                                                    Cho chờ khám
+                                                                                </DropdownMenuItem>
+                                                                            )}
                                                                         </DropdownMenuContent>
                                                                     </DropdownMenu>
                                                                 </div>

@@ -62,5 +62,13 @@ namespace ClinictManagementSystem.Controllers
         {
             return await _userService.GetAvailableDoctorsAsync(doctorAvailabilityFilterDTO);
         }
+
+        [Authorize(Roles = AppRole.Admin)]
+        [SwaggerOperation(Summary = "Cập nhật user cho admin")]
+        [HttpPut("~/api/v1/admin/update-user/{userId}")]
+        public async Task<ApiResponse<bool>> UpdateUserByAdminAsync(Guid userId, UpdateUserByAdminDTO updateUserByAdminDTO)
+        {
+            return await _userService.UpdateUserByAdminAsync(userId, updateUserByAdminDTO);
+        }
     }
 }

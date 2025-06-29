@@ -29,7 +29,7 @@ namespace ClinictManagementSystem.Controllers
         }
 
         [SwaggerOperation(Summary = "Cập nhật trạng thái lịch khám")]
-        [Authorize(Roles = AppRole.Admin + "," + AppRole.Doctor)]
+        [Authorize(Roles = AppRole.Admin + "," + AppRole.Doctor + "," + AppRole.Receptionist)]
         [HttpPut("{id}/status")]
         public async Task<ApiResponse<bool>> UpdateAppointmentStatusAsync(Guid id, AppointmentStatusEnum appointmentStatusEnum)
         {

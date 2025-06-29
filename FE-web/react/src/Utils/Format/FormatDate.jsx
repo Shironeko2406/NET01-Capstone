@@ -42,6 +42,12 @@ const formatAppointmentDate = date => {
     return upperFirst(formatted);
 };
 
+const calculateAge = dateOfBirth => {
+    if (!dateOfBirth) return 0;
+    const today = dayjs();
+    return today.diff(dateOfBirth, 'year');
+};
+
 export {
     formatDate,
     formatDateTime,
@@ -49,4 +55,5 @@ export {
     getStartOfCurrentMonth,
     getNow,
     formatAppointmentDate,
+    calculateAge,
 };

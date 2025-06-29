@@ -56,6 +56,11 @@ function deleteCookie(name) {
     document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
+const truncateText = (text, maxLength = 30) => {
+    if (!text) return 'Không có ghi chú';
+    return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
+};
+
 // Export the functions
 export {
     getDataTextStorage,
@@ -67,4 +72,5 @@ export {
     setCookie,
     getCookie,
     deleteCookie,
+    truncateText,
 };

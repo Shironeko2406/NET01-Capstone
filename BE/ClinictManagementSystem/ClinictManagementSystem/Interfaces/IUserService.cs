@@ -12,6 +12,7 @@ namespace ClinictManagementSystem.Interfaces
         Task<ApiResponse<Pagination<GetUsersDTO>>> FilterUserByAdminAsync(FilterUsersDTO filterUsersDTO);
         Task<ApiResponse<UserDetailDTO>> GetUserByLoginAsync();
         Task<ApiResponse<bool>> UpdateUserLoginAsync(UpdateUserDTO updateUserDTO);
+        Task<ApiResponse<bool>> UpdateUserByAdminAsync(Guid userId, UpdateUserByAdminDTO updateUserByAdminDTO);
         Task<ApiResponse<List<DoctorGetDTO>>> GetAvailableDoctorsAsync(DoctorAvailabilityFilterDTO doctorAvailabilityFilterDTO);
     }
 }

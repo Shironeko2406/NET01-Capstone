@@ -39,9 +39,16 @@ namespace ClinictManagementSystem.Controllers
 
             if (response.VnPayResponseCode == "00")
             {
-                // update trạng thái thành công
-                await _invoiceService.UpdatePaymentStatusAsync(Guid.Parse(response.OrderId), PaymentStatusEnum.Paid);
-                return Redirect("http://localhost:5173/payment-success");
+                var updateResult = await _invoiceService.UpdatePaymentStatusAsync(Guid.Parse(response.OrderId), PaymentStatusEnum.Paid);
+
+                if (updateResult)
+                {
+                    return Redirect("http://localhost:5173/payment-success");
+                }
+                else
+                {
+                    return Redirect("http://localhost:5173/payment-failure");
+                }
             }
             else
             {

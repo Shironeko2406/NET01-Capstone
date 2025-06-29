@@ -6,6 +6,7 @@ import { MessageProvider } from './Context/MessageContext';
 import { LoadingProvider } from './Context/LoadingContext';
 import { Provider } from 'react-redux';
 import { store } from './Redux/Store';
+import '@ant-design/v5-patch-for-react-19';
 
 createRoot(document.getElementById('root')).render(
     <MessageProvider>

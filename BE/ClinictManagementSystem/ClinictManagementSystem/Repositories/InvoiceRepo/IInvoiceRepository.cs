@@ -5,5 +5,6 @@ namespace ClinictManagementSystem.Repositories.InvoiceRepo
 {
     public interface IInvoiceRepository : IGenericRepository<Invoice>
     {
+        Task<Invoice?> GetDetailInvoiceIdAsync(Guid invoiceId);
     }
 }

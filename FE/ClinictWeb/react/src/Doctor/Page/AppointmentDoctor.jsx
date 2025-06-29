@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
 import {
     Select,
     SelectContent,
@@ -18,8 +18,20 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Calendar, Filter, MoreVertical, Eye, Users, Activity, BarChart3 } from 'lucide-react';
-import { GetAppointmentDoctorLoginActionAsync } from '../../Redux/ReducerAPI/AppointmentReducer';
+import {
+    Calendar,
+    Filter,
+    MoreVertical,
+    Eye,
+    Users,
+    Activity,
+    BarChart3,
+    Stethoscope,
+} from 'lucide-react';
+import {
+    GetAppointmentDoctorLoginActionAsync,
+    UpdateStatusAppointmentByIdForManageActionAsync,
+} from '../../Redux/ReducerAPI/AppointmentReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { GetSpecialtiesDoctorLoginActionAsync } from '../../Redux/ReducerAPI/SpecialtyReducer';
 import { pageSizeOptions } from '../../Utils/Data/DataExport';
@@ -33,6 +45,7 @@ import { GetAppointmentStatisticActionAsync } from '../../Redux/ReducerAPI/Stati
 import FilterAppointmentModal from '../Modal/FilterAppointmentModal';
 import { useNavigate } from 'react-router-dom';
 import AppointmentTabList from '../Components/AppointmentTabList';
+import { useAsyncAction } from '../../Hooks/UseAsyncAction';
 
 const AppointmentDoctor = () => {
     const [activeTab, setActiveTab] = useState('');
@@ -54,6 +67,7 @@ const AppointmentDoctor = () => {
     const { specialties } = useSelector(state => state.SpecialtyReducer);
     const { appointmentStatistic } = useSelector(state => state.StatisticReducer);
     const navigate = useNavigate();
+    const { run } = useAsyncAction();
 
     useEffect(() => {
         dispatch(GetAppointmentDoctorLoginActionAsync(filter));
@@ -111,6 +125,13 @@ const AppointmentDoctor = () => {
             pageSize: Number(size),
             pageIndex: 1,
         }));
+    };
+
+    const handleStartExamination = appointmentId => {
+        run(
+            UpdateStatusAppointmentByIdForManageActionAsync(appointmentId, 'InProgress', filter),
+            () => {}
+        );
     };
 
     return (
@@ -414,6 +435,19 @@ const AppointmentDoctor = () => {
                                                                                 <Eye className="mr-2 h-4 w-4" />
                                                                                 Xem chi tiết
                                                                             </DropdownMenuItem>
+                                                                            {appointment.status ===
+                                                                                'Waiting' && (
+                                                                                <DropdownMenuItem
+                                                                                    onClick={() =>
+                                                                                        handleStartExamination(
+                                                                                            appointment.appointmentId
+                                                                                        )
+                                                                                    }
+                                                                                >
+                                                                                    <Stethoscope className="mr-2 h-4 w-4" />
+                                                                                    Bắt đầu khám
+                                                                                </DropdownMenuItem>
+                                                                            )}
                                                                         </DropdownMenuContent>
                                                                     </DropdownMenu>
                                                                 </div>

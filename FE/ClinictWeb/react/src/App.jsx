@@ -21,6 +21,7 @@ import AppointmentDoctor from './Doctor/Page/AppointmentDoctor';
 import AppointmentDetail from './Doctor/Page/AppointmentDetail';
 import AppointmentLabTech from './LabTechnician/Page/AppointmentLabTech';
 import TestResultOfLabService from './LabTechnician/Page/TestResultOfAppointment';
+import UpdateUser from './Admin/Page/UpdateUser';
 
 function App() {
     return (
@@ -40,6 +41,7 @@ function App() {
                         <Route path="specialty" element={<SpecialtyManagement />} />
                         <Route path="user" element={<UserManagement />} />
                         <Route path="user/create" element={<CreateUser />} />
+                        <Route path="user/edit" element={<UpdateUser />} />
                         <Route path="medicine-type" element={<MedicineTypeManagement />} />
                         <Route path="medicine" element={<MedicineManagement />} />
                         <Route

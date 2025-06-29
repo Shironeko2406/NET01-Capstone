@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Filter, Plus, Edit } from 'lucide-react';
+import { Filter, Plus, Edit, MoreVertical, ArrowUp, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CardTitle } from '@/components/ui/card';
 import {
@@ -10,6 +10,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import FilterMedicineModal from '../Modal/FilterMedicineModal';
 import { GetMedicinesActionAsync } from '../../Redux/ReducerAPI/MedicineReducer';
@@ -21,8 +28,10 @@ import {
     getSortFieldTranslate,
 } from '../../Utils/Translate&FormatColor/MedicineUtil';
 import { GetMedicineTypesActionAsync } from '../../Redux/ReducerAPI/MedicineTypeReducer';
-import { pageSizeOptions } from '../../Utils/Data/DataExport';
+import { pageSizeOptions, stockActions } from '../../Utils/Data/DataExport';
 import { generatePaginationNumbers } from '../../Utils/GeneratePagination';
+import AddMedicineModal from '../Modal/AddMedicineModal';
+import StockHistoryModal from '../Modal/StockHistoryModal';
 
 const MedicineManagement = () => {
     const dispatch = useDispatch();
@@ -41,6 +50,10 @@ const MedicineManagement = () => {
     });
 
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isStockModalOpen, setIsStockModalOpen] = useState(false);
+    const [selectedMedicine, setSelectedMedicine] = useState(null);
+    const [stockActionType, setStockActionType] = useState(null);
 
     useEffect(() => {
         dispatch(GetMedicinesActionAsync(filter));
@@ -86,6 +99,18 @@ const MedicineManagement = () => {
         return count;
     };
 
+    const handleStockActionOpen = (medicine, actionType) => {
+        setSelectedMedicine(medicine);
+        setStockActionType(actionType);
+        setIsStockModalOpen(true);
+    };
+
+    const handleCloseStockAction = () => {
+        setSelectedMedicine(null);
+        setStockActionType(null);
+        setIsStockModalOpen(false);
+    };
+
     return (
         <>
             {/* Header */}
@@ -94,7 +119,10 @@ const MedicineManagement = () => {
                     <h1 className="text-2xl font-bold text-gray-900 mb-1">Quản lý thuốc</h1>
                     <p className="text-sm text-gray-500">Quản lý danh sách thuốc trong hệ thống</p>
                 </div>
-                <Button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg">
+                <Button
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg"
+                    onClick={() => setIsModalOpen(true)}
+                >
                     <Plus className="w-4 h-4 mr-2" />
                     Thêm thuốc
                 </Button>
@@ -260,13 +288,34 @@ const MedicineManagement = () => {
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center justify-center gap-1">
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                className="h-8 w-8 p-0"
-                                            >
-                                                <Edit className="w-4 h-4" />
-                                            </Button>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="h-8 w-8 p-0"
+                                                    >
+                                                        <MoreVertical className="h-4 w-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
+                                                    {stockActions.map(stockType => (
+                                                        <DropdownMenuItem
+                                                            key={stockType.type}
+                                                            onClick={() =>
+                                                                handleStockActionOpen(
+                                                                    medicine,
+                                                                    stockType
+                                                                )
+                                                            }
+                                                        >
+                                                            {stockType.icon}
+                                                            {stockType.label}
+                                                        </DropdownMenuItem>
+                                                    ))}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </div>
                                     </td>
                                 </tr>
@@ -352,6 +401,15 @@ const MedicineManagement = () => {
                     sortBy: filter.sortBy,
                     sortField: filter.sortField,
                 }}
+            />
+
+            <AddMedicineModal filter={filter} open={isModalOpen} onOpenChange={setIsModalOpen} />
+            <StockHistoryModal
+                open={isStockModalOpen}
+                onOpenChange={handleCloseStockAction}
+                selectedMedicine={selectedMedicine}
+                actionType={stockActionType}
+                filter={filter}
             />
         </>
     );

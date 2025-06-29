@@ -1,3 +1,5 @@
+import { ArrowUp, Plus, Settings } from 'lucide-react';
+
 const roles = [
     { value: 'Patient', label: 'Bệnh nhân' },
     { value: 'Doctor', label: 'Bác sĩ' },
@@ -6,10 +8,25 @@ const roles = [
     { value: 'LabTechnician', label: 'Xét nghiệm viên' },
 ];
 
+const medicineUnits = [
+    { value: 'box', label: 'Hộp' },
+    { value: 'strip', label: 'Vỉ' },
+    { value: 'bottle', label: 'Chai' },
+    { value: 'tablet', label: 'Viên' },
+    { value: 'tube', label: 'Tuýp' },
+    { value: 'other', label: 'Khác' },
+];
+
 const stockTypes = [
     { value: 'Import', label: 'Nhập kho' },
     { value: 'Export', label: 'Xuất kho' },
     { value: 'Adjust', label: 'Điều chỉnh kho' },
+];
+
+const stockActions = [
+    { type: 'Import', label: 'Nhập kho', icon: <Plus className="mr-2 h-4 w-4" /> },
+    { type: 'Export', label: 'Xuất kho', icon: <ArrowUp className="mr-2 h-4 w-4" /> },
+    { type: 'Adjust', label: 'Điều chỉnh kho', icon: <Settings className="mr-2 h-4 w-4" /> },
 ];
 
 const sortOptions = [
@@ -33,4 +50,14 @@ const sortFieldOptions = [
 
 const pageSizeOptions = ['5', '10'];
 
-export { roles, genders, statuses, sortFieldOptions, pageSizeOptions, stockTypes, sortOptions };
+export {
+    roles,
+    genders,
+    statuses,
+    sortFieldOptions,
+    pageSizeOptions,
+    stockTypes,
+    sortOptions,
+    medicineUnits,
+    stockActions,
+};

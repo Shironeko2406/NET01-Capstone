@@ -31,7 +31,7 @@ const DiagnosisTab = ({ diagnosisForm, handleSaveDiagnosis }) => {
                         Kết luận cuối cùng
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="p-6 space-y-4">
+                <CardContent className="px-6 pb-6 space-y-4">
                     <Form form={diagnosisForm} layout="vertical" onFinish={handleSaveDiagnosis}>
                         <Form.Item
                             label={

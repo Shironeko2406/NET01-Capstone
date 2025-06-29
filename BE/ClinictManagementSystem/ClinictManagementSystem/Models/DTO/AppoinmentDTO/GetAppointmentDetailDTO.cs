@@ -23,6 +23,7 @@ namespace ClinictManagementSystem.Models.DTO.AppoinmentDTO
         public string? PatientPhone { get; set; }
         public GenderEnum? PatientGender { get; set; }
         public DateTime? PatientDob { get; set; }
+        public Guid? invoiceId { get; set; }
 
         // Thông tin bác sĩ
         public Guid DoctorId { get; set; }

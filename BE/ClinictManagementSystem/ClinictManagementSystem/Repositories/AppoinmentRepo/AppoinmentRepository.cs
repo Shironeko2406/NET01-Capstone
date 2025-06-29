@@ -52,6 +52,7 @@ namespace ClinictManagementSystem.Repositories.AppoinmentRepo
                 .Include(a => a.Prescription)
                     .ThenInclude(p => p.PrescriptionDetails)
                         .ThenInclude(pd => pd.Medicine)
+                .Include(a => a.Invoice)
                 .FirstOrDefaultAsync(a => a.AppointmentId == appointmentId);
         }
 

@@ -31,7 +31,6 @@ import {
 import { GetAllMedicineActionAsync } from '../../Redux/ReducerAPI/MedicineReducer';
 import { UpdatePrescriptionByAppointmentIdActionAsync } from '../../Redux/ReducerAPI/PrescriptionReducer';
 import { getMedicineUnitTranslate } from '../../Utils/Translate&FormatColor/MedicineUtil';
-import { usePaymentCalculation } from '../../Hooks/UsePaymentCalculation';
 import PaymentSummaryTab from '../Components/PaymentSummaryTab';
 
 const AppointmentDetail = () => {
@@ -65,9 +64,6 @@ const AppointmentDetail = () => {
     const [medicineQuantities, setMedicineQuantities] = useState({});
     const [searchMedicine, setSearchMedicine] = useState('');
     const dosageInstructionsRef = useRef({});
-
-    // ==================== PAYMENT CALCULATION ====================
-    const paymentData = usePaymentCalculation();
 
     // ==================== INITIALIZATION ====================
     useEffect(() => {
