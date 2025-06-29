@@ -1,4 +1,5 @@
-﻿using ClinictManagementSystem.Interfaces;
+﻿using ClinictManagementSystem.Enums;
+using ClinictManagementSystem.Interfaces;
 using ClinictManagementSystem.Models.Entity;
 using ClinictManagementSystem.Repositories.Generic;
 using Microsoft.EntityFrameworkCore;
@@ -23,5 +24,14 @@ namespace ClinictManagementSystem.Repositories.InvoiceRepo
                 .FirstOrDefaultAsync(i => i.InvoiceId == invoiceId);
         }
 
+        public async Task<List<Invoice>> GetInvoicesByTimeRangeAsync(DateTime start, DateTime end)
+        {
+            return await _dbContext.Invoices
+                .Where(x => !x.IsDeleted &&
+                            x.PaymentStatus == PaymentStatusEnum.Paid &&
+                            x.PaymentDate >= start &&
+                            x.PaymentDate <= end)
+                .ToListAsync();
+        }
     }
 }

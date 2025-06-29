@@ -152,6 +152,22 @@ namespace ClinictManagementSystem.Repositories.AppoinmentRepo
             return result;
         }
 
+        public async Task<int> GetTotalAppointmentRevenueByIdsAsync(List<Guid> appointmentIds)
+        {
+            const int appointmentFee = 350000;
+            return appointmentIds.Count * appointmentFee;
+        }
 
+        public async Task<int> GetTotalAppointmentRevenueAsync()
+        {
+            var paidCompletedAppointments = await _dbContext.Appointments
+                .Where(a => !a.IsDeleted &&
+                            a.Status == AppointmentStatusEnum.Completed &&
+                            a.Invoice != null &&
+                            a.Invoice.PaymentStatus == PaymentStatusEnum.Paid)
+                .CountAsync();
+
+            return paidCompletedAppointments * 350000;
+        }
     }
 }

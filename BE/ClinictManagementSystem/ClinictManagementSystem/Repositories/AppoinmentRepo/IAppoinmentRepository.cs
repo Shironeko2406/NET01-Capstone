@@ -23,5 +23,7 @@ namespace ClinictManagementSystem.Repositories.AppoinmentRepo
             Expression<Func<AppointmentServices, bool>>? relatedDataFilter = null,
             string? relatedDataProperty = null
         );
+        Task<int> GetTotalAppointmentRevenueByIdsAsync(List<Guid> appointmentIds);
+        Task<int> GetTotalAppointmentRevenueAsync();
     }
 }
